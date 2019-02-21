@@ -32,7 +32,7 @@ module.exports = ({ cache = new Keyv(), get, send } = {}) => {
   assert(get, 'get required')
   assert(send, 'send required')
 
-  return async (req, res) => {
+  return async ({ req, res, ...opts }) => {
     const hasForce = Boolean(req.query ? req.query.force : parse(req.url).force)
     const url = urlResolve('http://localhost', req.url)
     const key = getKey(url)
@@ -41,7 +41,7 @@ module.exports = ({ cache = new Keyv(), get, send } = {}) => {
 
     const { ttl, createdAt = Date.now(), data, ...props } = isHit
       ? cachedResult
-      : await get({ req, res })
+      : await get({ req, res, ...opts })
 
     setCacheControl({ res, createdAt, isHit, ttl, hasForce })
 

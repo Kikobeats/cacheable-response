@@ -65,7 +65,7 @@ At least, **cacheable-response** needs two things:
 const micro = require('micro')
 
 /* Explicitly pass `cacheable-response` as server */
-micro(ssrCache)
+micro((req, res) => ssrCache({ req, res }))
 ```
 
 That's include any express-like framework as well.
@@ -75,7 +75,7 @@ const express = require('express')
 const app = express()
 
 /* Passing `cacheable-response` instance as middleware */
-app.use(ssrCache)
+app.use((req, res) => ssrCache({ req, res }))
 ```
 
 At all times the cache status is reflected as `x-cache` headers in the response.

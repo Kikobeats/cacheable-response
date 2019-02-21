@@ -9,18 +9,14 @@ import cacheableResponse from '..'
 
 const createServer = props => {
   const server = cacheableResponse(props)
-  const api = micro(server)
+  const api = micro((req, res) => server({ req, res }))
   return listen(api)
 }
 
 test('required props', t => {
   t.throws(() => cacheableResponse(), AssertionError, 'get is required')
   t.throws(() => cacheableResponse({}), AssertionError, 'get is required')
-  t.throws(
-    () => cacheableResponse({ get: true }),
-    AssertionError,
-    'send is required'
-  )
+  t.throws(() => cacheableResponse({ get: true }), AssertionError, 'send is required')
 })
 
 test('MISS for first access', async t => {
