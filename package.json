@@ -1,0 +1,111 @@
+{
+  "name": "cacheable-response",
+  "description": "An HTTP compliant route path middleware for serving cache response with invalidation support.",
+  "homepage": "https://nicedoc.io/Kikobeats/cacheable-response",
+  "version": "0.0.0",
+  "main": "index.js",
+  "author": {
+    "email": "josefrancisco.verdu@gmail.com",
+    "name": "Kiko Beats",
+    "url": "https://kikobeats.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kikobeats/cacheable-response.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Kikobeats/cacheable-response/issues"
+  },
+  "keywords": [
+    "cache",
+    "cacheable",
+    "caching",
+    "cloudflare",
+    "http",
+    "https",
+    "layer",
+    "response",
+    "ssr"
+  ],
+  "dependencies": {
+    "keyv": "~3.1.0",
+    "normalize-url": "~4.1.0",
+    "pretty-ms": "~4.0.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "latest",
+    "@commitlint/config-conventional": "latest",
+    "ava": "latest",
+    "conventional-github-releaser": "latest",
+    "coveralls": "latest",
+    "finepack": "latest",
+    "git-authors-cli": "latest",
+    "git-dirty": "latest",
+    "got": "latest",
+    "husky": "latest",
+    "lint-staged": "latest",
+    "micro": "latest",
+    "npm-check-updates": "latest",
+    "nyc": "latest",
+    "prettier-standard": "latest",
+    "standard": "latest",
+    "standard-markdown": "latest",
+    "standard-version": "latest",
+    "test-listen": "latest"
+  },
+  "engines": {
+    "node": ">= 8"
+  },
+  "files": [
+    "index.js"
+  ],
+  "scripts": {
+    "clean": "rm -rf node_modules",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "lint": "standard-markdown README.md && standard",
+    "postrelease": "npm run release:tags && npm run release:github && npm publish",
+    "precommit": "lint-staged",
+    "prerelease": "git-dirty && npm run update:check && npm test && git-authors-cli",
+    "pretest": "npm run lint",
+    "pretty": "prettier-standard index.js {core,test,bin,scripts}/**/*.js --single-quote --print-width 100",
+    "release": "git add package.json && standard-version -a",
+    "release:github": "conventional-github-releaser -p angular",
+    "release:tags": "git push --follow-tags origin master",
+    "test": "nyc ava",
+    "update": "ncu -a",
+    "update:check": "ncu -- --error-level 2"
+  },
+  "license": "MIT",
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "linters": {
+      "package.json": [
+        "finepack",
+        "git add"
+      ],
+      "*.js": [
+        "prettier-standard",
+        "git add"
+      ],
+      "*.md": [
+        "standard-markdown",
+        "git add"
+      ]
+    }
+  },
+  "standard-version": {
+    "scripts": {
+      "prechangelog": "git-authors-cli"
+    }
+  }
+}
