@@ -4,8 +4,11 @@ const { resolve: urlResolve } = require('url')
 const normalizeUrl = require('normalize-url')
 const { parse } = require('querystring')
 const prettyMs = require('pretty-ms')
+const computeEtag = require('etag')
 const assert = require('assert')
 const Keyv = require('keyv')
+
+const getEtag = data => computeEtag(typeof data === 'string' ? data : JSON.stringify(data))
 
 const getKey = url => {
   const { origin } = new URL(url)
@@ -17,8 +20,8 @@ const getKey = url => {
 
 const toSeconds = ms => Math.floor(ms / 1000)
 
-const createSetCacheControl = ({ revalidate }) => {
-  return ({ res, createdAt, isHit, ttl, force }) => {
+const createSetCache = ({ revalidate }) => {
+  return ({ res, createdAt, isHit, ttl, force, etag }) => {
     // Specifies the maximum amount of time a resource
     // will be considered fresh in seconds
     const diff = force ? 0 : createdAt + ttl - Date.now()
@@ -31,6 +34,7 @@ const createSetCacheControl = ({ revalidate }) => {
     )
     res.setHeader('X-Cache-Status', isHit ? 'HIT' : 'MISS')
     res.setHeader('X-Cache-Expired-At', prettyMs(diff))
+    res.setHeader('ETag', etag)
   }
 }
 
@@ -44,7 +48,7 @@ module.exports = ({
   assert(get, 'get required')
   assert(send, 'send required')
 
-  const setCacheControl = createSetCacheControl({
+  const setCache = createSetCache({
     revalidate: typeof revalidate === 'function' ? revalidate : () => revalidate
   })
 
@@ -55,14 +59,23 @@ module.exports = ({
     const cachedResult = await cache.get(key)
     const isHit = cachedResult && !hasForce
 
-    const { ttl = defaultTtl, createdAt = Date.now(), data, ...props } = isHit
+    const { etag: cachedEtag, ttl = defaultTtl, createdAt = Date.now(), data, ...props } = isHit
       ? cachedResult
       : await get({ req, res, ...opts })
 
-    setCacheControl({ res, createdAt, isHit, ttl, hasForce })
+    const etag = cachedEtag || getEtag(data)
+
+    setCache({
+      etag,
+      res,
+      createdAt,
+      isHit,
+      ttl,
+      hasForce
+    })
 
     if (!isHit) {
-      await cache.set(key, { createdAt, ttl, data }, ttl)
+      await cache.set(key, { etag, createdAt, ttl, data }, ttl)
     }
 
     send({ data, res, req, ...props })
