@@ -13,10 +13,16 @@ const createServer = props => {
   return listen(api)
 }
 
-test('required props', t => {
-  t.throws(() => cacheableResponse(), AssertionError, 'get is required')
-  t.throws(() => cacheableResponse({}), AssertionError, 'get is required')
-  t.throws(() => cacheableResponse({ get: true }), AssertionError, 'send is required')
+test('.get is required', t => {
+  const error = t.throws(() => cacheableResponse({}))
+  t.true(error instanceof AssertionError)
+  t.is(error.message, '.get required')
+})
+
+test('.send is required', t => {
+  const error = t.throws(() => cacheableResponse({ get: true }))
+  t.true(error instanceof AssertionError)
+  t.is(error.message, '.send required')
 })
 
 test('default ttl and revalidate', async t => {

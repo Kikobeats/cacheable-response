@@ -6,6 +6,7 @@ const { parse } = require('querystring')
 const prettyMs = require('pretty-ms')
 const computeEtag = require('etag')
 const assert = require('assert')
+const { URL } = require('url')
 const Keyv = require('keyv')
 
 const getEtag = data => computeEtag(typeof data === 'string' ? data : JSON.stringify(data))
@@ -39,14 +40,14 @@ const createSetCache = ({ revalidate }) => {
 }
 
 module.exports = ({
-  cache = new Keyv(),
+  cache = new Keyv({ namespace: 'ssr' }),
   get,
   send,
   revalidate = ttl => ttl / 24,
   ttl: defaultTtl = 7200000
 } = {}) => {
-  assert(get, 'get required')
-  assert(send, 'send required')
+  assert(get, '.get required')
+  assert(send, '.send required')
 
   const setCache = createSetCache({
     revalidate: typeof revalidate === 'function' ? revalidate : () => revalidate

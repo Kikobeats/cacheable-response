@@ -118,7 +118,7 @@ curl https://myserver.dev/user?force=true # MISS (forcing invalidation)
 ##### cache
 
 Type: `boolean`<br>
-Default: [`keyv`](https://github.com/lukechilds/keyv)
+Default: `new Keyv({ namespace: 'ssr' })`
 
 The cache instance used for backed your pre-calculated server side response copies.
 
@@ -131,7 +131,7 @@ If you don't specify it, a memory cache will be used.
 Type: `number`<br>
 Default: `7200000`
 
-Number of milliseconds a cache response is considered fresh.
+Number of milliseconds a cache response is considered valid.
 
 After this period of time, the cache response should be refreshed.
 
