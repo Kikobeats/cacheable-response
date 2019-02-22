@@ -118,13 +118,37 @@ curl https://myserver.dev/user?force=true # MISS (forcing invalidation)
 ##### cache
 
 Type: `boolean`<br>
-Default: `[keyv](https://github.com/lukechilds/keyv)`
+Default: [`keyv`](https://github.com/lukechilds/keyv)
 
 The cache instance used for backed your pre-calculated server side response copies.
 
 The library delegates in [keyv](https://github.com/lukechilds/keyv), a tiny key value store with [multi adapter support](https://github.com/lukechilds/keyv#official-storage-adapters).
 
 If you don't specify it, a memory cache will be used.
+
+##### ttl
+
+Type: `number`<br>
+Default: `7200000`
+
+Number of milliseconds a cache response is considered fresh.
+
+After this period of time, the cache response should be refreshed.
+
+This value can be specified as well providing it as part of [`.get`](#get) output.
+
+If you don't provide one, this be used as fallback for avoid keep things into cache forever.
+
+##### revalidate
+
+Type: `function`|`number`<br>
+Default: `ttl => ttl / 24`
+
+Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background. the latency of the refresh is hidden from the user.
+
+You can provide a function, it will receive [`ttl`](#ttl) as first parameter or a fixed value.
+
+The value will be associated with [`stale-while-revalidate`](https://www.mnot.net/blog/2014/06/01/chrome_and_stale-while-revalidate) directive.
 
 ##### get
 
@@ -144,7 +168,7 @@ function get ({ req, res }) {
 The method will received `({ req, res })` and it should be returns:
 
 - **data** `string`: The content to be saved on the cache.
-- **ttl** `number`: The quantity of time in milliseconds the content is considered valid on the cache. Don't specify it means store it forever.
+- **ttl** `number`: The quantity of time in milliseconds the content is considered valid on the cache. Don't specify it means use default [`ttl`](#ttl).
 - **createdAt** `date`: The timestamp associated with the content (`Date.now()` by default).
 
 Any other property can be specified and will passed to `.send`.
