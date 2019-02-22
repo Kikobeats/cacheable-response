@@ -84,7 +84,8 @@ The first resource access will be a `MISS`.
 
 ```bash
 HTTP/2 200
-cache-control: public, max-age=7200
+cache-control: public, max-age=7200, s-maxage=7200, stale-while-revalidate=300
+ETag: "d-pedE0BZFQNM7HX6mFsKPL6l+dUo"
 x-cache-status: MISS
 x-cache-expired-at: 1h 59m 60s
 ```
@@ -94,6 +95,8 @@ Successive resource access under the `ttl` period returns a `HIT`
 ```bash
 HTTP/2 200
 cache-control: public, max-age=7170
+cache-control: public, max-age=7170, s-maxage=7170, stale-while-revalidate=298
+ETag: "d-pedE0BZFQNM7HX6mFsKPL6l+dUo"
 x-cache-status: HIT
 x-cache-expired-at: 1h 59m 30s
 ```
@@ -214,7 +217,8 @@ Next time you query about a resource, a new `cf-cache-status` appeared as part o
 
 ```bash
 HTTP/2 200
-cache-control: public, max-age=7200
+cache-control: public, max-age=7200, s-maxage=7200, stale-while-revalidate=300
+ETag: "d-pedE0BZFQNM7HX6mFsKPL6l+dUo"
 x-cache-status: MISS
 x-cache-expired-at: 1h 59m 60s
 cf-cache-status: MISS
@@ -224,7 +228,8 @@ CloudFlare will [respect your `cache-control` policy](https://support.cloudflare
 
 ```bash
 HTTP/2 200
-cache-control: public, max-age=7200
+cache-control: public, max-age=7200, s-maxage=7200, stale-while-revalidate=300
+ETag: "d-pedE0BZFQNM7HX6mFsKPL6l+dUo"
 x-cache-status: MISS
 x-cache-expired-at: 1h 59m 60s
 cf-cache-status: HIT
