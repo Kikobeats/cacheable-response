@@ -15,22 +15,38 @@ const getKey = url => {
   return baseKey.replace(origin, '').replace('/?', '')
 }
 
-const setCacheControl = ({ res, createdAt, isHit, ttl, force }) => {
-  // Specifies the maximum amount of time a resource
-  // will be considered fresh in seconds
-  const diff = force ? 0 : createdAt + ttl - Date.now()
-  const maxAge = Math.floor(diff / 1000)
-  res.setHeader(
-    'Cache-Control',
-    `public, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=30`
-  )
-  res.setHeader('X-Cache-Status', isHit ? 'HIT' : 'MISS')
-  res.setHeader('X-Cache-Expired-At', prettyMs(diff))
+const toSeconds = ms => Math.floor(ms / 1000)
+
+const createSetCacheControl = ({ revalidate }) => {
+  return ({ res, createdAt, isHit, ttl, force }) => {
+    // Specifies the maximum amount of time a resource
+    // will be considered fresh in seconds
+    const diff = force ? 0 : createdAt + ttl - Date.now()
+    const maxAge = toSeconds(diff)
+    res.setHeader(
+      'Cache-Control',
+      `public, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=${toSeconds(
+        revalidate(ttl)
+      )}`
+    )
+    res.setHeader('X-Cache-Status', isHit ? 'HIT' : 'MISS')
+    res.setHeader('X-Cache-Expired-At', prettyMs(diff))
+  }
 }
 
-module.exports = ({ cache = new Keyv(), get, send } = {}) => {
+module.exports = ({
+  cache = new Keyv(),
+  get,
+  send,
+  revalidate = ttl => ttl / 24,
+  ttl: defaultTtl = 7200000
+} = {}) => {
   assert(get, 'get required')
   assert(send, 'send required')
+
+  const setCacheControl = createSetCacheControl({
+    revalidate: typeof revalidate === 'function' ? revalidate : () => revalidate
+  })
 
   return async ({ req, res, ...opts }) => {
     const hasForce = Boolean(req.query ? req.query.force : parse(req.url).force)
@@ -39,7 +55,7 @@ module.exports = ({ cache = new Keyv(), get, send } = {}) => {
     const cachedResult = await cache.get(key)
     const isHit = cachedResult && !hasForce
 
-    const { ttl, createdAt = Date.now(), data, ...props } = isHit
+    const { ttl = defaultTtl, createdAt = Date.now(), data, ...props } = isHit
       ? cachedResult
       : await get({ req, res, ...opts })
 
