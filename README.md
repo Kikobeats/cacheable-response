@@ -78,6 +78,8 @@ const app = express()
 app.use((req, res) => ssrCache({ req, res }))
 ```
 
+See more [examples](#examples).
+
 At all times the cache status is reflected as `x-cache` headers in the response.
 
 The first resource access will be a `MISS`.
@@ -245,6 +247,10 @@ The headers associated with the cache copy will the headers from the first reque
 You can have a better overview of the percentage of success by looking your CloudFlare domain analytics
 
 ![](https://i.imgur.com/1Eg64YS.png)
+
+## Examples
+
+- [Express](https://github.com/Kikobeats/unavatar/blob/master/src/index.js#L12)
 
 ## Bibliography
 
