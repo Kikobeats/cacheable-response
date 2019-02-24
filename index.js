@@ -82,3 +82,5 @@ module.exports = ({
     send({ data, res, req, ...props })
   }
 }
+
+module.exports.getKey = getKey
