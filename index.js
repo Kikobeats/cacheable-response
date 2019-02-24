@@ -22,17 +22,19 @@ const getKey = url => {
 const toSeconds = ms => Math.floor(ms / 1000)
 
 const createSetCache = ({ revalidate }) => {
-  return ({ res, createdAt, isHit, ttl, force, etag }) => {
+  return ({ res, createdAt, isHit, ttl, hasForce, etag }) => {
     // Specifies the maximum amount of time a resource
     // will be considered fresh in seconds
-    const diff = force ? 0 : createdAt + ttl - Date.now()
+    const diff = hasForce ? 0 : createdAt + ttl - Date.now()
     const maxAge = toSeconds(diff)
+
     res.setHeader(
       'Cache-Control',
-      `public, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=${toSeconds(
-        revalidate(ttl)
-      )}`
+      `public, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=${
+        hasForce ? 0 : toSeconds(revalidate(ttl))
+      }`
     )
+
     res.setHeader('X-Cache-Status', isHit ? 'HIT' : 'MISS')
     res.setHeader('X-Cache-Expired-At', prettyMs(diff))
     res.setHeader('ETag', etag)
@@ -54,7 +56,7 @@ module.exports = ({
   })
 
   return async ({ req, res, ...opts }) => {
-    const hasForce = Boolean(req.query ? req.query.force : parse(req.url).force)
+    const hasForce = Boolean(req.query ? req.query.force : parse(req.url.split('?')[1]).force)
     const url = urlResolve('http://localhost', req.url)
     const key = getKey(url)
     const cachedResult = await cache.get(key)
