@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.1.3"></a>
+## [1.1.3](https://github.com/Kikobeats/cacheable-response/compare/v1.1.2...v1.1.3) (2019-02-25)
+
+
+### Bug Fixes
+
+* deterministics tests ([edd2f37](https://github.com/Kikobeats/cacheable-response/commit/edd2f37))
+* invalidation ([40965fc](https://github.com/Kikobeats/cacheable-response/commit/40965fc))
+
+
+
 <a name="1.1.2"></a>
 ## [1.1.2](https://github.com/Kikobeats/cacheable-response/compare/v1.1.1...v1.1.2) (2019-02-23)
 
