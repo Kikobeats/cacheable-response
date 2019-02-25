@@ -13,6 +13,16 @@ const createServer = props => {
   return listen(api)
 }
 
+const getMaxAge = headers =>
+  Number(
+    headers['cache-control']
+      .split('=')[1]
+      .split(' ')[0]
+      .split(',')[0]
+  )
+
+const getRevalidate = headers => Number(headers['cache-control'].split('=')[3])
+
 test('.get is required', t => {
   const error = t.throws(() => cacheableResponse({}))
   t.true(error instanceof AssertionError)
@@ -28,55 +38,47 @@ test('.send is required', t => {
 test('default ttl and revalidate', async t => {
   const url = await createServer({
     get: ({ req, res }) => ({ data: { foo: 'bar' } }),
-    send: ({ data, headers, res, req, ...props }) =>
-      res.end('Welcome to Micro')
+    send: ({ data, headers, res, req, ...props }) => res.end('Welcome to Micro')
   })
+
   const { headers } = await got(`${url}/kikobeats`)
-  t.is(
-    headers['cache-control'],
-    'public, max-age=7200, s-maxage=7200, stale-while-revalidate=300'
-  )
+  t.true([7200, 7199].includes(getMaxAge(headers)))
+  t.true([300, 299].includes(getRevalidate(headers)))
 })
 
 test('custom ttl', async t => {
   const url = await createServer({
     get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
-    send: ({ data, headers, res, req, ...props }) =>
-      res.end('Welcome to Micro')
+    send: ({ data, headers, res, req, ...props }) => res.end('Welcome to Micro')
   })
+
   const { headers } = await got(`${url}/kikobeats`)
-  t.is(
-    headers['cache-control'],
-    'public, max-age=86400, s-maxage=86400, stale-while-revalidate=3600'
-  )
+  t.true([86400, 86399].includes(getMaxAge(headers)))
+  t.true([3600, 3599].includes(getRevalidate(headers)))
 })
 
 test('custom revalidate', async t => {
   const url = await createServer({
     revalidate: ttl => ttl * 0.8,
     get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
-    send: ({ data, headers, res, req, ...props }) =>
-      res.end('Welcome to Micro')
+    send: ({ data, headers, res, req, ...props }) => res.end('Welcome to Micro')
   })
+
   const { headers } = await got(`${url}/kikobeats`)
-  t.is(
-    headers['cache-control'],
-    'public, max-age=86400, s-maxage=86400, stale-while-revalidate=69120'
-  )
+  t.true([86400, 86399].includes(getMaxAge(headers)))
+  t.true([69120, 69119].includes(getRevalidate(headers)))
 })
 
 test('custom fixed revalidate', async t => {
   const url = await createServer({
     revalidate: 300000,
     get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
-    send: ({ data, headers, res, req, ...props }) =>
-      res.end('Welcome to Micro')
+    send: ({ data, headers, res, req, ...props }) => res.end('Welcome to Micro')
   })
+
   const { headers } = await got(`${url}/kikobeats`)
-  t.is(
-    headers['cache-control'],
-    'public, max-age=86400, s-maxage=86400, stale-while-revalidate=300'
-  )
+  t.true([86400, 86399].includes(getMaxAge(headers)))
+  t.true([300, 299].includes(getRevalidate(headers)))
 })
 
 test('MISS for first access', async t => {
@@ -130,21 +132,18 @@ test('force query params to invalidate', async t => {
       res.end('Welcome to Micro')
     }
   })
+
   const { headers: headersOne } = await got(`${url}/kikobeats`)
   t.is(headersOne['x-cache-status'], 'MISS')
-  t.is(
-    headersOne['cache-control'],
-    'public, max-age=86400, s-maxage=86400, stale-while-revalidate=3600'
-  )
+  t.true([86400, 86399].includes(getMaxAge(headersOne)))
+  t.true([3600, 3599].includes(getRevalidate(headersOne)))
   const { headers: headersTwo } = await got(`${url}/kikobeats`)
   t.is(headersTwo['x-cache-status'], 'HIT')
   const { headers: headersThree } = await got(`${url}/kikobeats?force=true`)
   t.is(headersThree['x-cache-status'], 'MISS')
   t.is(headersThree['x-cache-expired-at'], '0ms')
-  t.is(
-    headersThree['cache-control'],
-    'public, max-age=0, s-maxage=0, stale-while-revalidate=0'
-  )
+  t.is(getMaxAge(headersThree), 0)
+  t.is(getRevalidate(headersThree), 0)
   const { headers: headersFour } = await got(`${url}/kikobeats`)
   t.is(headersFour['x-cache-status'], 'HIT')
 })
