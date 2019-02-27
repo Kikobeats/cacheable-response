@@ -251,6 +251,7 @@ You can have a better overview of the percentage of success by looking your Clou
 ## Examples
 
 - [Express](https://github.com/Kikobeats/unavatar/blob/master/src/index.js#L12)
+- [Next.js](https://github.com/zeit/next.js/tree/canary/examples/ssr-caching)
 
 ## Bibliography
 
