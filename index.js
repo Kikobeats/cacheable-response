@@ -21,7 +21,7 @@ const getKey = url => {
 
 const toSeconds = ms => Math.floor(ms / 1000)
 
-const createSetCache = ({ revalidate }) => {
+const createSetHeaders = ({ revalidate }) => {
   return ({ res, createdAt, isHit, ttl, hasForce, etag }) => {
     // Specifies the maximum amount of time a resource
     // will be considered fresh in seconds
@@ -51,7 +51,7 @@ module.exports = ({
   assert(get, '.get required')
   assert(send, '.send required')
 
-  const setCache = createSetCache({
+  const setHeaders = createSetHeaders({
     revalidate: typeof revalidate === 'function' ? revalidate : () => revalidate
   })
 
@@ -68,7 +68,7 @@ module.exports = ({
 
     const etag = cachedEtag || getEtag(data)
 
-    setCache({
+    setHeaders({
       etag,
       res,
       createdAt,
@@ -78,7 +78,7 @@ module.exports = ({
     })
 
     if (!isHit) {
-      await cache.set(key, { etag, createdAt, ttl, data }, ttl)
+      await cache.set(key, { etag, createdAt, ttl, data, ...props }, ttl)
     }
 
     send({ data, res, req, ...props })
