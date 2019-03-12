@@ -30,7 +30,7 @@ const createSetHeaders = ({ revalidate }) => {
 
     res.setHeader(
       'Cache-Control',
-      `public, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=${
+      `public, must-revalidate, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=${
         hasForce ? 0 : toSeconds(revalidate(ttl))
       }`
     )
