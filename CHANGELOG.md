@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.0"></a>
+# [1.2.0](https://github.com/Kikobeats/cacheable-response/compare/v1.1.6...v1.2.0) (2019-03-12)
+
+
+### Features
+
+* add must-revalidate directive ([0ca286f](https://github.com/Kikobeats/cacheable-response/commit/0ca286f))
+
+
+
 <a name="1.1.6"></a>
 ## [1.1.6](https://github.com/Kikobeats/cacheable-response/compare/v1.1.5...v1.1.6) (2019-03-04)
 
