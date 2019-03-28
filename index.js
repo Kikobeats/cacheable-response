@@ -9,6 +9,8 @@ const assert = require('assert')
 const { URL } = require('url')
 const Keyv = require('keyv')
 
+const { decompress: brotliDecompress, compress: brotliCompress } = require('iltorb')
+
 const getEtag = data => computeEtag(typeof data === 'string' ? data : JSON.stringify(data))
 
 const getKey = url => {
@@ -43,6 +45,7 @@ const createSetHeaders = ({ revalidate }) => {
 
 module.exports = ({
   cache = new Keyv({ namespace: 'ssr' }),
+  compress = false,
   get,
   send,
   revalidate = ttl => ttl / 24,
@@ -59,8 +62,12 @@ module.exports = ({
     const hasForce = Boolean(req.query ? req.query.force : parse(req.url.split('?')[1]).force)
     const url = urlResolve('http://localhost', req.url)
     const key = getKey(url)
-    const cachedResult = await cache.get(key)
-    const isHit = !hasForce && cachedResult !== undefined
+
+    const cachedData = await cache.get(key)
+    const hasData = cachedData !== undefined
+    const cachedResult =
+      compress && hasData ? JSON.parse(await brotliDecompress(cachedData)) : cachedData
+    const isHit = !hasForce && hasData
 
     const { etag: cachedEtag, ttl = defaultTtl, createdAt = Date.now(), data, ...props } = isHit
       ? cachedResult || {}
@@ -78,7 +85,9 @@ module.exports = ({
     })
 
     if (!isHit) {
-      await cache.set(key, { etag, createdAt, ttl, data, ...props }, ttl)
+      const payload = { etag, createdAt, ttl, data, ...props }
+      const value = compress ? await brotliCompress(Buffer.from(JSON.stringify(payload))) : payload
+      await cache.set(key, value, ttl)
     }
 
     send({ data, res, req, ...props })
