@@ -60,10 +60,10 @@ module.exports = ({
     const url = urlResolve('http://localhost', req.url)
     const key = getKey(url)
     const cachedResult = await cache.get(key)
-    const isHit = !!cachedResult && !hasForce
+    const isHit = !hasForce && cachedResult !== undefined
 
     const { etag: cachedEtag, ttl = defaultTtl, createdAt = Date.now(), data, ...props } = isHit
-      ? cachedResult
+      ? cachedResult || {}
       : await get({ req, res, ...opts })
 
     const etag = cachedEtag || getEtag(data)
