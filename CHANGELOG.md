@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/Kikobeats/cacheable-response/compare/v1.2.0...v1.2.1) (2019-03-28)
+
+
+### Bug Fixes
+
+* ensure cached result is accesible ([a051945](https://github.com/Kikobeats/cacheable-response/commit/a051945))
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/Kikobeats/cacheable-response/compare/v1.1.6...v1.2.0) (2019-03-12)
 
