@@ -144,6 +144,13 @@ This value can be specified as well providing it as part of [`.get`](#get) outpu
 
 If you don't provide one, this be used as fallback for avoid keep things into cache forever.
 
+##### compress
+
+Type: `boolean`<br>
+Default: `false`
+
+Enable compress/decmpress data using brotli compression format.
+
 ##### revalidate
 
 Type: `function`|`number`<br>
