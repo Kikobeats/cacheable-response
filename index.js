@@ -65,12 +65,13 @@ module.exports = ({
 
     const cachedData = await cache.get(key)
     const hasData = cachedData !== undefined
-    const cachedResult =
-      compress && hasData ? JSON.parse(await brotliDecompress(cachedData)) : cachedData
     const isHit = !hasForce && hasData
 
+    const cachedResult =
+      compress && hasData ? JSON.parse(await brotliDecompress(cachedData)) : cachedData
+
     const { etag: cachedEtag, ttl = defaultTtl, createdAt = Date.now(), data, ...props } = isHit
-      ? cachedResult || {}
+      ? cachedResult
       : await get({ req, res, ...opts })
 
     const etag = cachedEtag || getEtag(data)
