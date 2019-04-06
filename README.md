@@ -149,7 +149,13 @@ If you don't provide one, this be used as fallback for avoid keep things into ca
 Type: `boolean`<br>
 Default: `false`
 
-Enable compress/decmpress data using brotli compression format.
+Enable compress/decompress data using brotli compression format.
+
+If you enable it, you need to an additional `iltorb` package:
+
+```bash
+npm install iltorb
+```
 
 ##### revalidate
 
