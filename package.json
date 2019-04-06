@@ -28,8 +28,8 @@
     "ssr"
   ],
   "dependencies": {
+    "compress-brotli": "~1.0.1",
     "etag": "~1.8.1",
-    "iltorb": "~2.4.2",
     "keyv": "~3.1.0",
     "normalize-url": "~4.3.0",
     "pretty-ms": "~4.0.0"
@@ -46,6 +46,7 @@
     "git-dirty": "latest",
     "got": "latest",
     "husky": "latest",
+    "iltorb": "latest",
     "lint-staged": "latest",
     "micro": "latest",
     "npm-check-updates": "latest",
