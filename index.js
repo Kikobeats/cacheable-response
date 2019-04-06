@@ -1,5 +1,6 @@
 'use strict'
 
+const createCompress = require('compress-brotli')
 const { resolve: urlResolve } = require('url')
 const normalizeUrl = require('normalize-url')
 const { parse } = require('querystring')
@@ -9,8 +10,7 @@ const assert = require('assert')
 const { URL } = require('url')
 const Keyv = require('keyv')
 
-const getEtag = data =>
-  computeEtag(typeof data === 'string' ? data : JSON.stringify(data))
+const getEtag = data => computeEtag(JSON.stringify(data))
 
 const getKey = url => {
   const { origin } = new URL(url)
@@ -44,7 +44,7 @@ const createSetHeaders = ({ revalidate }) => {
 
 module.exports = ({
   cache = new Keyv(),
-  compress = false,
+  compress: enableCompression = false,
   get,
   send,
   revalidate = ttl => ttl / 24,
@@ -54,14 +54,13 @@ module.exports = ({
   assert(send, '.send required')
 
   const setHeaders = createSetHeaders({
-    revalidate:
-      typeof revalidate === 'function' ? revalidate : () => revalidate
+    revalidate: typeof revalidate === 'function' ? revalidate : () => revalidate
   })
 
+  const { compress, decompress } = createCompress({ enable: enableCompression })
+
   return async ({ req, res, ...opts }) => {
-    const hasForce = Boolean(
-      req.query ? req.query.force : parse(req.url.split('?')[1]).force
-    )
+    const hasForce = Boolean(req.query ? req.query.force : parse(req.url.split('?')[1]).force)
     const url = urlResolve('http://localhost', req.url)
     const key = getKey(url)
 
@@ -69,18 +68,11 @@ module.exports = ({
     const hasData = cachedData !== undefined
     const isHit = !hasForce && hasData
 
-    const cachedResult =
-      compress && hasData
-        ? JSON.parse(await require('iltorb').decompress(cachedData))
-        : cachedData
+    const cachedResult = await decompress(cachedData)
 
-    const {
-      etag: cachedEtag,
-      ttl = defaultTtl,
-      createdAt = Date.now(),
-      data,
-      ...props
-    } = isHit ? cachedResult : await get({ req, res, ...opts })
+    const { etag: cachedEtag, ttl = defaultTtl, createdAt = Date.now(), data, ...props } = isHit
+      ? cachedResult
+      : await get({ req, res, ...opts })
 
     const etag = cachedEtag || getEtag(data)
 
@@ -95,9 +87,7 @@ module.exports = ({
 
     if (!isHit) {
       const payload = { etag, createdAt, ttl, data, ...props }
-      const value = compress
-        ? await require('iltorb').compress(Buffer.from(JSON.stringify(payload)))
-        : payload
+      const value = await compress(payload)
       await cache.set(key, value, ttl)
     }
 
