@@ -43,7 +43,7 @@ const createSetHeaders = ({ revalidate }) => {
 }
 
 module.exports = ({
-  cache = new Keyv(),
+  cache = new Keyv({ namespace: 'ssr' }),
   compress: enableCompression = false,
   get,
   send,
