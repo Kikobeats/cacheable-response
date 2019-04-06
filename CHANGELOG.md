@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.4.0"></a>
+# [1.4.0](https://github.com/Kikobeats/cacheable-response/compare/v1.3.2...v1.4.0) (2019-04-06)
+
+
+### Bug Fixes
+
+* dont change stable code ([16aad9d](https://github.com/Kikobeats/cacheable-response/commit/16aad9d))
+
+
+### Features
+
+* reduce library footprint ([a9b35a7](https://github.com/Kikobeats/cacheable-response/commit/a9b35a7))
+
+
+
 <a name="1.3.2"></a>
 ## [1.3.2](https://github.com/Kikobeats/cacheable-response/compare/v1.3.1...v1.3.2) (2019-04-03)
 
