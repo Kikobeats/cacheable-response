@@ -54,27 +54,30 @@ module.exports = ({
   assert(send, '.send required')
 
   const setHeaders = createSetHeaders({
-    revalidate: typeof revalidate === 'function' ? revalidate : () => revalidate
+    revalidate:
+      typeof revalidate === 'function' ? revalidate : () => revalidate
   })
 
   const { compress, decompress } = createCompress({ enable: enableCompression })
 
   return async ({ req, res, ...opts }) => {
-    const hasForce = Boolean(req.query ? req.query.force : parse(req.url.split('?')[1]).force)
+    const hasForce = Boolean(
+      req.query ? req.query.force : parse(req.url.split('?')[1]).force
+    )
 
     // Because req.url is relative, we need to convert it into an absolute url
     // `u:req.url` is the smallest url length possible
     const key = getKey(urlResolve('u:', req.url))
+    const cachedResult = await decompress(await cache.get(key))
+    const isHit = !hasForce && cachedResult !== undefined
 
-    const cachedData = await cache.get(key)
-    const hasData = cachedData !== undefined
-    const isHit = !hasForce && hasData
-
-    const cachedResult = await decompress(cachedData)
-
-    const { etag: cachedEtag, ttl = defaultTtl, createdAt = Date.now(), data, ...props } = isHit
-      ? cachedResult
-      : await get({ req, res, ...opts })
+    const {
+      etag: cachedEtag,
+      ttl = defaultTtl,
+      createdAt = Date.now(),
+      data,
+      ...props
+    } = cachedResult || (await get({ req, res, ...opts }))
 
     const etag = cachedEtag || getEtag(data)
 
