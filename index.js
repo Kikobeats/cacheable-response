@@ -61,8 +61,10 @@ module.exports = ({
 
   return async ({ req, res, ...opts }) => {
     const hasForce = Boolean(req.query ? req.query.force : parse(req.url.split('?')[1]).force)
-    const url = urlResolve('http://localhost', req.url)
-    const key = getKey(url)
+
+    // Because req.url is relative, we need to convert it into an absolute url
+    // `u:req.url` is the smallest url length possible
+    const key = getKey(urlResolve('u:', req.url))
 
     const cachedData = await cache.get(key)
     const hasData = cachedData !== undefined
