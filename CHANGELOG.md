@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.5.0"></a>
+# [1.5.0](https://github.com/Kikobeats/cacheable-response/compare/v1.4.2...v1.5.0) (2019-04-11)
+
+
+### Features
+
+* expose serialize ([a8b2e74](https://github.com/Kikobeats/cacheable-response/commit/a8b2e74))
+
+
+
 <a name="1.4.2"></a>
 ## [1.4.2](https://github.com/Kikobeats/cacheable-response/compare/v1.4.1...v1.4.2) (2019-04-06)
 
