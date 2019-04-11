@@ -5,12 +5,10 @@ const { resolve: urlResolve } = require('url')
 const normalizeUrl = require('normalize-url')
 const { parse } = require('querystring')
 const prettyMs = require('pretty-ms')
-const computeEtag = require('etag')
 const assert = require('assert')
+const getEtag = require('etag')
 const { URL } = require('url')
 const Keyv = require('keyv')
-
-const getEtag = data => computeEtag(JSON.stringify(data))
 
 const getKey = url => {
   const { origin } = new URL(url)
@@ -48,22 +46,20 @@ module.exports = ({
   get,
   send,
   revalidate = ttl => ttl / 24,
-  ttl: defaultTtl = 7200000
+  ttl: defaultTtl = 7200000,
+  serialize = JSON.stringify
 } = {}) => {
   assert(get, '.get required')
   assert(send, '.send required')
 
   const setHeaders = createSetHeaders({
-    revalidate:
-      typeof revalidate === 'function' ? revalidate : () => revalidate
+    revalidate: typeof revalidate === 'function' ? revalidate : () => revalidate
   })
 
   const { compress, decompress } = createCompress({ enable: enableCompression })
 
   return async ({ req, res, ...opts }) => {
-    const hasForce = Boolean(
-      req.query ? req.query.force : parse(req.url.split('?')[1]).force
-    )
+    const hasForce = Boolean(req.query ? req.query.force : parse(req.url.split('?')[1]).force)
 
     // Because req.url is relative, we need to convert it into an absolute url
     // `u:req.url` is the smallest url length possible
@@ -71,15 +67,10 @@ module.exports = ({
     const cachedResult = await decompress(await cache.get(key))
     const isHit = !hasForce && cachedResult !== undefined
 
-    const {
-      etag: cachedEtag,
-      ttl = defaultTtl,
-      createdAt = Date.now(),
-      data,
-      ...props
-    } = cachedResult || (await get({ req, res, ...opts }))
+    const { etag: cachedEtag, ttl = defaultTtl, createdAt = Date.now(), data, ...props } =
+      cachedResult || (await get({ req, res, ...opts }))
 
-    const etag = cachedEtag || getEtag(data)
+    const etag = cachedEtag || getEtag(serialize(data))
 
     setHeaders({
       etag,
