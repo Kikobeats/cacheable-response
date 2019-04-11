@@ -149,7 +149,14 @@ If you don't provide one, this be used as fallback for avoid keep things into ca
 Type: `function`<br>
 Default: `JSON.stringify`
 
-Set the serializer to use before getting etag from the data.
+Set the serializer method to be used before compress.
+
+##### deserialize
+
+Type: `function`<br>
+Default: `JSON.parse`
+
+Set the deserialize method to be used after decompress.
 
 ##### compress
 

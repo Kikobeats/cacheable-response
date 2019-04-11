@@ -47,7 +47,7 @@ module.exports = ({
   send,
   revalidate = ttl => ttl / 24,
   ttl: defaultTtl = 7200000,
-  serialize = JSON.stringify
+  ...compressOpts
 } = {}) => {
   assert(get, '.get required')
   assert(send, '.send required')
@@ -56,10 +56,15 @@ module.exports = ({
     revalidate: typeof revalidate === 'function' ? revalidate : () => revalidate
   })
 
-  const { compress, decompress } = createCompress({ enable: enableCompression })
+  const { serialize, compress, decompress } = createCompress({
+    enable: enableCompression,
+    ...compressOpts
+  })
 
   return async ({ req, res, ...opts }) => {
-    const hasForce = Boolean(req.query ? req.query.force : parse(req.url.split('?')[1]).force)
+    const hasForce = Boolean(
+      req.query ? req.query.force : parse(req.url.split('?')[1]).force
+    )
 
     // Because req.url is relative, we need to convert it into an absolute url
     // `u:req.url` is the smallest url length possible
@@ -67,8 +72,13 @@ module.exports = ({
     const cachedResult = await decompress(await cache.get(key))
     const isHit = !hasForce && cachedResult !== undefined
 
-    const { etag: cachedEtag, ttl = defaultTtl, createdAt = Date.now(), data, ...props } =
-      cachedResult || (await get({ req, res, ...opts }))
+    const {
+      etag: cachedEtag,
+      ttl = defaultTtl,
+      createdAt = Date.now(),
+      data,
+      ...props
+    } = cachedResult || (await get({ req, res, ...opts }))
 
     const etag = cachedEtag || getEtag(serialize(data))
 
