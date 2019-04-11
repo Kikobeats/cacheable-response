@@ -144,6 +144,13 @@ This value can be specified as well providing it as part of [`.get`](#get) outpu
 
 If you don't provide one, this be used as fallback for avoid keep things into cache forever.
 
+##### serialize
+
+Type: `function`<br>
+Default: `JSON.stringify`
+
+Set the serializer to use before getting etag from the data.
+
 ##### compress
 
 Type: `boolean`<br>
