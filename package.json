@@ -32,7 +32,7 @@
     "etag": "~1.8.1",
     "keyv": "~3.1.0",
     "normalize-url": "~4.3.0",
-    "pretty-ms": "~4.0.0"
+    "pretty-ms": "~5.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "latest",
