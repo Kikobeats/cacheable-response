@@ -122,7 +122,7 @@ curl https://myserver.dev/user?force=true # MISS (forcing invalidation)
 
 ##### cache
 
-Type: `boolean`<br>
+Type: `boolean`<br/>
 Default: `new Keyv({ namespace: 'ssr' })`
 
 The cache instance used for backed your pre-calculated server side response copies.
@@ -133,7 +133,7 @@ If you don't specify it, a memory cache will be used.
 
 ##### ttl
 
-Type: `number`<br>
+Type: `number`<br/>
 Default: `7200000`
 
 Number of milliseconds a cache response is considered valid.
@@ -146,21 +146,21 @@ If you don't provide one, this be used as fallback for avoid keep things into ca
 
 ##### serialize
 
-Type: `function`<br>
+Type: `function`<br/>
 Default: `JSON.stringify`
 
 Set the serializer method to be used before compress.
 
 ##### deserialize
 
-Type: `function`<br>
+Type: `function`<br/>
 Default: `JSON.parse`
 
 Set the deserialize method to be used after decompress.
 
 ##### compress
 
-Type: `boolean`<br>
+Type: `boolean`<br/>
 Default: `false`
 
 Enable compress/decompress data using brotli compression format.
@@ -173,7 +173,7 @@ npm install iltorb
 
 ##### revalidate
 
-Type: `function`|`number`<br>
+Type: `function`|`number`<br/>
 Default: `ttl => ttl / 24`
 
 Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background. the latency of the refresh is hidden from the user.
@@ -182,10 +182,17 @@ You can provide a function, it will receive [`ttl`](#ttl) as first parameter or 
 
 The value will be associated with [`stale-while-revalidate`](https://www.mnot.net/blog/2014/06/01/chrome_and_stale-while-revalidate) directive.
 
+##### getKey
+
+Type: `function`<br/>
+Default: `req => normalizeUrl(req.url)`
+
+It determinates how the cache key should be computed using `req` as input.
+
 ##### get
 
-_Required_<br>
-Type: `function`<br>
+_Required_<br/>
+Type: `function`<br/>
 
 The method to be called for creating a fresh cacheable response associated with the current route path.
 
@@ -207,8 +214,8 @@ Any other property can be specified and will passed to `.send`.
 
 ##### send
 
-_Required_<br>
-Type: `function`<br>
+_Required_<br/>
+Type: `function`<br/>
 
 The method used to determinate how the content should be rendered.
 
@@ -289,7 +296,7 @@ You can have a better overview of the percentage of success by looking your Clou
 
 ## License
 
-**cacheable-response** © [Kiko Beats](https://kikobeats.com), released under the [MIT](https://github.com/Kikobeats/cacheable-response/blob/master/LICENSE.md) License.<br>
+**cacheable-response** © [Kiko Beats](https://kikobeats.com), released under the [MIT](https://github.com/Kikobeats/cacheable-response/blob/master/LICENSE.md) License.<br/>
 Authored and maintained by Kiko Beats with help from [contributors](https://github.com/Kikobeats/cacheable-response/contributors).
 
 > [kikobeats.com](https://kikobeats.com) · GitHub [Kiko Beats](https://github.com/Kikobeats) · Twitter [@Kikobeats](https://twitter.com/Kikobeats)

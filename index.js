@@ -10,7 +10,8 @@ const getEtag = require('etag')
 const { URL } = require('url')
 const Keyv = require('keyv')
 
-const getKey = url => {
+const _getKey = req => {
+  const url = urlResolve('http://localhost', req.url)
   const { origin } = new URL(url)
   const baseKey = normalizeUrl(url, {
     removeQueryParameters: [/^utm_\w+/i, 'force', 'filter', 'ref']
@@ -43,6 +44,7 @@ const createSetHeaders = ({ revalidate }) => {
 module.exports = ({
   cache = new Keyv({ namespace: 'ssr' }),
   compress: enableCompression = false,
+  getKey = _getKey,
   get,
   send,
   revalidate = ttl => ttl / 24,
@@ -65,7 +67,7 @@ module.exports = ({
     const hasForce = Boolean(
       req.query ? req.query.force : parse(req.url.split('?')[1]).force
     )
-    const key = getKey(urlResolve('http://localhost', req.url))
+    const key = getKey(req)
     const cachedResult = await decompress(await cache.get(key))
     const isHit = !hasForce && cachedResult !== undefined
 
@@ -98,4 +100,4 @@ module.exports = ({
   }
 }
 
-module.exports.getKey = getKey
+module.exports.getKey = _getKey
