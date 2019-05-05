@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+# [1.6.0](https://github.com/Kikobeats/cacheable-response/compare/v1.5.2...v1.6.0) (2019-05-05)
+
+
+### Bug Fixes
+
+* **package:** update pretty-ms to version 5.0.0 ([63c6dab](https://github.com/Kikobeats/cacheable-response/commit/63c6dab))
+
+
+### Features
+
+* expose .getKey method ([3603e4d](https://github.com/Kikobeats/cacheable-response/commit/3603e4d)), closes [#11](https://github.com/Kikobeats/cacheable-response/issues/11) [#22](https://github.com/Kikobeats/cacheable-response/issues/22)
+
+
+
 <a name="1.5.2"></a>
 ## [1.5.2](https://github.com/Kikobeats/cacheable-response/compare/v1.5.1...v1.5.2) (2019-04-11)
 
