@@ -77,7 +77,7 @@ module.exports = ({
       createdAt = Date.now(),
       data,
       ...props
-    } = cachedResult || (await get({ req, res, ...opts }))
+    } = isHit ? cachedResult : await get({ req, res, ...opts })
 
     const etag = cachedEtag || getEtag(serialize(data))
 
