@@ -1,5 +1,6 @@
 'use strict'
 
+const debug = require('debug')('cacheable-response')
 const createCompress = require('compress-brotli')
 const { resolve: urlResolve } = require('url')
 const normalizeUrl = require('normalize-url')
@@ -71,13 +72,16 @@ module.exports = ({
     const cachedResult = await decompress(await cache.get(key))
     const isHit = !hasForce && cachedResult !== undefined
 
+    const result = isHit ? cachedResult : await get({ req, res, ...opts })
+    debug(`key=${key} hit=${isHit} etag=${result.etag}`)
+
     const {
       etag: cachedEtag,
       ttl = defaultTtl,
       createdAt = Date.now(),
       data,
       ...props
-    } = isHit ? cachedResult : await get({ req, res, ...opts })
+    } = result
 
     const etag = cachedEtag || getEtag(serialize(data))
 
