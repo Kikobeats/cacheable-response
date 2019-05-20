@@ -70,10 +70,10 @@
     "lint": "standard-markdown README.md && standard",
     "postrelease": "npm run release:tags && npm run release:github && ci-publish",
     "precommit": "lint-staged",
-    "prerelease": "npm run update:check && git-authors-cli",
+    "prerelease": "npm run update:check",
     "pretest": "npm run lint",
     "pretty": "prettier-standard index.js {core,test,bin,scripts}/**/*.js --single-quote --print-width 100",
-    "release": "git add package.json && standard-version -a",
+    "release": "git-authors-cli && git add package.json && standard-version -a",
     "release:github": "conventional-github-releaser -p angular",
     "release:tags": "git push --follow-tags origin HEAD:master",
     "test": "nyc ava",
@@ -106,11 +106,6 @@
         "standard-markdown",
         "git add"
       ]
-    }
-  },
-  "standard-version": {
-    "scripts": {
-      "prechangelog": "git-authors-cli"
     }
   }
 }
