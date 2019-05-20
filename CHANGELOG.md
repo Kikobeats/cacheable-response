@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.4](https://github.com/Kikobeats/cacheable-response/compare/v1.6.3...v1.6.4) (2019-05-20)
+
+
+### Build System
+
+* change git-authors-cli position ([d1e9879](https://github.com/Kikobeats/cacheable-response/commit/d1e9879))
+
+
+
 ### [1.6.3](https://github.com/Kikobeats/cacheable-response/compare/v1.6.2...v1.6.3) (2019-05-17)
 
 
