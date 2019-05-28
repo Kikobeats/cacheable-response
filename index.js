@@ -11,6 +11,15 @@ const getEtag = require('etag')
 const { URL } = require('url')
 const Keyv = require('keyv')
 
+function isEmpty (value) {
+  return (
+    value === undefined ||
+    value === null ||
+    (typeof value === 'object' && Object.keys(value).length === 0) ||
+    (typeof value === 'string' && value.trim().length === 0)
+  )
+}
+
 const _getKey = req => {
   const url = urlResolve('http://localhost', req.url)
   const { origin } = new URL(url)
@@ -71,9 +80,13 @@ module.exports = ({
     const key = getKey(req)
     const cachedResult = await decompress(await cache.get(key))
     const isHit = !hasForce && cachedResult !== undefined
-
     const result = isHit ? cachedResult : await get({ req, res, ...opts })
-    debug(`key=${key} hit=${isHit} etag=${result.etag}`)
+
+    debug(
+      `key=${key} hit=${isHit} cachedResult=${!isEmpty(
+        cachedResult
+      )} result={${!isEmpty(result)}} etag=${result.etag}`
+    )
 
     const {
       etag: cachedEtag,
