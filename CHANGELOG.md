@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.6](https://github.com/Kikobeats/cacheable-response/compare/v1.6.5...v1.6.6) (2019-06-04)
+
+
+### Build System
+
+* better debug ([da881d4](https://github.com/Kikobeats/cacheable-response/commit/da881d4))
+
+
+
 ### [1.6.5](https://github.com/Kikobeats/cacheable-response/compare/v1.6.4...v1.6.5) (2019-05-28)
 
 
