@@ -38,7 +38,9 @@ test('.send is required', t => {
 test('default ttl and revalidate', async t => {
   const url = await createServer({
     get: ({ req, res }) => ({ data: { foo: 'bar' } }),
-    send: ({ data, headers, res, req, ...props }) => res.end('Welcome to Micro')
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end('Welcome to Micro')
+    }
   })
 
   const { headers } = await got(`${url}/kikobeats`)
@@ -49,7 +51,9 @@ test('default ttl and revalidate', async t => {
 test('custom ttl', async t => {
   const url = await createServer({
     get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
-    send: ({ data, headers, res, req, ...props }) => res.end('Welcome to Micro')
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end('Welcome to Micro')
+    }
   })
 
   const { headers } = await got(`${url}/kikobeats`)
@@ -61,7 +65,9 @@ test('custom revalidate', async t => {
   const url = await createServer({
     revalidate: ttl => ttl * 0.8,
     get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
-    send: ({ data, headers, res, req, ...props }) => res.end('Welcome to Micro')
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end('Welcome to Micro')
+    }
   })
 
   const { headers } = await got(`${url}/kikobeats`)
@@ -73,7 +79,9 @@ test('custom fixed revalidate', async t => {
   const url = await createServer({
     revalidate: 300000,
     get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
-    send: ({ data, headers, res, req, ...props }) => res.end('Welcome to Micro')
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end('Welcome to Micro')
+    }
   })
 
   const { headers } = await got(`${url}/kikobeats`)
