@@ -115,7 +115,7 @@ module.exports = ({
       await cache.set(key, value, ttl)
     }
 
-    send({ data, res, req, ...props })
+    return send({ data, res, req, ...props })
   }
 }
 

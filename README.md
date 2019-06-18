@@ -197,7 +197,7 @@ Type: `function`<br/>
 The method to be called for creating a fresh cacheable response associated with the current route path.
 
 ```js
-function get ({ req, res }) {
+async function get ({ req, res }) {
   const data = doSomething(req, res)
   const ttl = 7200000 // 2 hours
   return { data, ttl }
@@ -220,14 +220,14 @@ Type: `function`<br/>
 The method used to determinate how the content should be rendered.
 
 ```js
-function get ({ req, res }) {
+async function get ({ req, res }) {
   const data = doSomething(req, res)
   const ttl = 7200000 // 2 hours
   const headers = { userAgent: 'cacheable-response' }
   return { data, ttl, headers }
 }
 
-function set ({ req, res, data, headers }) {
+async function set ({ req, res, data, headers }) {
   res.setHeader('user-agent', headers.userAgent)
   res.send(data)
 }
