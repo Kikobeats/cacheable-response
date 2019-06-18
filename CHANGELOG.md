@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.9](https://github.com/Kikobeats/cacheable-response/compare/v1.6.8...v1.6.9) (2019-06-18)
+
+
+### Build System
+
+* exclude embed query parameter ([2f58d0d](https://github.com/Kikobeats/cacheable-response/commit/2f58d0d))
+
+
+
 ### [1.6.8](https://github.com/Kikobeats/cacheable-response/compare/v1.6.7...v1.6.8) (2019-06-18)
 
 
