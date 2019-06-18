@@ -24,7 +24,14 @@ const _getKey = req => {
   const url = urlResolve('http://localhost', req.url)
   const { origin } = new URL(url)
   const baseKey = normalizeUrl(url, {
-    removeQueryParameters: [/^utm_\w+/i, 'force', 'filter', 'ref', 'proxy']
+    removeQueryParameters: [
+      'embed',
+      'filter',
+      'force',
+      'proxy',
+      'ref',
+      /^utm_\w+/i
+    ]
   })
   return baseKey.replace(origin, '').replace('/?', '')
 }
