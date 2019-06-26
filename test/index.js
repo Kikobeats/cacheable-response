@@ -217,3 +217,23 @@ test('compress support', async t => {
   t.is(headersTwo['x-cache-status'], 'HIT')
   t.is(headersOne.etag, headersTwo.etag)
 })
+
+test('prevent send if data is undefined', async t => {
+  let isSendCalled = false
+  const url = await createServer({
+    compress: true,
+    get: ({ req, res }) => {
+      throw Error()
+    },
+    send: ({ data, headers, res, req, ...props }) => {
+      isSendCalled = true
+      res.end('Welcome to Micro')
+    }
+  })
+
+  try {
+    await got(`${url}/kikobeats`, { retry: 0 })
+  } catch (err) {
+    t.false(isSendCalled)
+  }
+})

@@ -89,6 +89,8 @@ module.exports = ({
     const isHit = !hasForce && cachedResult !== undefined
     const result = isHit ? cachedResult : await get({ req, res, ...opts })
 
+    if (!result) return
+
     const {
       etag: cachedEtag,
       ttl = defaultTtl,
