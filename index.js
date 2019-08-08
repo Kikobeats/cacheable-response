@@ -64,7 +64,7 @@ module.exports = ({
   getKey = _getKey,
   get,
   send,
-  revalidate = ttl => ttl / 24,
+  revalidate = ttl => ttl * 0.8,
   ttl: defaultTtl = 7200000,
   ...compressOpts
 } = {}) => {
