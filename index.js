@@ -84,7 +84,7 @@ module.exports = ({
     const hasForce = Boolean(
       req.query ? req.query.force : parse(req.url.split('?')[1]).force
     )
-    const key = getKey(req)
+    const key = getKey(req, res)
     const cachedResult = await decompress(await cache.get(key))
     const isHit = !hasForce && cachedResult !== undefined
     const result = isHit ? cachedResult : await get({ req, res, ...opts })
