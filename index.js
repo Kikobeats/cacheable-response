@@ -63,7 +63,7 @@ module.exports = ({
   getKey = _getKey,
   get,
   send,
-  revalidate = ttl => ttl / 24,
+  revalidate = ttl => ttl * 0.8,
   ttl: defaultTtl = 7200000,
   ...compressOpts
 } = {}) => {
@@ -71,8 +71,7 @@ module.exports = ({
   assert(send, '.send required')
 
   const setHeaders = createSetHeaders({
-    revalidate:
-      typeof revalidate === 'function' ? revalidate : () => revalidate
+    revalidate: typeof revalidate === 'function' ? revalidate : () => revalidate
   })
 
   const { serialize, compress, decompress } = createCompress({
