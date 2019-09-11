@@ -2,7 +2,6 @@
 
 const debug = require('debug-logfmt')('cacheable-response')
 const createCompress = require('compress-brotli')
-const { resolve: urlResolve } = require('url')
 const normalizeUrl = require('normalize-url')
 const { parse } = require('querystring')
 const prettyMs = require('pretty-ms')
@@ -21,7 +20,7 @@ function isEmpty (value) {
 }
 
 const _getKey = req => {
-  const url = urlResolve('http://localhost', req.url)
+  const url = new URL(req.url, 'http://localhost').toString()
   const { origin } = new URL(url)
   const baseKey = normalizeUrl(url, {
     removeQueryParameters: [
@@ -72,7 +71,8 @@ module.exports = ({
   assert(send, '.send required')
 
   const setHeaders = createSetHeaders({
-    revalidate: typeof revalidate === 'function' ? revalidate : () => revalidate
+    revalidate:
+      typeof revalidate === 'function' ? revalidate : () => revalidate
   })
 
   const { serialize, compress, decompress } = createCompress({
