@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/Kikobeats/cacheable-response/compare/v1.6.12...v1.7.0) (2019-09-11)
+
+
+### Build System
+
+* update dependencies ([5c502e6](https://github.com/Kikobeats/cacheable-response/commit/5c502e6))
+
+
+### Features
+
+* add response to getKey attributes ([da25929](https://github.com/Kikobeats/cacheable-response/commit/da25929))
+
+
+
 ### [1.6.12](https://github.com/Kikobeats/cacheable-response/compare/v1.6.11...v1.6.12) (2019-06-26)
 
 
