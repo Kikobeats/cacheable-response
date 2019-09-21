@@ -34,11 +34,11 @@
     "ssr"
   ],
   "dependencies": {
-    "compress-brotli": "~1.0.7",
+    "compress-brotli": "~1.0.8",
     "debug-logfmt": "~1.0.3",
     "etag": "~1.8.1",
     "keyv": "~3.1.0",
-    "normalize-url": "~4.3.0",
+    "normalize-url": "~4.4.1",
     "pretty-ms": "~5.0.0"
   },
   "devDependencies": {
