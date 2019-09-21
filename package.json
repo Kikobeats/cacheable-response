@@ -2,7 +2,7 @@
   "name": "cacheable-response",
   "description": "An HTTP compliant route path middleware for serving cache response with invalidation support.",
   "homepage": "https://nicedoc.io/Kikobeats/cacheable-response",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "main": "index.js",
   "author": {
     "email": "josefrancisco.verdu@gmail.com",
@@ -10,10 +10,7 @@
     "url": "https://kikobeats.com"
   },
   "contributors": [
-    {
-      "name": "whooehoo",
-      "email": "whooehoo@yandex.ru"
-    }
+    "whooehoo <whooehoo@yandex.ru>"
   ],
   "repository": {
     "type": "git",
