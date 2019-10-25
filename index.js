@@ -99,13 +99,16 @@ module.exports = ({
     } = result
 
     const etag = cachedEtag || getEtag(serialize(data))
+    const ifNoneMatch = req.headers['if-none-match']
+    const isModified = etag !== ifNoneMatch
 
     debug({
       key,
       isHit,
       cachedResult: !isEmpty(cachedResult),
       result: !isEmpty(result),
-      etag
+      etag,
+      ifNoneMatch
     })
 
     setHeaders({
@@ -117,13 +120,18 @@ module.exports = ({
       hasForce
     })
 
-    if (!isHit) {
-      const payload = { etag, createdAt, ttl, data, ...props }
-      const value = await compress(payload)
-      await cache.set(key, value, ttl)
-    }
+    if (isModified) {
+      if (!isHit) {
+        const payload = { etag, createdAt, ttl, data, ...props }
+        const value = await compress(payload)
+        await cache.set(key, value, ttl)
+      }
 
-    return send({ data, res, req, ...props })
+      return send({ data, res, req, ...props })
+    } else {
+      res.statusCode = 304
+      res.end()
+    }
   }
 }
 
