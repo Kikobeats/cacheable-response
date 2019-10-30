@@ -10,8 +10,14 @@
     "url": "https://kikobeats.com"
   },
   "contributors": [
-    "rickynyairo <rickynyairo@gmail.com>",
-    "whooehoo <whooehoo@yandex.ru>"
+    {
+      "name": "rickynyairo",
+      "email": "rickynyairo@gmail.com"
+    },
+    {
+      "name": "whooehoo",
+      "email": "whooehoo@yandex.ru"
+    }
   ],
   "repository": {
     "type": "git",
@@ -70,17 +76,17 @@
   ],
   "scripts": {
     "clean": "rm -rf node_modules",
+    "contributors": "(git-authors-cli && finepack && git add package.json && git commit -m 'build: contributors' --no-verify) || true",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "lint": "standard-markdown README.md && standard",
     "postrelease": "npm run release:tags && npm run release:github && ci-publish",
-    "prerelease": "npm run update:check",
+    "prerelease": "npm run update:check && npm run contributors",
     "pretest": "npm run lint",
-    "pretty": "prettier-standard index.js {core,test,bin,scripts}/**/*.js --single-quote --print-width 100",
-    "release": "git-authors-cli && git add package.json && standard-version -a",
+    "release": "standard-version -a",
     "release:github": "conventional-github-releaser -p angular",
     "release:tags": "git push --follow-tags origin HEAD:master",
     "test": "nyc ava",
-    "update": "ncu -a",
+    "update": "ncu -u",
     "update:check": "ncu -- --error-level 2"
   },
   "license": "MIT",
