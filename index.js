@@ -99,13 +99,16 @@ module.exports = ({
     } = result
 
     const etag = cachedEtag || getEtag(serialize(data))
+    const ifNoneMatch = req.headers['if-none-match']
+    const isModified = etag !== ifNoneMatch
 
     debug({
       key,
       isHit,
       cachedResult: !isEmpty(cachedResult),
       result: !isEmpty(result),
-      etag
+      etag,
+      ifNoneMatch
     })
 
     setHeaders({
@@ -116,6 +119,12 @@ module.exports = ({
       ttl,
       hasForce
     })
+
+    if (!isModified) {
+      res.statusCode = 304
+      res.end()
+      return
+    }
 
     if (!isHit) {
       const payload = { etag, createdAt, ttl, data, ...props }

@@ -237,3 +237,25 @@ test('prevent send if data is undefined', async t => {
     t.false(isSendCalled)
   }
 })
+
+test('return empty 304 response when If-None-Match matches ETag', async t => {
+  const url = await createServer({
+    get: ({ req, res }) => {
+      return {
+        data: { foo: 'bar' },
+        ttl: 1000,
+        createdAt: Date.now(),
+        foo: { bar: true }
+      }
+    },
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end('Welcome to Micro')
+    }
+  })
+  const { headers } = await got(`${url}/kikobeats`)
+  const { body, statusCode } = await got(`${url}/kikobeats`, {
+    headers: { 'If-None-Match': headers.etag }
+  })
+  t.is(statusCode, 304)
+  t.is(body, '')
+})
