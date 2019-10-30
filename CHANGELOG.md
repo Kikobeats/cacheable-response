@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/Kikobeats/cacheable-response/compare/v1.7.5...v1.8.0) (2019-10-30)
+
+
+### Features
+
+* return 304 when If-None-Match matches ETag ([ca08d9b](https://github.com/Kikobeats/cacheable-response/commit/ca08d9b877600fbf2e4c2bb73a041676cd7002c2)), closes [#31](https://github.com/Kikobeats/cacheable-response/issues/31)
+* return 304 when If-None-Match matches ETag ([#32](https://github.com/Kikobeats/cacheable-response/issues/32)) ([ef672a1](https://github.com/Kikobeats/cacheable-response/commit/ef672a17a77c927dcb5c344d5a578bfbfa9167a5))
+
 ### [1.7.5](https://github.com/Kikobeats/cacheable-response/compare/v1.7.4...v1.7.5) (2019-10-30)
 
 ### [1.7.4](https://github.com/Kikobeats/cacheable-response/compare/v1.7.3...v1.7.4) (2019-10-15)
