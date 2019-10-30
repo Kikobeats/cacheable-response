@@ -120,18 +120,19 @@ module.exports = ({
       hasForce
     })
 
-    if (isModified) {
-      if (!isHit) {
-        const payload = { etag, createdAt, ttl, data, ...props }
-        const value = await compress(payload)
-        await cache.set(key, value, ttl)
-      }
-
-      return send({ data, res, req, ...props })
-    } else {
+    if (!isModified) {
       res.statusCode = 304
       res.end()
+      return
     }
+
+    if (!isHit) {
+      const payload = { etag, createdAt, ttl, data, ...props }
+      const value = await compress(payload)
+      await cache.set(key, value, ttl)
+    }
+
+    return send({ data, res, req, ...props })
   }
 }
 
