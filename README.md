@@ -200,7 +200,8 @@ The method to be called for creating a fresh cacheable response associated with 
 async function get ({ req, res }) {
   const data = doSomething(req, res)
   const ttl = 7200000 // 2 hours
-  return { data, ttl }
+  const headers = { userAgent: 'cacheable-response' }
+  return { data, ttl, headers }
 }
 ```
 
@@ -220,14 +221,7 @@ Type: `function`<br/>
 The method used to determinate how the content should be rendered.
 
 ```js
-async function get ({ req, res }) {
-  const data = doSomething(req, res)
-  const ttl = 7200000 // 2 hours
-  const headers = { userAgent: 'cacheable-response' }
-  return { data, ttl, headers }
-}
-
-async function set ({ req, res, data, headers }) {
+async function send ({ req, res, data, headers }) {
   res.setHeader('user-agent', headers.userAgent)
   res.send(data)
 }
