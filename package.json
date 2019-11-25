@@ -46,12 +46,12 @@
     "ssr"
   ],
   "dependencies": {
-    "compress-brotli": "~1.2.0",
+    "compress-brotli": "~1.2.1",
     "debug-logfmt": "~1.0.4",
     "etag": "~1.8.1",
-    "keyv": "~3.1.0",
+    "keyv": "~4.0.0",
     "normalize-url": "~4.5.0",
-    "pretty-ms": "~5.0.0"
+    "pretty-ms": "~5.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "latest",
