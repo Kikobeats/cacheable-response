@@ -11,6 +11,10 @@
   },
   "contributors": [
     {
+      "name": "whooehoo",
+      "email": "whooehoo@yandex.ru"
+    },
+    {
       "name": "Jakub Sarnowski",
       "email": "jakub.sarnowski.st-yl.com"
     },
@@ -21,10 +25,6 @@
     {
       "name": "rickynyairo",
       "email": "rickynyairo@gmail.com"
-    },
-    {
-      "name": "whooehoo",
-      "email": "whooehoo@yandex.ru"
     }
   ],
   "repository": {
