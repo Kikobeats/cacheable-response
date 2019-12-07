@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/Kikobeats/cacheable-response/compare/v1.9.2...v1.10.0) (2019-12-07)
+
+
+### Features
+
+* add all options to getKey params ([a692392](https://github.com/Kikobeats/cacheable-response/commit/a69239276d06d5fd1bcea204989bc1bfa26e09b9))
+
+
+### Bug Fixes
+
+* linter ([9ef6331](https://github.com/Kikobeats/cacheable-response/commit/9ef633161bfcb72db76e345577543fbb21816545))
+
 ### [1.9.2](https://github.com/Kikobeats/cacheable-response/compare/v1.9.1...v1.9.2) (2019-11-25)
 
 ### [1.9.1](https://github.com/Kikobeats/cacheable-response/compare/v1.9.0...v1.9.1) (2019-11-19)
