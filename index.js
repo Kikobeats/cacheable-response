@@ -80,7 +80,7 @@ module.exports = ({
   })
 
   return async opts => {
-    const { req, res } = opts;
+    const { req, res } = opts
     const hasForce = Boolean(
       req.query ? req.query.force : parse(req.url.split('?')[1]).force
     )
