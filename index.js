@@ -19,7 +19,7 @@ function isEmpty (value) {
   )
 }
 
-const _getKey = req => {
+const _getKey = ({ req }) => {
   const url = new URL(req.url, 'http://localhost').toString()
   const { origin } = new URL(url)
   const baseKey = normalizeUrl(url, {
@@ -79,14 +79,15 @@ module.exports = ({
     ...compressOpts
   })
 
-  return async ({ req, res, ...opts }) => {
+  return async opts => {
+    const { req, res } = opts;
     const hasForce = Boolean(
       req.query ? req.query.force : parse(req.url.split('?')[1]).force
     )
-    const key = getKey(req, res)
+    const key = getKey(opts)
     const cachedResult = await decompress(await cache.get(key))
     const isHit = !hasForce && cachedResult !== undefined
-    const result = isHit ? cachedResult : await get({ req, res, ...opts })
+    const result = isHit ? cachedResult : await get(opts)
 
     if (!result) return
 
