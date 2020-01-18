@@ -22,16 +22,7 @@ function isEmpty (value) {
 const _getKey = ({ req }) => {
   const url = new URL(req.url, 'http://localhost').toString()
   const { origin } = new URL(url)
-  const baseKey = normalizeUrl(url, {
-    removeQueryParameters: [
-      'embed',
-      'filter',
-      'force',
-      'proxy',
-      'ref',
-      /^utm_\w+/i
-    ]
-  })
+  const baseKey = normalizeUrl(url)
   return baseKey.replace(origin, '').replace('/?', '')
 }
 
