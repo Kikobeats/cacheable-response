@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/Kikobeats/cacheable-response/compare/v1.10.2...v2.0.0) (2020-02-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* requires Node.js >= 10
+
+### build
+
+* update dependencies ([731d08d](https://github.com/Kikobeats/cacheable-response/commit/731d08d636cf53f27222f7a3f841462057226a01))
+
 ### [1.10.2](https://github.com/Kikobeats/cacheable-response/compare/v1.10.1...v1.10.2) (2020-01-22)
 
 
