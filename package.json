@@ -50,7 +50,7 @@
     "debug-logfmt": "~1.0.4",
     "etag": "~1.8.1",
     "keyv": "~4.0.0",
-    "normalize-url": "~4.5.0",
+    "normalize-url": "~5.0.0",
     "pretty-ms": "~5.1.0"
   },
   "devDependencies": {
@@ -77,7 +77,7 @@
     "test-listen": "latest"
   },
   "engines": {
-    "node": ">= 8"
+    "node": ">= 10"
   },
   "files": [
     "index.js"
