@@ -207,7 +207,7 @@ async function get ({ req, res }) {
 
 The method will received `({ req, res })` and it should be returns:
 
-- **data** `string`: The content to be saved on the cache.
+- **data** `object`|`string`: The content to be saved on the cache.
 - **ttl** `number`: The quantity of time in milliseconds the content is considered valid on the cache. Don't specify it means use default [`ttl`](#ttl).
 - **createdAt** `date`: The timestamp associated with the content (`Date.now()` by default).
 
