@@ -56,7 +56,7 @@ const ssrCache = cacheableResponse({
 
 At least, **cacheable-response** needs two things:
 
-- **get**: The method to be called for creating a fresh cacheable response associated with the current route path.
+- **get**: It creates a fresh cacheable response associated with the current route path.
 - **send**: It determines how the response should be rendered.
 
 **cacheable-response** is _framework agnostic_: It could be used with any library that accepts `(request, response)` as input.
@@ -212,6 +212,8 @@ The method will received `({ req, res })` and it should be returns:
 - **createdAt** `date`: The timestamp associated with the content (`Date.now()` by default).
 
 Any other property can be specified and will passed to `.send`.
+
+In case you want to bypass the cache, preventing caching a value (e.g., when an error occurred), you should return `undefined` or `null`.
 
 ##### send
 
