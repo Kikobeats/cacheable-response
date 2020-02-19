@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.4](https://github.com/Kikobeats/cacheable-response/compare/v2.0.3...v2.0.4) (2020-02-19)
+
+
+### Bug Fixes
+
+* save into cache under 304 response ([#43](https://github.com/Kikobeats/cacheable-response/issues/43)) ([c033b79](https://github.com/Kikobeats/cacheable-response/commit/c033b79058f131ddfe0946a0cf2f9a67c23c9470))
+
 ### [2.0.3](https://github.com/Kikobeats/cacheable-response/compare/v2.0.2...v2.0.3) (2020-02-18)
 
 ### [2.0.2](https://github.com/Kikobeats/cacheable-response/compare/v2.0.1...v2.0.2) (2020-02-16)
