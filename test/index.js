@@ -1,12 +1,12 @@
-import { AssertionError } from 'assert'
+const { AssertionError } = require('assert')
 
-import listen from 'test-listen'
-import micro from 'micro'
-import test from 'ava'
-import got from 'got'
-import Keyv from 'keyv'
+const listen = require('test-listen')
+const micro = require('micro')
+const Keyv = require('keyv')
+const test = require('ava')
+const got = require('got')
 
-import cacheableResponse from '..'
+const cacheableResponse = require('..')
 
 const createServer = props => {
   const server = cacheableResponse(props)

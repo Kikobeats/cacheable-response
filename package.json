@@ -56,7 +56,7 @@
   "devDependencies": {
     "@commitlint/cli": "latest",
     "@commitlint/config-conventional": "latest",
-    "ava": "~2.4.0",
+    "ava": "latest",
     "ci-publish": "latest",
     "conventional-github-releaser": "latest",
     "coveralls": "latest",
@@ -80,6 +80,7 @@
     "node": ">= 10"
   },
   "files": [
+    "index.d.ts",
     "index.js"
   ],
   "scripts": {
@@ -98,6 +99,11 @@
     "update:check": "ncu -- --error-level 2"
   },
   "license": "MIT",
+  "ava": {
+    "files": [
+      "test/**/*.js"
+    ]
+  },
   "commitlint": {
     "extends": [
       "@commitlint/config-conventional"
