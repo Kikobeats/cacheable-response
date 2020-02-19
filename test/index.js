@@ -278,7 +278,7 @@ test('return HIT after empty 304 response', async t => {
     }
   })
   const { headers: headersOne } = await got(`${url}/kikobeats`)
-  cache.clear()
+  await cache.clear()
   await got(`${url}/kikobeats`, {
     headers: { 'If-None-Match': headersOne.etag }
   })
