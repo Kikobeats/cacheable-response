@@ -56,7 +56,7 @@
   "devDependencies": {
     "@commitlint/cli": "latest",
     "@commitlint/config-conventional": "latest",
-    "ava": "latest",
+    "ava": "~2.4.0",
     "ci-publish": "latest",
     "conventional-github-releaser": "latest",
     "coveralls": "latest",

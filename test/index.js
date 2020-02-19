@@ -4,6 +4,7 @@ import listen from 'test-listen'
 import micro from 'micro'
 import test from 'ava'
 import got from 'got'
+import Keyv from 'keyv'
 
 import cacheableResponse from '..'
 
@@ -258,4 +259,29 @@ test('return empty 304 response when If-None-Match matches ETag', async t => {
   })
   t.is(statusCode, 304)
   t.is(body, '')
+})
+
+test('return HIT after empty 304 response', async t => {
+  const cache = new Keyv({ namespace: 'ssr' })
+  const url = await createServer({
+    cache,
+    get: ({ req, res }) => {
+      return {
+        data: { foo: 'bar' },
+        ttl: 10000,
+        createdAt: Date.now(),
+        foo: { bar: true }
+      }
+    },
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end('Welcome to Micro')
+    }
+  })
+  const { headers: headersOne } = await got(`${url}/kikobeats`)
+  cache.clear()
+  await got(`${url}/kikobeats`, {
+    headers: { 'If-None-Match': headersOne.etag }
+  })
+  const { headers: headersTwo } = await got(`${url}/kikobeats`)
+  t.is(headersTwo['x-cache-status'], 'HIT')
 })
