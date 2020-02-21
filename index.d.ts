@@ -19,9 +19,10 @@ declare namespace CacheableResponse {
     send: (params: SendParams, ...props) => void
     ttl?: number; // milliseconds
     compress?: boolean;
-    serialize?: (object) => string;
-    deserialize?: (string) => object;
+    serialize?: (obj: object) => string;
+    deserialize?: (str: string) => object;
     cache?: boolean;
+    getKey: (req: any) => string,
     revalidate?: (ttl: number) => number;
   }
   type ReturnFunction = (params: SendParams) => void
