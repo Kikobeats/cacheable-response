@@ -11,10 +11,6 @@
   },
   "contributors": [
     {
-      "name": "whooehoo",
-      "email": "whooehoo@yandex.ru"
-    },
-    {
       "name": "Ali Hmer",
       "email": "alitohami@gmail.com"
     },
@@ -33,6 +29,10 @@
     {
       "name": "rickynyairo",
       "email": "rickynyairo@gmail.com"
+    },
+    {
+      "name": "whooehoo",
+      "email": "whooehoo@yandex.ru"
     }
   ],
   "repository": {
