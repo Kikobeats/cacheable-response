@@ -59,7 +59,7 @@
     "etag": "~1.8.1",
     "keyv": "~4.0.0",
     "normalize-url": "~5.0.0",
-    "pretty-ms": "~6.0.1"
+    "pretty-ms": "~7.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "latest",
