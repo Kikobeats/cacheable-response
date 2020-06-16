@@ -10,16 +10,13 @@ const getEtag = require('etag')
 const { URL } = require('url')
 const Keyv = require('keyv')
 
-function isEmpty (value) {
-  return (
-    value === undefined ||
-    value === null ||
-    (typeof value === 'object' && Object.keys(value).length === 0) ||
-    (typeof value === 'string' && value.trim().length === 0)
-  )
-}
+const isEmpty = value =>
+  value === undefined ||
+  value === null ||
+  (typeof value === 'object' && Object.keys(value).length === 0) ||
+  (typeof value === 'string' && value.trim().length === 0)
 
-const _getKey = ({ req }) => {
+const getKeyDefault = ({ req }) => {
   const url = new URL(req.url, 'http://localhost').toString()
   const { origin } = new URL(url)
   const baseKey = normalizeUrl(url, {
@@ -52,7 +49,7 @@ const createSetHeaders = ({ revalidate }) => {
 module.exports = ({
   cache = new Keyv({ namespace: 'ssr' }),
   compress: enableCompression = false,
-  getKey = _getKey,
+  getKey = getKeyDefault,
   get,
   send,
   revalidate = ttl => Math.round(ttl * 0.2),
