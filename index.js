@@ -10,7 +10,7 @@ const getEtag = require('etag')
 const { URL } = require('url')
 const Keyv = require('keyv')
 
-function isEmpty(value) {
+function isEmpty (value) {
   return (
     value === undefined ||
     value === null ||
@@ -40,7 +40,7 @@ const createSetHeaders = ({ revalidate }) => {
     res.setHeader(
       'Cache-Control',
       `public, must-revalidate, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=${
-        hasForce ? 0 : toSeconds(revalidate(ttl))
+      hasForce ? 0 : toSeconds(revalidate(ttl))
       }`
     )
 

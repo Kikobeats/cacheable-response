@@ -46,7 +46,7 @@ test('default ttl and revalidate', async t => {
 
   const { headers } = await got(`${url}/kikobeats`)
   t.true([7200, 7199].includes(getMaxAge(headers)))
-  t.true([5760, 5759].includes(getRevalidate(headers)))
+  t.true([1440, 1439].includes(getRevalidate(headers)))
 })
 
 test('custom ttl', async t => {
@@ -59,12 +59,12 @@ test('custom ttl', async t => {
 
   const { headers } = await got(`${url}/kikobeats`)
   t.true([86400, 86399].includes(getMaxAge(headers)))
-  t.true([69120, 69119].includes(getRevalidate(headers)))
+  t.true([17280, 17279].includes(getRevalidate(headers)))
 })
 
 test('custom revalidate', async t => {
   const url = await createServer({
-    revalidate: ttl => ttl * 0.8,
+    revalidate: ttl => ttl * 0.1,
     get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
     send: ({ data, headers, res, req, ...props }) => {
       res.end('Welcome to Micro')
@@ -73,7 +73,7 @@ test('custom revalidate', async t => {
 
   const { headers } = await got(`${url}/kikobeats`)
   t.true([86400, 86399].includes(getMaxAge(headers)))
-  t.true([69120, 69119].includes(getRevalidate(headers)))
+  t.true([8640, 8639].includes(getRevalidate(headers)))
 })
 
 test('custom fixed revalidate', async t => {
@@ -145,7 +145,7 @@ test('force query params to invalidate', async t => {
   const { headers: headersOne } = await got(`${url}/kikobeats`)
   t.is(headersOne['x-cache-status'], 'MISS')
   t.true([86400, 86399].includes(getMaxAge(headersOne)))
-  t.true([69120, 69119].includes(getRevalidate(headersOne)))
+  t.true([17280, 17279].includes(getRevalidate(headersOne)))
   const { headers: headersTwo } = await got(`${url}/kikobeats`)
   t.is(headersTwo['x-cache-status'], 'HIT')
   const { headers: headersThree } = await got(`${url}/kikobeats?force=true`)
