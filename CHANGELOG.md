@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.10](https://github.com/Kikobeats/cacheable-response/compare/v2.0.9...v2.0.10) (2020-06-16)
+
+
+### Bug Fixes
+
+* linter ([9831f22](https://github.com/Kikobeats/cacheable-response/commit/9831f2289f2c2c7fefe33434654c8612b9ddbece))
+* ttl ([469db51](https://github.com/Kikobeats/cacheable-response/commit/469db51a3e638a46fe7d1c324b46bd7140cb24c2))
+
 ### [2.0.9](https://github.com/Kikobeats/cacheable-response/compare/v2.0.8...v2.0.9) (2020-05-06)
 
 
