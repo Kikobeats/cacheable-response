@@ -10,7 +10,7 @@ const getEtag = require('etag')
 const { URL } = require('url')
 const Keyv = require('keyv')
 
-function isEmpty (value) {
+function isEmpty(value) {
   return (
     value === undefined ||
     value === null ||
