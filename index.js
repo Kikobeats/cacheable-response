@@ -126,4 +126,4 @@ module.exports = ({
   }
 }
 
-module.exports.getKey = _getKey
+module.exports.getKey = getKeyDefault
