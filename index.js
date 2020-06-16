@@ -82,7 +82,7 @@ module.exports = ({
     const isHit = !hasForce && cachedResult !== undefined
     const result = isHit ? cachedResult : await get(opts)
 
-    if (!result) return
+    if (isEmpty(result)) return
 
     const {
       etag: cachedEtag,
