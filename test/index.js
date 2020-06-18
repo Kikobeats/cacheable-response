@@ -14,15 +14,19 @@ const createServer = props => {
   return listen(api)
 }
 
-const getMaxAge = headers =>
-  Number(
-    headers['cache-control']
-      .split('=')[1]
-      .split(' ')[0]
-      .split(',')[0]
-  )
-
-const getRevalidate = headers => Number(headers['cache-control'].split('=')[3])
+const parseCacheControl = headers => {
+  const header = headers['cache-control']
+  return header.split(', ').reduce((acc, rawKey) => {
+    let value = true
+    let key = rawKey
+    if (rawKey.includes('=')) {
+      const [parsedKey, parsedValue] = rawKey.split('=')
+      key = parsedKey
+      value = Number(parsedValue)
+    }
+    return { ...acc, [key]: value }
+  }, {})
+}
 
 test('.get is required', t => {
   const error = t.throws(() => cacheableResponse({}))
@@ -45,8 +49,8 @@ test('default ttl and revalidate', async t => {
   })
 
   const { headers } = await got(`${url}/kikobeats`)
-  t.true([7200, 7199].includes(getMaxAge(headers)))
-  t.true([1440, 1439].includes(getRevalidate(headers)))
+  const cacheControl = parseCacheControl(headers)
+  t.snapshot(cacheControl)
 })
 
 test('custom ttl', async t => {
@@ -58,8 +62,8 @@ test('custom ttl', async t => {
   })
 
   const { headers } = await got(`${url}/kikobeats`)
-  t.true([86400, 86399].includes(getMaxAge(headers)))
-  t.true([17280, 17279].includes(getRevalidate(headers)))
+  const cacheControl = parseCacheControl(headers)
+  t.snapshot(cacheControl)
 })
 
 test('custom revalidate', async t => {
@@ -72,8 +76,8 @@ test('custom revalidate', async t => {
   })
 
   const { headers } = await got(`${url}/kikobeats`)
-  t.true([86400, 86399].includes(getMaxAge(headers)))
-  t.true([8640, 8639].includes(getRevalidate(headers)))
+  const cacheControl = parseCacheControl(headers)
+  t.snapshot(cacheControl)
 })
 
 test('custom fixed revalidate', async t => {
@@ -86,8 +90,8 @@ test('custom fixed revalidate', async t => {
   })
 
   const { headers } = await got(`${url}/kikobeats`)
-  t.true([86400, 86399].includes(getMaxAge(headers)))
-  t.true([300, 299].includes(getRevalidate(headers)))
+  const cacheControl = parseCacheControl(headers)
+  t.snapshot(cacheControl)
 })
 
 test('MISS for first access', async t => {
@@ -144,15 +148,16 @@ test('force query params to invalidate', async t => {
 
   const { headers: headersOne } = await got(`${url}/kikobeats`)
   t.is(headersOne['x-cache-status'], 'MISS')
-  t.true([86400, 86399].includes(getMaxAge(headersOne)))
-  t.true([17280, 17279].includes(getRevalidate(headersOne)))
+  t.snapshot(parseCacheControl(headersOne))
+
   const { headers: headersTwo } = await got(`${url}/kikobeats`)
   t.is(headersTwo['x-cache-status'], 'HIT')
+
   const { headers: headersThree } = await got(`${url}/kikobeats?force=true`)
   t.is(headersThree['x-cache-status'], 'MISS')
   t.is(headersThree['x-cache-expired-at'], '0ms')
-  t.is(getMaxAge(headersThree), 0)
-  t.is(getRevalidate(headersThree), 0)
+  t.snapshot(parseCacheControl(headersThree))
+
   const { headers: headersFour } = await got(`${url}/kikobeats`)
   t.is(headersFour['x-cache-status'], 'HIT')
 })
