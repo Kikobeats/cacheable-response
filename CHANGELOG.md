@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/Kikobeats/cacheable-response/compare/v2.0.10...v2.1.0) (2020-06-18)
+
+
+### Features
+
+* add stale-if-error directive ([0a7ee28](https://github.com/Kikobeats/cacheable-response/commit/0a7ee282736a0ca038023fc6a087a79d9f3dda55))
+
+
+### Bug Fixes
+
+* linter ([6642027](https://github.com/Kikobeats/cacheable-response/commit/6642027bbbfe755231d470ee5b6eaa59ac90f151))
+
 ### [2.0.10](https://github.com/Kikobeats/cacheable-response/compare/v2.0.9...v2.0.10) (2020-06-16)
 
 
