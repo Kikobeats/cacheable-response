@@ -46,6 +46,39 @@ const createSetHeaders = ({ revalidate }) => {
   }
 }
 
+async function doRefreshEarly (
+  createdAt,
+  refreshEarly,
+  defaultTtl,
+  get,
+  opts,
+  serialize,
+  compress,
+  cache,
+  key
+) {
+  if (Date.now() - createdAt > refreshEarly) {
+    const {
+      ttl = defaultTtl,
+      refreshEarly = ttl,
+      createdAt = Date.now(),
+      data,
+      ...props
+    } = await get(opts)
+    const etag = getEtag(serialize(data))
+    const payload = {
+      etag,
+      createdAt,
+      ttl,
+      refreshEarly,
+      data,
+      ...props
+    }
+    const value = await compress(payload)
+    await cache.set(key, value, ttl)
+  }
+}
+
 module.exports = ({
   cache = new Keyv({ namespace: 'ssr' }),
   compress: enableCompression = false,
@@ -83,6 +116,7 @@ module.exports = ({
     const {
       etag: cachedEtag,
       ttl = defaultTtl,
+      refreshEarly = ttl,
       createdAt = Date.now(),
       data,
       ...props
@@ -111,7 +145,7 @@ module.exports = ({
     })
 
     if (!isHit) {
-      const payload = { etag, createdAt, ttl, data, ...props }
+      const payload = { etag, createdAt, ttl, refreshEarly, data, ...props }
       const value = await compress(payload)
       await cache.set(key, value, ttl)
     }
@@ -122,7 +156,19 @@ module.exports = ({
       return
     }
 
-    return send({ data, res, req, ...props })
+    const sendResult = send({ data, res, req, ...props })
+    doRefreshEarly(
+      createdAt,
+      refreshEarly,
+      defaultTtl,
+      get,
+      opts,
+      serialize,
+      compress,
+      cache,
+      key
+    )
+    return sendResult
   }
 }
 

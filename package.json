@@ -29,6 +29,10 @@
     {
       "name": "whooehoo",
       "email": "whooehoo@yandex.ru"
+    },
+    {
+      "name": "mattraibert",
+      "email": "mattraibert@positiondev.com"
     }
   ],
   "repository": {
@@ -99,6 +103,7 @@
     "release:github": "conventional-github-releaser -p angular",
     "release:tags": "git push --follow-tags origin HEAD:master",
     "test": "nyc ava",
+    "test:watch": "ava --watch --verbose",
     "update": "ncu -u",
     "update:check": "ncu -- --error-level 2"
   },
