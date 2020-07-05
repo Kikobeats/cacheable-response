@@ -31,7 +31,7 @@ const createSetHeaders = ({ revalidate }) => {
   return ({ res, createdAt, isHit, ttl, hasForce, etag }) => {
     // Specifies the maximum amount of time a resource
     // will be considered fresh in seconds
-    const diff = hasForce ? 0 : createdAt + ttl - Date.now()
+    const diff = Math.max(hasForce ? 0 : createdAt + ttl - Date.now(), 0)
     const maxAge = toSeconds(diff)
     const revalidation = toSeconds(revalidate(ttl))
 
@@ -46,9 +46,10 @@ const createSetHeaders = ({ revalidate }) => {
   }
 }
 
-async function doRefreshEarly (
+async function doRefreshCache (
   createdAt,
-  refreshEarly,
+  ttl,
+  serveStale,
   defaultTtl,
   get,
   opts,
@@ -57,10 +58,10 @@ async function doRefreshEarly (
   cache,
   key
 ) {
-  if (Date.now() - createdAt > refreshEarly) {
+  if (Date.now() - createdAt > ttl) {
     const {
       ttl = defaultTtl,
-      refreshEarly = ttl,
+      serveStale = ttl,
       createdAt = Date.now(),
       data,
       ...props
@@ -70,12 +71,12 @@ async function doRefreshEarly (
       etag,
       createdAt,
       ttl,
-      refreshEarly,
+      serveStale,
       data,
       ...props
     }
     const value = await compress(payload)
-    await cache.set(key, value, ttl)
+    await cache.set(key, value, ttl + serveStale)
   }
 }
 
@@ -116,7 +117,7 @@ module.exports = ({
     const {
       etag: cachedEtag,
       ttl = defaultTtl,
-      refreshEarly = ttl,
+      serveStale = ttl,
       createdAt = Date.now(),
       data,
       ...props
@@ -145,9 +146,9 @@ module.exports = ({
     })
 
     if (!isHit) {
-      const payload = { etag, createdAt, ttl, refreshEarly, data, ...props }
+      const payload = { etag, createdAt, ttl, serveStale, data, ...props }
       const value = await compress(payload)
-      await cache.set(key, value, ttl)
+      await cache.set(key, value, ttl + serveStale)
     }
 
     if (!isModified) {
@@ -157,9 +158,10 @@ module.exports = ({
     }
 
     const sendResult = send({ data, res, req, ...props })
-    doRefreshEarly(
+    doRefreshCache(
       createdAt,
-      refreshEarly,
+      ttl,
+      serveStale,
       defaultTtl,
       get,
       opts,

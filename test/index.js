@@ -205,42 +205,72 @@ test('MISS after cache expiration', async t => {
   t.is(headers['x-cache-status'], 'MISS')
 })
 
-test('refreshEarly millis returns old cached, while refreshing', async t => {
-  const cacheMissTimestamps = []
-  const ttl = 60 * 1000
-  const refreshEarly = 100
+test('serveStale millis returns old cached content while refreshing', async t => {
+  const responseBodies = ['first', 'second']
+  const ttl = 1
+  const serveStale = 7200000
+  let cache = new Keyv({ namespace: 'test' })
   const url = await createServer({
+    cache,
     get: ({ req, res }) => {
       return {
         ttl,
-        refreshEarly,
-        createdAt: (() => {
-          const now = Date.now()
-          cacheMissTimestamps.push(now)
-          return now
-        })(),
-        data: Math.random()
+        serveStale,
+        createdAt: Date.now(),
+        data: responseBodies.shift()
       }
     },
     send: ({ data, headers, res, req, ...props }) => {
       res.end(`${data}`)
-    },
-    revalidate: 7200000
+    }
   })
-  // initial render populates the cache
-  const initialResponse = await got(`${url}/kikobeats`)
+  const initial = await got(`${url}/kikobeats`)
 
-  while (Date.now() - cacheMissTimestamps[0] < refreshEarly) {}
-  const hitWhileRefreshing = await got(`${url}/kikobeats`)
-  t.is(hitWhileRefreshing.headers['x-cache-status'], 'HIT')
-  t.is(hitWhileRefreshing.headers['x-cache-expired-at'], '59.8s')
-  t.is(initialResponse.body, hitWhileRefreshing.body)
+  t.is(initial.body, 'first')
+  t.is(initial.headers['x-cache-status'], 'MISS')
 
-  t.is(cacheMissTimestamps.length, 2)
-  const hitAfterRefresh = await got(`${url}/kikobeats`)
-  t.is(hitAfterRefresh.headers['x-cache-status'], 'HIT')
-  t.is(hitAfterRefresh.headers['x-cache-expired-at'], '59.9s')
-  t.not(initialResponse.body, hitAfterRefresh.body)
+  const staleAfterTtl = await got(`${url}/kikobeats`)
+
+  t.is(staleAfterTtl.body, 'first')
+  t.is(staleAfterTtl.headers['x-cache-status'], 'HIT')
+
+  t.is((await cache.get('/kikobeats')).data, 'second')
+})
+
+test('sends fresh content on the first request after refresh', async t => {
+  const responseBodies = ['first', 'second', 'third']
+  const ttl = 1
+  const serveStale = 7200000
+  let cache = new Keyv({ namespace: 'test' })
+  const url = await createServer({
+    cache,
+    get: ({ req, res }) => {
+      return {
+        ttl,
+        serveStale,
+        data: responseBodies.shift()
+      }
+    },
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end(`${data}`)
+    }
+  })
+  const initial = await got(`${url}/kikobeats`)
+
+  t.is(initial.body, 'first')
+  t.is(initial.headers['x-cache-status'], 'MISS')
+
+  const staleAfterTtl = await got(`${url}/kikobeats`)
+
+  t.is(staleAfterTtl.body, 'first')
+  t.is(staleAfterTtl.headers['x-cache-status'], 'HIT')
+
+  t.is((await cache.get('/kikobeats')).data, 'second')
+
+  const afterRefresh = await got(`${url}/kikobeats`)
+
+  t.is(afterRefresh.body, 'second')
+  t.is(afterRefresh.headers['x-cache-status'], 'HIT')
 })
 
 test('etag is present', async t => {

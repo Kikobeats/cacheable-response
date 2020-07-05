@@ -144,6 +144,17 @@ This value can be specified as well providing it as part of [`.get`](#get) outpu
 
 If you don't provide one, this be used as fallback for avoid keep things into cache forever.
 
+##### serveStale
+
+Type: `number`<br/>
+Default: `0`
+
+Number of milliseconds after ttl has expired that we send the stale content. The get method will still be called, and the cache will be updated.
+
+Similar to `stale-while-revalidate,` this allows us to send a fast response while we freshen up the cache for the next visitor.
+
+The default value of `0` has no effect.
+
 ##### serialize
 
 Type: `function`<br/>
