@@ -46,39 +46,12 @@ const createSetHeaders = ({ revalidate }) => {
   }
 }
 
-async function doRefreshCache (
-  createdAt,
-  ttl,
-  serveStale,
-  defaultTtl,
-  get,
-  opts,
-  serialize,
-  compress,
-  cache,
-  key
-) {
-  if (Date.now() - createdAt > ttl) {
-    const {
-      ttl = defaultTtl,
-      serveStale = ttl,
-      createdAt = Date.now(),
-      data,
-      ...props
-    } = await get(opts)
-    const etag = getEtag(serialize(data))
-    const payload = {
-      etag,
-      createdAt,
-      ttl,
-      serveStale,
-      data,
-      ...props
-    }
-    const value = await compress(payload)
-    await cache.set(key, value, ttl + serveStale)
-  }
-}
+const setCache = async (compress, cache, key, payload) =>
+  await cache.set(
+    key,
+    await compress(payload),
+    payload.ttl + payload.serveStale
+  )
 
 module.exports = ({
   cache = new Keyv({ namespace: 'ssr' }),
@@ -146,9 +119,14 @@ module.exports = ({
     })
 
     if (!isHit) {
-      const payload = { etag, createdAt, ttl, serveStale, data, ...props }
-      const value = await compress(payload)
-      await cache.set(key, value, ttl + serveStale)
+      await setCache(compress, cache, key, {
+        etag,
+        createdAt,
+        ttl,
+        serveStale,
+        data,
+        ...props
+      })
     }
 
     if (!isModified) {
@@ -158,18 +136,24 @@ module.exports = ({
     }
 
     const sendResult = send({ data, res, req, ...props })
-    doRefreshCache(
-      createdAt,
-      ttl,
-      serveStale,
-      defaultTtl,
-      get,
-      opts,
-      serialize,
-      compress,
-      cache,
-      key
-    )
+    if (Date.now() - createdAt > ttl) {
+      const {
+        ttl = defaultTtl,
+        serveStale = ttl,
+        createdAt = Date.now(),
+        data,
+        ...props
+      } = await get(opts)
+      const etag = getEtag(serialize(data))
+      setCache(compress, cache, key, {
+        etag,
+        createdAt,
+        ttl,
+        serveStale,
+        data,
+        ...props
+      })
+    }
     return sendResult
   }
 }
