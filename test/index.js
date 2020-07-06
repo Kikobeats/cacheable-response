@@ -207,15 +207,19 @@ test('MISS after cache expiration', async t => {
 
 test('serveStale millis returns old cached content while refreshing', async t => {
   const responseBodies = ['first', 'second']
-  const ttl = 1
-  const serveStale = 7200000
-  let cache = new Keyv({ namespace: 'test' })
+  const cache = new Keyv({ namespace: 'test' })
   const url = await createServer({
-    cache,
+    cache: {
+      set: (key, value, ttl) => {
+        t.is(ttl, 7200001)
+        cache.set(key, value, ttl)
+      },
+      get: key => cache.get(key)
+    },
     get: ({ req, res }) => {
       return {
-        ttl,
-        serveStale,
+        ttl: 1,
+        serveStale: 7200000,
         createdAt: Date.now(),
         data: responseBodies.shift()
       }
@@ -237,11 +241,46 @@ test('serveStale millis returns old cached content while refreshing', async t =>
   t.is((await cache.get('/kikobeats')).data, 'second')
 })
 
+test('empty serveStale preserves normal ttl behavior', async t => {
+  const cache = new Keyv({ namespace: 'test' })
+
+  const url = await createServer({
+    cache: {
+      set: (key, value, ttl) => {
+        t.is(ttl, 12340)
+        t.is(value.data, 'first')
+        t.is(value.serveStale, 0)
+
+        cache.set(key, value, ttl)
+      },
+      get: key => cache.get(key)
+    },
+    get: ({ req, res }) => {
+      return {
+        ttl: 12340,
+        createdAt: Date.now(),
+        data: 'first'
+      }
+    },
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end(`${data}`)
+    }
+  })
+  const initial = await got(`${url}/kikobeats`)
+
+  t.is(initial.body, 'first')
+  t.is(initial.headers['x-cache-status'], 'MISS')
+  t.is(
+    initial.headers['cache-control'],
+    'public, must-revalidate, max-age=12, s-maxage=12, stale-while-revalidate=2, stale-if-error=2'
+  )
+})
+
 test('sends fresh content on the first request after refresh', async t => {
   const responseBodies = ['first', 'second', 'third']
   const ttl = 1
   const serveStale = 7200000
-  let cache = new Keyv({ namespace: 'test' })
+  const cache = new Keyv({ namespace: 'test' })
   const url = await createServer({
     cache,
     get: ({ req, res }) => {
@@ -259,6 +298,10 @@ test('sends fresh content on the first request after refresh', async t => {
 
   t.is(initial.body, 'first')
   t.is(initial.headers['x-cache-status'], 'MISS')
+  t.is(
+    initial.headers['cache-control'],
+    'public, must-revalidate, max-age=0, s-maxage=0, stale-while-revalidate=0, stale-if-error=0'
+  )
 
   const staleAfterTtl = await got(`${url}/kikobeats`)
 

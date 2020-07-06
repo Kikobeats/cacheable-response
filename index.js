@@ -90,7 +90,7 @@ module.exports = ({
     const {
       etag: cachedEtag,
       ttl = defaultTtl,
-      serveStale = ttl,
+      serveStale = 0,
       createdAt = Date.now(),
       data,
       ...props
