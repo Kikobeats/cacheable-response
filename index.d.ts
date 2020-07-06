@@ -30,7 +30,7 @@ declare namespace CacheableResponse {
     get: (
       opts: Options
     ) => Promise<
-      (Optional<Cache<Data>, "etag" | "ttl" | "createdAt"> & GetReturnProps) | null
+      (Optional<Cache<Data>, "etag" | "ttl" | "serveStale" | "createdAt"> & GetReturnProps) | null
     >;
 
     /**
@@ -92,6 +92,7 @@ declare namespace CacheableResponse {
     createdAt: number;
     /** ttl in milliseconds */
     ttl: number;
+    serveStale: number;
     /** cached value */
     data: T;
   }
