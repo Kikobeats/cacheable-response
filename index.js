@@ -136,7 +136,8 @@ module.exports = ({
     }
 
     const sendResult = send({ data, res, req, ...props })
-    if (Date.now() - createdAt > ttl) {
+    const elapsedMillis = Date.now() - createdAt
+    if (elapsedMillis > ttl && elapsedMillis <= serveStale) {
       const {
         ttl = defaultTtl,
         serveStale = ttl,
@@ -145,7 +146,7 @@ module.exports = ({
         ...props
       } = await get(opts)
       const etag = getEtag(serialize(data))
-      setCache(compress, cache, key, {
+      await setCache(compress, cache, key, {
         etag,
         createdAt,
         ttl,

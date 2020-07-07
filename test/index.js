@@ -232,6 +232,10 @@ test('serveStale millis returns old cached content while refreshing', async t =>
 
   t.is(initial.body, 'first')
   t.is(initial.headers['x-cache-status'], 'MISS')
+  t.is(
+    initial.headers['cache-control'],
+    'public, must-revalidate, max-age=0, s-maxage=0, stale-while-revalidate=0, stale-if-error=0'
+  )
 
   const staleAfterTtl = await got(`${url}/kikobeats`)
 
@@ -241,42 +245,7 @@ test('serveStale millis returns old cached content while refreshing', async t =>
   t.is((await cache.get('/kikobeats')).data, 'second')
 })
 
-test('empty serveStale preserves normal ttl behavior', async t => {
-  const cache = new Keyv({ namespace: 'test' })
-
-  const url = await createServer({
-    cache: {
-      set: (key, value, ttl) => {
-        t.is(ttl, 12340)
-        t.is(value.data, 'first')
-        t.is(value.serveStale, 0)
-
-        cache.set(key, value, ttl)
-      },
-      get: key => cache.get(key)
-    },
-    get: ({ req, res }) => {
-      return {
-        ttl: 12340,
-        createdAt: Date.now(),
-        data: 'first'
-      }
-    },
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end(`${data}`)
-    }
-  })
-  const initial = await got(`${url}/kikobeats`)
-
-  t.is(initial.body, 'first')
-  t.is(initial.headers['x-cache-status'], 'MISS')
-  t.is(
-    initial.headers['cache-control'],
-    'public, must-revalidate, max-age=12, s-maxage=12, stale-while-revalidate=2, stale-if-error=2'
-  )
-})
-
-test('sends fresh content on the first request after refresh', async t => {
+test('sends fresh content on the next request after refresh', async t => {
   const responseBodies = ['first', 'second', 'third']
   const ttl = 1
   const serveStale = 7200000
@@ -295,25 +264,74 @@ test('sends fresh content on the first request after refresh', async t => {
     }
   })
   const initial = await got(`${url}/kikobeats`)
-
   t.is(initial.body, 'first')
-  t.is(initial.headers['x-cache-status'], 'MISS')
-  t.is(
-    initial.headers['cache-control'],
-    'public, must-revalidate, max-age=0, s-maxage=0, stale-while-revalidate=0, stale-if-error=0'
-  )
 
   const staleAfterTtl = await got(`${url}/kikobeats`)
-
   t.is(staleAfterTtl.body, 'first')
-  t.is(staleAfterTtl.headers['x-cache-status'], 'HIT')
-
-  t.is((await cache.get('/kikobeats')).data, 'second')
 
   const afterRefresh = await got(`${url}/kikobeats`)
 
   t.is(afterRefresh.body, 'second')
   t.is(afterRefresh.headers['x-cache-status'], 'HIT')
+})
+
+test('empty serveStale preserves normal ttl behavior', async t => {
+  const cache = new Keyv({ namespace: 'test' })
+  const url = await createServer({
+    cache: {
+      set: (key, value, ttl) => {
+        t.is(ttl, 12340)
+        t.is(value.serveStale, 0)
+
+        cache.set(key, value, ttl)
+      },
+      get: key => cache.get(key)
+    },
+    get: ({ req, res }) => {
+      return {
+        ttl: 12340,
+        createdAt: Date.now(),
+        data: { foo: 'bar' }
+      }
+    },
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end('Welcome to Micro')
+    }
+  })
+  const initial = await got(`${url}/kikobeats`)
+  t.is(initial.headers['x-cache-status'], 'MISS')
+  t.is(
+    initial.headers['cache-control'],
+    'public, must-revalidate, max-age=12, s-maxage=12, stale-while-revalidate=2, stale-if-error=2'
+  )
+  const second = await got(`${url}/kikobeats`)
+  t.is(second.headers['x-cache-status'], 'HIT')
+  t.is(
+    second.headers['cache-control'],
+    'public, must-revalidate, max-age=12, s-maxage=12, stale-while-revalidate=2, stale-if-error=2'
+  )
+})
+
+test('empty serveStale prevents background refresh', async t => {
+  let getCount = 0
+  const url = await createServer({
+    get: ({ req, res }) => {
+      getCount = getCount + 1
+      return {
+        ttl: 1,
+        createdAt: Date.now(),
+        data: { foo: 'bar' }
+      }
+    },
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end('Welcome to Micro')
+    }
+  })
+  const initial = await got(`${url}/kikobeats`)
+  t.is(getCount, 1)
+  t.is(initial.headers['x-cache-status'], 'MISS')
+  await got(`${url}/kikobeats`)
+  t.is(getCount, 2)
 })
 
 test('etag is present', async t => {
