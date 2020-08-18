@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.2](https://github.com/Kikobeats/cacheable-response/compare/v2.1.1...v2.1.2) (2020-08-18)
+
+
+### Bug Fixes
+
+* don't add revalidate headers if value is 0 ([ab38c5e](https://github.com/Kikobeats/cacheable-response/commit/ab38c5e2e02c8accc9ff5d18dbf61ff8de6e54e5))
+
 ### [2.1.1](https://github.com/Kikobeats/cacheable-response/compare/v2.1.0...v2.1.1) (2020-08-18)
 
 ## [2.1.0](https://github.com/Kikobeats/cacheable-response/compare/v2.0.10...v2.1.0) (2020-06-18)
