@@ -118,6 +118,26 @@ test('custom fixed revalidate', async t => {
   t.true([299, 300].includes(cacheControl['stale-if-error']))
 })
 
+test('disable revalidation', async t => {
+  const url = await createServer({
+    revalidate: false,
+    get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end('Welcome to Micro')
+    }
+  })
+
+  const { headers } = await got(`${url}/kikobeats`)
+  const cacheControl = parseCacheControl(headers)
+
+  t.true(cacheControl.public)
+  t.true(cacheControl['must-revalidate'])
+  t.true([86399, 86400].includes(cacheControl['max-age']))
+  t.true([86399, 86400].includes(cacheControl['s-maxage']))
+  t.false(!!cacheControl['stale-while-revalidate'])
+  t.false(!!cacheControl['stale-if-error'])
+})
+
 test('MISS for first access', async t => {
   const url = await createServer({
     get: ({ req, res }) => {
