@@ -33,13 +33,15 @@ const createSetHeaders = ({ revalidate }) => {
     // will be considered fresh in seconds
     const diff = hasForce ? 0 : createdAt + ttl - Date.now()
     const maxAge = toSeconds(diff)
-    const revalidation = toSeconds(revalidate(ttl))
+    const revalidation = revalidate ? toSeconds(revalidate(ttl)) : 0
 
-    res.setHeader(
-      'Cache-Control',
-      `public, must-revalidate, max-age=${maxAge}, s-maxage=${maxAge}, stale-while-revalidate=${revalidation}, stale-if-error=${revalidation}`
-    )
+    let cacheControl = `public, must-revalidate, max-age=${maxAge}, s-maxage=${maxAge}`
 
+    if (revalidation) {
+      cacheControl = `${cacheControl}, stale-while-revalidate=${revalidation}, stale-if-error=${revalidation}`
+    }
+
+    res.setHeader('Cache-Control', cacheControl)
     res.setHeader('X-Cache-Status', isHit ? 'HIT' : 'MISS')
     res.setHeader('X-Cache-Expired-At', prettyMs(diff))
     res.setHeader('ETag', etag)
