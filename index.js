@@ -115,7 +115,7 @@ module.exports = ({
     if (!isHit) {
       const payload = { etag, createdAt, ttl, data, ...props }
       const value = await compress(payload)
-      cache.set(key, value, ttl)
+      await cache.set(key, value, ttl)
     }
 
     if (!isModified) {
