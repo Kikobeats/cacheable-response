@@ -118,7 +118,7 @@ module.exports = ({
       await cache.set(key, value, ttl)
     }
 
-    if (!isModified) {
+    if (!hasForce && !isModified) {
       res.statusCode = 304
       res.end()
       return
