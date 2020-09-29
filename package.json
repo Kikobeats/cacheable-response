@@ -45,9 +45,9 @@
     "compress-brotli": "~1.2.2",
     "debug-logfmt": "~1.0.4",
     "etag": "~1.8.1",
-    "keyv": "~4.0.1",
-    "normalize-url": "~5.1.0",
-    "pretty-ms": "~7.0.0"
+    "keyv": "~4.0.3",
+    "normalize-url": "~5.2.0",
+    "pretty-ms": "~7.0.1"
   },
   "devDependencies": {
     "@commitlint/cli": "latest",
