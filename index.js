@@ -16,7 +16,7 @@ const isEmpty = value =>
   (typeof value === 'object' && Object.keys(value).length === 0) ||
   (typeof value === 'string' && value.trim().length === 0)
 
-const getKeyDefault = ({ req }) => {
+export const getKeyDefault = ({ req }) => {
   const url = new URL(req.url, 'http://localhost').toString()
   const { origin } = new URL(url)
   const baseKey = normalizeUrl(url, {
