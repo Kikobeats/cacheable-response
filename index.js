@@ -35,7 +35,7 @@ const createSetHeaders = ({ revalidate }) => {
     const maxAge = toSeconds(diff)
     const revalidation = revalidate ? toSeconds(revalidate(ttl)) : 0
 
-    let cacheControl = `public, must-revalidate, max-age=${maxAge}, s-maxage=${maxAge}`
+    let cacheControl = `public, must-revalidate, max-age=${maxAge}`
 
     if (revalidation) {
       cacheControl = `${cacheControl}, stale-while-revalidate=${revalidation}, stale-if-error=${revalidation}`
