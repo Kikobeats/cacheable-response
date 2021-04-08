@@ -54,7 +54,6 @@ test('default ttl and revalidate', async t => {
   t.true(cacheControl.public)
   t.true(cacheControl['must-revalidate'])
   t.true([7199, 7200].includes(cacheControl['max-age']))
-  t.true([7199, 7200].includes(cacheControl['s-maxage']))
   t.true([1439, 1440].includes(cacheControl['stale-while-revalidate']))
   t.true([1439, 1440].includes(cacheControl['stale-if-error']))
 })
