@@ -1,44 +1,10 @@
-const { AssertionError } = require('assert')
+'use strict'
 
-const listen = require('test-listen')
 const Keyv = require('@keyvhq/core')
-const micro = require('micro')
 const test = require('ava')
 const got = require('got')
 
-const cacheableResponse = require('..')
-
-const createServer = props => {
-  const server = cacheableResponse(props)
-  const api = micro((req, res) => server({ req, res }))
-  return listen(api)
-}
-
-const parseCacheControl = headers => {
-  const header = headers['cache-control']
-  return header.split(', ').reduce((acc, rawKey) => {
-    let value = true
-    let key = rawKey
-    if (rawKey.includes('=')) {
-      const [parsedKey, parsedValue] = rawKey.split('=')
-      key = parsedKey
-      value = Number(parsedValue)
-    }
-    return { ...acc, [key]: value }
-  }, {})
-}
-
-test('.get is required', t => {
-  const error = t.throws(() => cacheableResponse({}))
-  t.true(error instanceof AssertionError)
-  t.is(error.message, '.get required')
-})
-
-test('.send is required', t => {
-  const error = t.throws(() => cacheableResponse({ get: true }))
-  t.true(error instanceof AssertionError)
-  t.is(error.message, '.send required')
-})
+const { parseCacheControl, createServer } = require('./util')
 
 test('default ttl and revalidate', async t => {
   const url = await createServer({
@@ -56,62 +22,6 @@ test('default ttl and revalidate', async t => {
   t.true([7199, 7200].includes(cacheControl['max-age']))
   t.true([1439, 1440].includes(cacheControl['stale-while-revalidate']))
   t.true([1439, 1440].includes(cacheControl['stale-if-error']))
-})
-
-test('custom ttl', async t => {
-  const url = await createServer({
-    get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
-
-  const { headers } = await got(`${url}/kikobeats`)
-  const cacheControl = parseCacheControl(headers)
-
-  t.true(cacheControl.public)
-  t.true(cacheControl['must-revalidate'])
-  t.true([86399, 86400].includes(cacheControl['max-age']))
-  t.true([17279, 17280].includes(cacheControl['stale-while-revalidate']))
-  t.true([17279, 17280].includes(cacheControl['stale-if-error']))
-})
-
-test('custom revalidate', async t => {
-  const url = await createServer({
-    revalidate: ttl => ttl * 0.1,
-    get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
-
-  const { headers } = await got(`${url}/kikobeats`)
-  const cacheControl = parseCacheControl(headers)
-
-  t.true(cacheControl.public)
-  t.true(cacheControl['must-revalidate'])
-  t.true([86399, 86400].includes(cacheControl['max-age']))
-  t.true([8639, 8640].includes(cacheControl['stale-while-revalidate']))
-  t.true([8639, 8640].includes(cacheControl['stale-if-error']))
-})
-
-test('custom fixed revalidate', async t => {
-  const url = await createServer({
-    revalidate: 300000,
-    get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
-
-  const { headers } = await got(`${url}/kikobeats`)
-  const cacheControl = parseCacheControl(headers)
-
-  t.true(cacheControl.public)
-  t.true(cacheControl['must-revalidate'])
-  t.true([86399, 86400].includes(cacheControl['max-age']))
-  t.true([299, 300].includes(cacheControl['stale-while-revalidate']))
-  t.true([299, 300].includes(cacheControl['stale-if-error']))
 })
 
 test('disable revalidation', async t => {
@@ -187,7 +97,6 @@ test('force query params to invalidate', async t => {
 
   const { headers: headersOne } = await got(`${url}/kikobeats`)
   t.is(headersOne['x-cache-status'], 'MISS')
-  // t.snapshot(parseCacheControl(headersOne))
 
   const { headers: headersTwo } = await got(`${url}/kikobeats`)
   t.is(headersTwo['x-cache-status'], 'HIT')
@@ -195,7 +104,6 @@ test('force query params to invalidate', async t => {
   const { headers: headersThree } = await got(`${url}/kikobeats?force=true`)
   t.is(headersThree['x-cache-status'], 'BYPASS')
   t.is(headersThree['x-cache-expired-at'], '0ms')
-  // t.snapshot(parseCacheControl(headersThree))
 
   const { headers: headersFour } = await got(`${url}/kikobeats`)
   t.is(headersFour['x-cache-status'], 'HIT')

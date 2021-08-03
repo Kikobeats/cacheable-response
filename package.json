@@ -105,7 +105,8 @@
   "license": "MIT",
   "ava": {
     "files": [
-      "test/**/*.js"
+      "test/**/*.js",
+      "!test/util.js"
     ]
   },
   "commitlint": {
@@ -115,7 +116,7 @@
   },
   "lint-staged": {
     "package.json": [
-      "finepack"
+      "finepack --sort-ignore-object-at ava"
     ],
     "*.js,!*.min.js,": [
       "prettier-standard"
