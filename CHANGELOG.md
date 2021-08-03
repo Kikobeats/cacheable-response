@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 2.2.0 (2021-08-03)
+
+
+### Features
+
+* add BYPASS cache state ([#78](https://github.com/Kikobeats/cacheable-response/issues/78)) ([e6bf8d6](https://github.com/Kikobeats/cacheable-response/commit/e6bf8d6d3fc0e57e6a492fdd12fe2e5e29ac28c6))
+
 ### [2.1.12](https://github.com/Kikobeats/cacheable-response/compare/v2.1.11...v2.1.12) (2021-04-08)
 
 ### [2.1.11](https://github.com/Kikobeats/cacheable-response/compare/v2.1.10...v2.1.11) (2021-04-05)
