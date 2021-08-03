@@ -1,8 +1,8 @@
 const { AssertionError } = require('assert')
 
 const listen = require('test-listen')
+const Keyv = require('@keyvhq/core')
 const micro = require('micro')
-const Keyv = require('keyv')
 const test = require('ava')
 const got = require('got')
 

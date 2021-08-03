@@ -5,10 +5,10 @@ const createCompress = require('compress-brotli')
 const normalizeUrl = require('normalize-url')
 const { parse } = require('querystring')
 const prettyMs = require('pretty-ms')
+const Keyv = require('@keyvhq/core')
 const assert = require('assert')
 const getEtag = require('etag')
 const { URL } = require('url')
-const Keyv = require('keyv')
 
 const isEmpty = value =>
   value === undefined ||
