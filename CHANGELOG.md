@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 2.3.0 (2021-08-03)
+
+
+### Features
+
+* customize bypass query parameter ([#79](https://github.com/Kikobeats/cacheable-response/issues/79)) ([929b8cc](https://github.com/Kikobeats/cacheable-response/commit/929b8ccc351f53f78c6bb085131728f1bd8ab56c)), closes [#72](https://github.com/Kikobeats/cacheable-response/issues/72)
+
 ## 2.2.0 (2021-08-03)
 
 
