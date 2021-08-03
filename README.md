@@ -107,14 +107,23 @@ In case you need you can force invalidate a cache response passing `force=true` 
 curl https://myserver.dev/user # MISS (first access)
 curl https://myserver.dev/user # HIT (served from cache)
 curl https://myserver.dev/user # HIT (served from cache)
-curl https://myserver.dev/user?force=true # MISS (forcing invalidation)
+curl https://myserver.dev/user?force=true # BYPASS (skip cache copy)
 ```
+
+In that case, the `x-cache-status` will reflect a `'BYPASS'` value.
 
 ## API
 
 ### cacheableResponse([options])
 
 #### options
+
+##### bypassQueryParameter
+
+Type: `boolean`<br/>
+Default: `'force'`
+
+The name of the query parameter to be used for skipping the cache copy in an intentional way.
 
 ##### cache
 
