@@ -42,7 +42,10 @@ const createSetHeaders = ({ revalidate }) => {
     }
 
     res.setHeader('Cache-Control', cacheControl)
-    res.setHeader('X-Cache-Status', isHit ? 'HIT' : 'MISS')
+    res.setHeader(
+      'X-Cache-Status',
+      isHit ? 'HIT' : hasForce ? 'BYPASS' : 'MISS'
+    )
     res.setHeader('X-Cache-Expired-At', prettyMs(diff))
     res.setHeader('ETag', etag)
   }

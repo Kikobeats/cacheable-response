@@ -193,7 +193,7 @@ test('force query params to invalidate', async t => {
   t.is(headersTwo['x-cache-status'], 'HIT')
 
   const { headers: headersThree } = await got(`${url}/kikobeats?force=true`)
-  t.is(headersThree['x-cache-status'], 'MISS')
+  t.is(headersThree['x-cache-status'], 'BYPASS')
   t.is(headersThree['x-cache-expired-at'], '0ms')
   // t.snapshot(parseCacheControl(headersThree))
 
