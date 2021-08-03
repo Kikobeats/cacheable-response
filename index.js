@@ -16,11 +16,14 @@ const isEmpty = value =>
   (typeof value === 'object' && Object.keys(value).length === 0) ||
   (typeof value === 'string' && value.trim().length === 0)
 
-const getKeyDefault = ({ req }) => {
+const hasQueryParameter = (req, key) =>
+  Boolean(req.query ? req.query[key] : parse(req.url.split('?')[1])[key])
+
+const getKeyDefault = ({ req }, bypassQueryParameter) => {
   const url = new URL(req.url, 'http://localhost').toString()
   const { origin } = new URL(url)
   const baseKey = normalizeUrl(url, {
-    removeQueryParameters: ['force', /^utm_\w+/i]
+    removeQueryParameters: [bypassQueryParameter, /^utm_\w+/i]
   })
   return baseKey.replace(origin, '').replace('/?', '')
 }
@@ -52,12 +55,13 @@ const createSetHeaders = ({ revalidate }) => {
 }
 
 module.exports = ({
+  bypassQueryParameter = 'force',
   cache = new Keyv({ namespace: 'ssr' }),
   compress: enableCompression = false,
-  getKey = getKeyDefault,
   get,
-  send,
+  getKey = getKeyDefault,
   revalidate = ttl => Math.round(ttl * 0.2),
+  send,
   ttl: defaultTtl = 7200000,
   ...compressOpts
 } = {}) => {
@@ -75,10 +79,8 @@ module.exports = ({
 
   return async opts => {
     const { req, res } = opts
-    const hasForce = Boolean(
-      req.query ? req.query.force : parse(req.url.split('?')[1]).force
-    )
-    const key = getKey(opts)
+    const hasForce = hasQueryParameter(req, bypassQueryParameter)
+    const key = getKey(opts, bypassQueryParameter)
     const cachedResult = await decompress(await cache.get(key))
     const isHit = !hasForce && cachedResult !== undefined
     const result = isHit ? cachedResult : await get(opts)
