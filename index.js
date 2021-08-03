@@ -5,10 +5,10 @@ const createCompress = require('compress-brotli')
 const normalizeUrl = require('normalize-url')
 const { parse } = require('querystring')
 const prettyMs = require('pretty-ms')
+const Keyv = require('@keyvhq/core')
 const assert = require('assert')
 const getEtag = require('etag')
 const { URL } = require('url')
-const Keyv = require('keyv')
 
 const isEmpty = value =>
   value === undefined ||
@@ -42,7 +42,10 @@ const createSetHeaders = ({ revalidate }) => {
     }
 
     res.setHeader('Cache-Control', cacheControl)
-    res.setHeader('X-Cache-Status', isHit ? 'HIT' : 'MISS')
+    res.setHeader(
+      'X-Cache-Status',
+      isHit ? 'HIT' : hasForce ? 'BYPASS' : 'MISS'
+    )
     res.setHeader('X-Cache-Expired-At', prettyMs(diff))
     res.setHeader('ETag', etag)
   }

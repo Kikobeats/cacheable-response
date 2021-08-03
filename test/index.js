@@ -1,8 +1,8 @@
 const { AssertionError } = require('assert')
 
 const listen = require('test-listen')
+const Keyv = require('@keyvhq/core')
 const micro = require('micro')
-const Keyv = require('keyv')
 const test = require('ava')
 const got = require('got')
 
@@ -193,7 +193,7 @@ test('force query params to invalidate', async t => {
   t.is(headersTwo['x-cache-status'], 'HIT')
 
   const { headers: headersThree } = await got(`${url}/kikobeats?force=true`)
-  t.is(headersThree['x-cache-status'], 'MISS')
+  t.is(headersThree['x-cache-status'], 'BYPASS')
   t.is(headersThree['x-cache-expired-at'], '0ms')
   // t.snapshot(parseCacheControl(headersThree))
 
