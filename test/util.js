@@ -1,30 +1,52 @@
 'use strict'
 
-const cacheableResponse = require('..')
-const listen = require('test-listen')
-const micro = require('micro')
+const test = require('ava')
 
-const createServer = props => {
-  const server = cacheableResponse(props)
-  const api = micro((req, res) => server({ req, res }))
-  return listen(api)
-}
+const { getKey } = require('../src/util')
 
-const parseCacheControl = headers => {
-  const header = headers['cache-control']
-  return header.split(', ').reduce((acc, rawKey) => {
-    let value = true
-    let key = rawKey
-    if (rawKey.includes('=')) {
-      const [parsedKey, parsedValue] = rawKey.split('=')
-      key = parsedKey
-      value = Number(parsedValue)
-    }
-    return { ...acc, [key]: value }
-  }, {})
-}
-
-module.exports = {
-  parseCacheControl,
-  createServer
-}
+test('default getKey dedupe requests', t => {
+  t.is(
+    getKey(
+      {
+        req: {
+          url: '/kikobeats?foo=bar&force'
+        }
+      },
+      { bypassQueryParameter: 'force' }
+    ),
+    '/kikobeats?foo=bar'
+  )
+  t.is(
+    getKey(
+      {
+        req: {
+          url: '/kikobeats?foo=bar&force=true'
+        }
+      },
+      { bypassQueryParameter: 'force' }
+    ),
+    '/kikobeats?foo=bar'
+  )
+  t.is(
+    getKey(
+      {
+        req: {
+          url: '/kikobeats?foo=bar&bypass=true'
+        }
+      },
+      { bypassQueryParameter: 'bypass' }
+    ),
+    '/kikobeats?foo=bar'
+  )
+  t.is(
+    getKey(
+      {
+        req: {
+          url: '/kikobeats?foo=bar&bypass=true&utm_source=twitter'
+        }
+      },
+      { bypassQueryParameter: 'bypass' }
+    ),
+    '/kikobeats?foo=bar'
+  )
+})

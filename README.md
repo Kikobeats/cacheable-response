@@ -45,7 +45,7 @@ const cacheableResponse = require('cacheable-response')
 const ssrCache = cacheableResponse({
   get: ({ req, res }) => ({
     data: doSomething(req),
-    ttl: 7200000 // 2 hours
+    ttl: 86400000 // 24 hours
   }),
   send: ({ data, res, req }) => res.send(data)
 })
@@ -136,33 +136,6 @@ The library delegates in [keyv](https://github.com/lukechilds/keyv), a tiny key 
 
 If you don't specify it, a memory cache will be used.
 
-##### ttl
-
-Type: `number`<br/>
-Default: `7200000`
-
-Number of milliseconds a cache response is considered valid.
-
-After this period of time, the cache response should be refreshed.
-
-This value can be specified as well providing it as part of [`.get`](#get) output.
-
-If you don't provide one, this be used as fallback for avoid keep things into cache forever.
-
-##### serialize
-
-Type: `function`<br/>
-Default: `JSON.stringify`
-
-Set the serializer method to be used before compress.
-
-##### deserialize
-
-Type: `function`<br/>
-Default: `JSON.parse`
-
-Set the deserialize method to be used after decompress.
-
 ##### compress
 
 Type: `boolean`<br/>
@@ -176,24 +149,6 @@ If you enable it, you need to an additional `iltorb` package:
 npm install iltorb
 ```
 
-##### revalidate
-
-Type: `function`|`number`<br/>
-Default: `ttl => ttl / 24`
-
-Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background. the latency of the refresh is hidden from the user.
-
-You can provide a function, it will receive [`ttl`](#ttl) as first parameter or a fixed value.
-
-The value will be associated with [`stale-while-revalidate`](https://www.mnot.net/blog/2014/06/01/chrome_and_stale-while-revalidate) directive.
-
-##### getKey
-
-Type: `function`<br/>
-Default: `({ req }) => normalizeUrl(req.url)`
-
-It determinates how the cache key should be computed, receiving `req, res` as input.
-
 ##### get
 
 _Required_<br/>
@@ -204,11 +159,18 @@ The method to be called for creating a fresh cacheable response associated with 
 ```js
 async function get ({ req, res }) {
   const data = doSomething(req, res)
-  const ttl = 7200000 // 2 hours
+  const ttl = 86400000 // 24 hours
   const headers = { userAgent: 'cacheable-response' }
   return { data, ttl, headers }
 }
 ```
+
+##### getKey
+
+Type: `function`<br/>
+Default: `({ req }) => normalizeUrl(req.url)`
+
+It determinates how the cache key should be computed, receiving `req, res` as input.
 
 The method will received `({ req, res })` and it should be returns:
 
@@ -235,6 +197,44 @@ async function send ({ req, res, data, headers }) {
 ```
 
 It will receive `({ req, res, data, ...props })` being `props` any other data supplied to `.get`.
+
+##### staleTtl
+
+Type: `number`|`boolean`<br/>
+Default: `3600000`
+
+Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background. the latency of the refresh is hidden from the user.
+
+The value will be associated with [`stale-while-revalidate`](https://www.mnot.net/blog/2014/06/01/chrome_and_stale-while-revalidate) directive.
+
+You can pass a `false` to disable it.
+
+##### ttl
+
+Type: `number`<br/>
+Default: `86400000`
+
+Number of milliseconds a cache response is considered valid.
+
+After this period of time, the cache response should be refreshed.
+
+This value can be specified as well providing it as part of [`.get`](#get) output.
+
+If you don't provide one, this be used as fallback for avoid keep things into cache forever.
+
+##### serialize
+
+Type: `function`<br/>
+Default: `JSON.stringify`
+
+Set the serializer method to be used before compress.
+
+##### deserialize
+
+Type: `function`<br/>
+Default: `JSON.parse`
+
+Set the deserialize method to be used after decompress.
 
 ## Pro-tip: Distributed cache with CloudFlare™️
 
