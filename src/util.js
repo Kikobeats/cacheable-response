@@ -26,7 +26,7 @@ const getKey = ({ req }, { bypassQueryParameter }) => {
 const toSeconds = ms => Math.floor(ms / 1000)
 
 const getStatus = ({ isHit, isStale, hasForce }) =>
-  isHit ? (isStale ? 'REVALIDATING' : 'HIT') : hasForce ? 'BYPASS' : 'MISS'
+  isHit ? (isStale ? 'STALE' : 'HIT') : hasForce ? 'BYPASS' : 'MISS'
 
 const createSetHeaders = ({ staleTtl }) => {
   return ({ res, createdAt, isHit, isStale, ttl, hasForce, etag }) => {

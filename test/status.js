@@ -96,7 +96,7 @@ test('BYPASS for forcing refresh', async t => {
   t.is(headersFour['x-cache-status'], 'HIT')
 })
 
-test('REVALIDATING when response is stale', async t => {
+test('STALE when response is stale', async t => {
   const url = await createServer(
     cacheableResponse({
       staleTtl: 80,
@@ -120,7 +120,7 @@ test('REVALIDATING when response is stale', async t => {
 
   t.is(
     (await got(`${url}/kikobeats`)).headers['x-cache-status'],
-    'REVALIDATING'
+    'STALE'
   )
 
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'HIT')
