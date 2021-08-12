@@ -2,7 +2,7 @@
 
 const test = require('ava')
 
-const { getKey } = require('../src/util')
+const { getKey } = require('../../src/util')
 
 test('default getKey dedupe requests', t => {
   t.is(

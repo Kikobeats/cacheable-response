@@ -4,8 +4,9 @@ const { parse } = require('querystring')
 const prettyMs = require('pretty-ms')
 const { URL } = require('url')
 
-const hasQueryParameter = (req, key) =>
-  Boolean(req.query ? req.query[key] : parse(req.url.split('?')[1])[key])
+const hasQueryParameter = (req, key) => {
+  return Boolean(req.query ? req.query[key] : parse(req.url.split('?')[1])[key])
+}
 
 const getKey = ({ req }, { bypassQueryParameter }) => {
   const urlObj = new URL(req.url, 'http://localhost:8080')
