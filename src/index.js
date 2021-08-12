@@ -46,16 +46,14 @@ module.exports = ({
 
     const [raw, { hasValue, key, isExpired, isStale }] = await memoGet(opts)
 
-    const result = await decompress(raw)
+    const result = (await decompress(raw)) || {}
     const isHit = !hasForce && !isExpired && hasValue
-
-    if (isEmpty(result)) return
 
     const {
       etag: cachedEtag,
       ttl = defaultTtl,
       createdAt = Date.now(),
-      data,
+      data = null,
       ...props
     } = result
 

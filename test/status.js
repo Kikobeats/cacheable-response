@@ -25,6 +25,17 @@ test('MISS for first access', async t => {
   t.is(headers['x-cache-status'], 'MISS')
 })
 
+test('MISS for undefined data value', async t => {
+  const url = await createServer({
+    get: ({ req, res }) => undefined,
+    send: ({ data, headers, res, req, ...props }) => {
+      res.end('Welcome to Micro')
+    }
+  })
+  t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
+  t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
+})
+
 test('MISS after cache expiration', async t => {
   const url = await createServer({
     staleTtl: false,
