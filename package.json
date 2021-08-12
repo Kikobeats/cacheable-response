@@ -87,7 +87,7 @@
   },
   "files": [
     "index.d.ts",
-    "index.js"
+    "src"
   ],
   "scripts": {
     "clean": "rm -rf node_modules",
