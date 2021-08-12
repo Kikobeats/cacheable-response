@@ -7,7 +7,7 @@ const Keyv = require('@keyvhq/core')
 const assert = require('assert')
 const getEtag = require('etag')
 
-const { isEmpty, hasQueryParameter, createSetHeaders } = require('./util')
+const { hasQueryParameter, createSetHeaders } = require('./util')
 
 module.exports = ({
   bypassQueryParameter = 'force',
@@ -66,7 +66,7 @@ module.exports = ({
       isHit,
       isExpired,
       isStale,
-      result: !isEmpty(result),
+      result: Object.keys(result).length === 0,
       etag,
       ifNoneMatch,
       isModified

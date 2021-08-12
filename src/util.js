@@ -4,12 +4,6 @@ const { parse } = require('querystring')
 const prettyMs = require('pretty-ms')
 const { URL } = require('url')
 
-const isEmpty = value =>
-  value === undefined ||
-  value === null ||
-  (typeof value === 'object' && Object.keys(value).length === 0) ||
-  (typeof value === 'string' && value.trim().length === 0)
-
 const hasQueryParameter = (req, key) =>
   Boolean(req.query ? req.query[key] : parse(req.url.split('?')[1])[key])
 
@@ -55,7 +49,6 @@ const createSetHeaders = ({ staleTtl }) => {
 }
 
 module.exports = {
-  isEmpty,
   hasQueryParameter,
   getKey,
   createSetHeaders
