@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/Kikobeats/cacheable-response/compare/v2.3.0...v2.4.0) (2021-08-12)
+
+
+### Features
+
+* add stale support ([#80](https://github.com/Kikobeats/cacheable-response/issues/80)) ([facd72d](https://github.com/Kikobeats/cacheable-response/commit/facd72d66ea2555dedd4feb8f44e8bd7adc6cc2e))
+
 ## 2.3.0 (2021-08-03)
 
 
