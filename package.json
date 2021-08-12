@@ -91,7 +91,7 @@
   ],
   "scripts": {
     "clean": "rm -rf node_modules",
-    "contributors": "(git-authors-cli && finepack && git add package.json && git commit -m 'build: contributors' --no-verify) || true",
+    "contributors": "(git-authors-cli && --sort-ignore-object-at ava && git add package.json && git commit -m 'build: contributors' --no-verify) || true",
     "lint": "standard-markdown README.md && standard",
     "postrelease": "npm run release:tags && npm run release:github && (ci-publish || npm publish --access=public)",
     "prerelease": "npm run update:check && npm run contributors",
@@ -106,8 +106,8 @@
   "license": "MIT",
   "ava": {
     "files": [
-      "!test/helpers.js",
-      "test/**/*.js"
+      "test/**/*.js",
+      "!test/helpers.js"
     ]
   },
   "commitlint": {
