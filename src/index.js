@@ -9,7 +9,7 @@ const getEtag = require('etag')
 
 const { hasQueryParameter, createSetHeaders } = require('./util')
 
-module.exports = ({
+const cacheableResponse = ({
   bypassQueryParameter = 'force',
   cache = new Keyv({ namespace: 'ssr' }),
   compress: enableCompression = false,
@@ -91,3 +91,5 @@ module.exports = ({
     return send({ data, res, req, ...props })
   }
 }
+
+module.exports = cacheableResponse

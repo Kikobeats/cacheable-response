@@ -3,15 +3,18 @@
 const test = require('ava')
 const got = require('got')
 
+const cacheableResponse = require('..')
 const { parseCacheControl, createServer } = require('./helpers')
 
 test('enabled by default', async t => {
-  const url = await createServer({
-    get: ({ req, res }) => ({ data: { foo: 'bar' } }),
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+  const url = await createServer(
+    cacheableResponse({
+      get: ({ req, res }) => ({ data: { foo: 'bar' } }),
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
+      }
+    })
+  )
 
   const { headers } = await got(`${url}/kikobeats`)
   const cacheControl = parseCacheControl(headers)
@@ -24,13 +27,15 @@ test('enabled by default', async t => {
 })
 
 test('as value', async t => {
-  const url = await createServer({
-    staleTtl: 300000,
-    get: ({ req, res }) => ({ data: { foo: 'bar' } }),
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+  const url = await createServer(
+    cacheableResponse({
+      staleTtl: 300000,
+      get: ({ req, res }) => ({ data: { foo: 'bar' } }),
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
+      }
+    })
+  )
 
   const { headers } = await got(`${url}/kikobeats`)
   const cacheControl = parseCacheControl(headers)

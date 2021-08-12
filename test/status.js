@@ -5,52 +5,59 @@ const delay = require('delay')
 const test = require('ava')
 const got = require('got')
 
+const cacheableResponse = require('..')
 const { createServer } = require('./helpers')
 
 test('MISS for first access', async t => {
-  const url = await createServer({
-    get: ({ req, res }) => {
-      return {
-        data: { foo: 'bar' },
-        ttl: 1000,
-        createdAt: Date.now(),
-        foo: { bar: true }
+  const url = await createServer(
+    cacheableResponse({
+      get: ({ req, res }) => {
+        return {
+          data: { foo: 'bar' },
+          ttl: 1000,
+          createdAt: Date.now(),
+          foo: { bar: true }
+        }
+      },
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
       }
-    },
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+    })
+  )
   const { headers } = await got(`${url}/kikobeats`)
   t.is(headers['x-cache-status'], 'MISS')
 })
 
 test('MISS for undefined data value', async t => {
-  const url = await createServer({
-    get: ({ req, res }) => undefined,
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+  const url = await createServer(
+    cacheableResponse({
+      get: ({ req, res }) => undefined,
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
+      }
+    })
+  )
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
 })
 
 test('MISS after cache expiration', async t => {
-  const url = await createServer({
-    staleTtl: false,
-    get: ({ req, res }) => {
-      return {
-        data: { foo: 'bar' },
-        ttl: 1,
-        createdAt: Date.now(),
-        foo: { bar: true }
+  const url = await createServer(
+    cacheableResponse({
+      staleTtl: false,
+      get: ({ req, res }) => {
+        return {
+          data: { foo: 'bar' },
+          ttl: 1,
+          createdAt: Date.now(),
+          foo: { bar: true }
+        }
+      },
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
       }
-    },
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+    })
+  )
 
   const doRequest = () => got(`${url}/kikobeats`)
 
@@ -59,19 +66,21 @@ test('MISS after cache expiration', async t => {
 })
 
 test('BYPASS for forcing refresh', async t => {
-  const url = await createServer({
-    get: ({ req, res }) => {
-      return {
-        data: { foo: 'bar' },
-        ttl: 86400000,
-        createdAt: Date.now(),
-        foo: { bar: true }
+  const url = await createServer(
+    cacheableResponse({
+      get: ({ req, res }) => {
+        return {
+          data: { foo: 'bar' },
+          ttl: 86400000,
+          createdAt: Date.now(),
+          foo: { bar: true }
+        }
+      },
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
       }
-    },
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+    })
+  )
 
   const { headers: headersOne } = await got(`${url}/kikobeats`)
   t.is(headersOne['x-cache-status'], 'MISS')
@@ -88,20 +97,22 @@ test('BYPASS for forcing refresh', async t => {
 })
 
 test('REVALIDATING when response is stale', async t => {
-  const url = await createServer({
-    staleTtl: 80,
-    ttl: 100,
-    get: ({ req, res }) => {
-      return {
-        data: { foo: 'bar' },
-        createdAt: Date.now(),
-        foo: { bar: true }
+  const url = await createServer(
+    cacheableResponse({
+      staleTtl: 80,
+      ttl: 100,
+      get: ({ req, res }) => {
+        return {
+          data: { foo: 'bar' },
+          createdAt: Date.now(),
+          foo: { bar: true }
+        }
+      },
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
       }
-    },
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+    })
+  )
 
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
 
@@ -116,20 +127,22 @@ test('REVALIDATING when response is stale', async t => {
 })
 
 test('HIT for second access', async t => {
-  const url = await createServer({
-    staleTtl: false,
-    get: ({ req, res }) => {
-      return {
-        data: { foo: 'bar' },
-        ttl: 10000,
-        createdAt: Date.now(),
-        foo: { bar: true }
+  const url = await createServer(
+    cacheableResponse({
+      staleTtl: false,
+      get: ({ req, res }) => {
+        return {
+          data: { foo: 'bar' },
+          ttl: 10000,
+          createdAt: Date.now(),
+          foo: { bar: true }
+        }
+      },
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
       }
-    },
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+    })
+  )
   await got(`${url}/kikobeats`)
   const { headers } = await got(`${url}/kikobeats`)
   t.is(headers['x-cache-status'], 'HIT')
@@ -137,21 +150,23 @@ test('HIT for second access', async t => {
 
 test('HIT after empty 304 response', async t => {
   const cache = new Keyv({ namespace: 'ssr' })
-  const url = await createServer({
-    staleTtl: false,
-    cache,
-    get: ({ req, res }) => {
-      return {
-        data: { foo: 'bar' },
-        ttl: 10000,
-        createdAt: Date.now(),
-        foo: { bar: true }
+  const url = await createServer(
+    cacheableResponse({
+      staleTtl: false,
+      cache,
+      get: ({ req, res }) => {
+        return {
+          data: { foo: 'bar' },
+          ttl: 10000,
+          createdAt: Date.now(),
+          foo: { bar: true }
+        }
+      },
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
       }
-    },
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+    })
+  )
   const { headers: headersOne } = await got(`${url}/kikobeats`)
   await cache.clear()
   await got(`${url}/kikobeats`, {
@@ -162,20 +177,22 @@ test('HIT after empty 304 response', async t => {
 })
 
 test('custom bypass query parameter', async t => {
-  const url = await createServer({
-    bypassQueryParameter: 'bypass',
-    get: ({ req, res }) => {
-      return {
-        data: { foo: 'bar' },
-        ttl: 86400000,
-        createdAt: Date.now(),
-        foo: { bar: true }
+  const url = await createServer(
+    cacheableResponse({
+      bypassQueryParameter: 'bypass',
+      get: ({ req, res }) => {
+        return {
+          data: { foo: 'bar' },
+          ttl: 86400000,
+          createdAt: Date.now(),
+          foo: { bar: true }
+        }
+      },
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
       }
-    },
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+    })
+  )
 
   const { headers: headersOne } = await got(`${url}/kikobeats`)
   t.is(headersOne['x-cache-status'], 'MISS')

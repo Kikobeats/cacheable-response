@@ -3,17 +3,20 @@
 const test = require('ava')
 const got = require('got')
 
+const cacheableResponse = require('..')
 const { parseCacheControl, createServer } = require('./helpers')
 
 test('as value', async t => {
-  const url = await createServer({
-    ttl: 3600000,
-    staleTtl: 720000,
-    get: ({ req, res }) => ({ data: { foo: 'bar' } }),
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+  const url = await createServer(
+    cacheableResponse({
+      ttl: 3600000,
+      staleTtl: 720000,
+      get: ({ req, res }) => ({ data: { foo: 'bar' } }),
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
+      }
+    })
+  )
 
   const { headers } = await got(`${url}/kikobeats`)
   const cacheControl = parseCacheControl(headers)
@@ -26,13 +29,15 @@ test('as value', async t => {
 })
 
 test('from value', async t => {
-  const url = await createServer({
-    staleTtl: 17280000,
-    get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+  const url = await createServer(
+    cacheableResponse({
+      staleTtl: 17280000,
+      get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
+      }
+    })
+  )
 
   const { headers } = await got(`${url}/kikobeats`)
   const cacheControl = parseCacheControl(headers)
@@ -45,12 +50,14 @@ test('from value', async t => {
 })
 
 test('sets default ttl', async t => {
-  const url = await createServer({
-    get: ({ req, res }) => ({ data: { foo: 'bar' } }),
-    send: ({ data, headers, res, req, ...props }) => {
-      res.end('Welcome to Micro')
-    }
-  })
+  const url = await createServer(
+    cacheableResponse({
+      get: ({ req, res }) => ({ data: { foo: 'bar' } }),
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Welcome to Micro')
+      }
+    })
+  )
 
   const { headers } = await got(`${url}/kikobeats`)
   const cacheControl = parseCacheControl(headers)
