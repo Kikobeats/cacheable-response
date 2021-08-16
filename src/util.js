@@ -28,29 +28,36 @@ const toSeconds = ms => Math.floor(ms / 1000)
 const getStatus = ({ isHit, isStale, hasForce }) =>
   isHit ? (isStale ? 'STALE' : 'HIT') : hasForce ? 'BYPASS' : 'MISS'
 
-const createSetHeaders = ({ staleTtl }) => {
-  return ({ res, createdAt, isHit, isStale, ttl, hasForce, etag }) => {
-    // Specifies the maximum amount of time a resource
-    // will be considered fresh in seconds
-    const diff = hasForce ? 0 : createdAt + ttl - Date.now()
-    const maxAge = toSeconds(diff)
-    const revalidation = staleTtl ? toSeconds(staleTtl) : 0
+const setHeaders = ({
+  createdAt,
+  etag,
+  hasForce,
+  isHit,
+  isStale,
+  res,
+  staleTtl,
+  ttl
+}) => {
+  // Specifies the maximum amount of time a resource
+  // will be considered fresh in seconds
+  const diff = hasForce ? 0 : createdAt + ttl - Date.now()
+  const maxAge = toSeconds(diff)
+  const revalidation = staleTtl ? toSeconds(staleTtl) : 0
 
-    let cacheControl = `public, must-revalidate, max-age=${maxAge}`
+  let cacheControl = `public, must-revalidate, max-age=${maxAge}`
 
-    if (revalidation) {
-      cacheControl = `${cacheControl}, stale-while-revalidate=${revalidation}, stale-if-error=${revalidation}`
-    }
-
-    res.setHeader('Cache-Control', cacheControl)
-    res.setHeader('X-Cache-Status', getStatus({ isHit, isStale, hasForce }))
-    res.setHeader('X-Cache-Expired-At', prettyMs(diff))
-    res.setHeader('ETag', etag)
+  if (revalidation) {
+    cacheControl = `${cacheControl}, stale-while-revalidate=${revalidation}, stale-if-error=${revalidation}`
   }
+
+  res.setHeader('Cache-Control', cacheControl)
+  res.setHeader('X-Cache-Status', getStatus({ isHit, isStale, hasForce }))
+  res.setHeader('X-Cache-Expired-At', prettyMs(diff))
+  res.setHeader('ETag', etag)
 }
 
 module.exports = {
-  hasQueryParameter,
   getKey,
-  createSetHeaders
+  hasQueryParameter,
+  setHeaders
 }
