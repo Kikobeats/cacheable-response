@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 2.5.0 (2021-08-16)
+
+
+### Features
+
+* be possible to set staleTtl from data ([026a27b](https://github.com/Kikobeats/cacheable-response/commit/026a27b5b9ef6985ccac462b0ad92d87a2798f39))
+
 ### 2.4.3 (2021-08-12)
 
 ### 2.4.2 (2021-08-12)
