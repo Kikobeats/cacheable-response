@@ -281,7 +281,7 @@ The headers associated with the cache copy will the headers from the first reque
 
 You can have a better overview of the percentage of success by looking your CloudFlare domain analytics
 
-![](https://i.imgur.com/1Eg64YS.png)
+![](https://i.imgur.com/WnPnRlk.png)
 
 ## Examples
 
