@@ -4,6 +4,10 @@ const { parse } = require('querystring')
 const prettyMs = require('pretty-ms')
 const { URL } = require('url')
 
+const size = obj => Object.keys(obj).length
+
+const isFunction = fn => typeof fn === 'function'
+
 const hasQueryParameter = (req, key) => {
   return Boolean(req.query ? req.query[key] : parse(req.url.split('?')[1])[key])
 }
@@ -59,5 +63,7 @@ const setHeaders = ({
 module.exports = {
   getKey,
   hasQueryParameter,
-  setHeaders
+  isFunction,
+  setHeaders,
+  size
 }

@@ -7,7 +7,7 @@ const Keyv = require('@keyvhq/core')
 const assert = require('assert')
 const getEtag = require('etag')
 
-const { hasQueryParameter, setHeaders } = require('./util')
+const { size, isFunction, hasQueryParameter, setHeaders } = require('./util')
 
 const cacheableResponse = ({
   bypassQueryParameter = 'force',
@@ -23,16 +23,11 @@ const cacheableResponse = ({
   assert(get, '.get required')
   assert(send, '.send required')
 
-  const isStaleEnabled = rawStaleTtl !== false
+  const staleTtl = isFunction(rawStaleTtl)
+    ? rawStaleTtl
+    : ({ staleTtl = rawStaleTtl } = {}) => staleTtl
 
-  const staleTtl = isStaleEnabled
-    ? typeof rawStaleTtl === 'function'
-        ? rawStaleTtl
-        : ({ staleTtl = rawStaleTtl } = {}) => staleTtl
-    : undefined
-
-  const ttl =
-    typeof rawTtl === 'function' ? rawTtl : ({ ttl = rawTtl } = {}) => ttl
+  const ttl = isFunction(rawTtl) ? rawTtl : ({ ttl = rawTtl } = {}) => ttl
 
   const { serialize, compress, decompress } = createCompress({
     enable: enableCompression,
@@ -60,7 +55,7 @@ const cacheableResponse = ({
       createdAt = Date.now(),
       data = null,
       etag: cachedEtag,
-      staleTtl = isStaleEnabled ? memoGet.staleTtl(result) : undefined,
+      staleTtl = memoGet.staleTtl(result),
       ttl = memoGet.ttl(result),
       ...props
     } = result
@@ -74,7 +69,7 @@ const cacheableResponse = ({
       isHit,
       isExpired,
       isStale,
-      result: Object.keys(result).length === 0,
+      result: size(result) === 0,
       etag,
       ifNoneMatch,
       isModified
