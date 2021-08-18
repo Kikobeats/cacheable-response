@@ -7,7 +7,7 @@ const Keyv = require('@keyvhq/core')
 const assert = require('assert')
 const getEtag = require('etag')
 
-const { size, isFunction, hasQueryParameter, setHeaders } = require('./util')
+const { hasQueryParameter, isFunction, setHeaders, size } = require('./util')
 
 const cacheableResponse = ({
   bypassQueryParameter = 'force',
@@ -45,8 +45,9 @@ const cacheableResponse = ({
   return async opts => {
     const { req, res } = opts
     const hasForce = hasQueryParameter(req, bypassQueryParameter)
-
     const [raw, { hasValue, key, isExpired, isStale }] = await memoGet(opts)
+
+    if (res.finished) return
 
     const result = (await decompress(raw)) || {}
     const isHit = !hasForce && !isExpired && hasValue

@@ -54,6 +54,25 @@ test('compress support', async t => {
   t.is(headersOne.etag, headersTwo.etag)
 })
 
+test('exit early is get is empty', async t => {
+  let isEnd = false
+
+  const end = (res, msg) => {
+    isEnd = true
+    res.end(msg)
+  }
+
+  const url = await createServer(
+    cacheableResponse({
+      get: ({ res }) => !isEnd && end(res, 'get'),
+      send: ({ res }) => !isEnd && end(res, 'send')
+    })
+  )
+
+  const res = await got(`${url}/kikobeats`)
+  t.is(res.body, 'get')
+})
+
 test('prevent send if data is undefined', async t => {
   let isSendCalled = false
   const url = await createServer(
