@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.5.3 (2021-08-18)
+
+
+### Bug Fixes
+
+* prevent to cache after res is written ([fca3334](https://github.com/Kikobeats/cacheable-response/commit/fca3334b6423a214951ce054b3e4404b074fb6ec))
+
 ### 2.5.2 (2021-08-17)
 
 ### 2.5.1 (2021-08-17)
