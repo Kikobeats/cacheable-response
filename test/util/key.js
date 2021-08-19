@@ -2,11 +2,11 @@
 
 const test = require('ava')
 
-const { getKey } = require('../../src/util')
+const { key } = require('../../src/util')
 
-test('default getKey dedupe requests', t => {
+test('default key dedupe requests', t => {
   t.is(
-    getKey(
+    key(
       {
         req: {
           url: '/kikobeats?foo=bar&force'
@@ -17,7 +17,7 @@ test('default getKey dedupe requests', t => {
     '/kikobeats?foo=bar'
   )
   t.is(
-    getKey(
+    key(
       {
         req: {
           url: '/kikobeats?foo=bar&force=true'
@@ -28,7 +28,7 @@ test('default getKey dedupe requests', t => {
     '/kikobeats?foo=bar'
   )
   t.is(
-    getKey(
+    key(
       {
         req: {
           url: '/kikobeats?foo=bar&bypass=true'
@@ -39,7 +39,7 @@ test('default getKey dedupe requests', t => {
     '/kikobeats?foo=bar'
   )
   t.is(
-    getKey(
+    key(
       {
         req: {
           url: '/kikobeats?foo=bar&bypass=true&utm_source=twitter'

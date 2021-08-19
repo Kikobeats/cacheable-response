@@ -14,7 +14,7 @@ const cacheableResponse = ({
   cache = new Keyv({ namespace: 'ssr' }),
   compress: enableCompression = false,
   get,
-  getKey = require('./util').getKey,
+  key: getKey = require('./util').key,
   send,
   staleTtl: rawStaleTtl = 3600000,
   ttl: rawTtl = 86400000,

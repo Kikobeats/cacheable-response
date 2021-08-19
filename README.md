@@ -112,6 +112,32 @@ curl https://myserver.dev/user?force=true # BYPASS (skip cache copy)
 
 In that case, the `x-cache-status` will reflect a `'BYPASS'` value.
 
+Additionally, you can configure a stale ttl:
+
+```js
+const cacheableResponse = require('cacheable-response')
+
+const ssrCache = cacheableResponse({
+  get: ({ req, res }) => ({
+    data: doSomething(req),
+    ttl: 86400000, // 24 hours
+    staleTtl: 3600000 // 1h
+  }),
+  send: ({ data, res, req }) => res.send(data)
+})
+```
+
+The stale ttl maximizes your cache HITs, allowing you to serve a no fresh cache copy _while_ doing revalidation on the background. 
+
+```bash
+curl https://myserver.dev/user # MISS (first access)
+curl https://myserver.dev/user # HIT (served from cache)
+curl https://myserver.dev/user # STALE (23 hours later, background revalidation)
+curl https://myserver.dev/user?force=true # HIT (fresh cache copy for the next 24 hours)
+```
+
+The library provides enough good sensible defaults for most common scenarios and you can tune these values based on your use case.
+
 ## API
 
 ### cacheableResponse([options])
@@ -165,13 +191,6 @@ async function get ({ req, res }) {
 }
 ```
 
-##### getKey
-
-Type: `function`<br/>
-Default: `({ req }) => normalizeUrl(req.url)`
-
-It determinates how the cache key should be computed, receiving `req, res` as input.
-
 The method will received `({ req, res })` and it should be returns:
 
 - **data** `object`|`string`: The content to be saved on the cache.
@@ -181,6 +200,13 @@ The method will received `({ req, res })` and it should be returns:
 Any other property can be specified and will passed to `.send`.
 
 In case you want to bypass the cache, preventing caching a value (e.g., when an error occurred), you should return `undefined` or `null`.
+
+##### key
+
+Type: `function`<br/>
+Default: `({ req }) => req.url)`
+
+It determinates how the cache key should be computed, receiving `req, res` as input.
 
 ##### send
 

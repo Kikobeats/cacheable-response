@@ -12,7 +12,7 @@ const hasQueryParameter = (req, key) => {
   return Boolean(req.query ? req.query[key] : parse(req.url.split('?')[1])[key])
 }
 
-const getKey = ({ req }, { bypassQueryParameter }) => {
+const key = ({ req }, { bypassQueryParameter }) => {
   const urlObj = new URL(req.url, 'http://localhost:8080')
   const OMIT_KEYS = [bypassQueryParameter, /^utm_\w+/i]
   const omitKeys = Array.from(urlObj.searchParams.keys()).reduce((acc, key) => {
@@ -61,7 +61,7 @@ const setHeaders = ({
 }
 
 module.exports = {
-  getKey,
+  key,
   hasQueryParameter,
   isFunction,
   setHeaders,
