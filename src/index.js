@@ -7,14 +7,14 @@ const Keyv = require('@keyvhq/core')
 const assert = require('assert')
 const getEtag = require('etag')
 
-const { hasQueryParameter, isFunction, setHeaders, size } = require('./util')
+const { createKey, isFunction, setHeaders, size } = require('./util')
 
 const cacheableResponse = ({
   bypassQueryParameter = 'force',
   cache = new Keyv({ namespace: 'ssr' }),
   compress: enableCompression = false,
   get,
-  key: getKey = require('./util').key,
+  key: getKey = createKey(bypassQueryParameter),
   send,
   staleTtl: rawStaleTtl = 3600000,
   ttl: rawTtl = 86400000,
@@ -35,22 +35,24 @@ const cacheableResponse = ({
   })
 
   const memoGet = memoize(get, cache, {
-    ttl,
-    staleTtl,
+    key: getKey,
     objectMode: true,
-    key: opts => getKey(opts, { bypassQueryParameter }),
+    staleTtl,
+    ttl,
     value: compress
   })
 
   return async opts => {
     const { req, res } = opts
-    const hasForce = hasQueryParameter(req, bypassQueryParameter)
-    const [raw, { hasValue, key, isExpired, isStale }] = await memoGet(opts)
+    const [
+      raw,
+      { forceExpiration, hasValue, key, isExpired, isStale }
+    ] = await memoGet(opts)
 
     if (res.finished) return
 
     const result = (await decompress(raw)) || {}
-    const isHit = !hasForce && !isExpired && hasValue
+    const isHit = !forceExpiration && !isExpired && hasValue
 
     const {
       createdAt = Date.now(),
@@ -84,10 +86,10 @@ const cacheableResponse = ({
       isStale,
       ttl,
       staleTtl,
-      hasForce
+      forceExpiration
     })
 
-    if (!hasForce && !isModified) {
+    if (!forceExpiration && !isModified) {
       res.statusCode = 304
       res.end()
       return

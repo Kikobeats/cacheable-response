@@ -9,10 +9,11 @@ const size = obj => Object.keys(obj).length
 const isFunction = fn => typeof fn === 'function'
 
 const hasQueryParameter = (req, key) => {
-  return Boolean(req.query ? req.query[key] : parse(req.url.split('?')[1])[key])
+  const value = req.query ? req.query[key] : parse(req.url.split('?')[1])[key]
+  return value !== undefined && value !== null
 }
 
-const key = ({ req }, { bypassQueryParameter }) => {
+const createKey = bypassQueryParameter => ({ req }) => {
   const urlObj = new URL(req.url, 'http://localhost:8080')
   const OMIT_KEYS = [bypassQueryParameter, /^utm_\w+/i]
   const omitKeys = Array.from(urlObj.searchParams.keys()).reduce((acc, key) => {
@@ -24,18 +25,21 @@ const key = ({ req }, { bypassQueryParameter }) => {
     return isOmitable ? [...acc, key] : acc
   }, [])
   omitKeys.forEach(key => urlObj.searchParams.delete(key))
-  return `${urlObj.pathname}${urlObj.search}`
+  return [
+    `${urlObj.pathname}${urlObj.search}`,
+    hasQueryParameter(req, bypassQueryParameter)
+  ]
 }
 
 const toSeconds = ms => Math.floor(ms / 1000)
 
-const getStatus = ({ isHit, isStale, hasForce }) =>
-  isHit ? (isStale ? 'STALE' : 'HIT') : hasForce ? 'BYPASS' : 'MISS'
+const getStatus = ({ isHit, isStale, forceExpiration }) =>
+  isHit ? (isStale ? 'STALE' : 'HIT') : forceExpiration ? 'BYPASS' : 'MISS'
 
 const setHeaders = ({
   createdAt,
   etag,
-  hasForce,
+  forceExpiration,
   isHit,
   isStale,
   res,
@@ -44,7 +48,7 @@ const setHeaders = ({
 }) => {
   // Specifies the maximum amount of time a resource
   // will be considered fresh in seconds
-  const diff = hasForce ? 0 : createdAt + ttl - Date.now()
+  const diff = forceExpiration ? 0 : createdAt + ttl - Date.now()
   const maxAge = toSeconds(diff)
   const revalidation = staleTtl ? toSeconds(staleTtl) : 0
 
@@ -55,13 +59,16 @@ const setHeaders = ({
   }
 
   res.setHeader('Cache-Control', cacheControl)
-  res.setHeader('X-Cache-Status', getStatus({ isHit, isStale, hasForce }))
+  res.setHeader(
+    'X-Cache-Status',
+    getStatus({ isHit, isStale, forceExpiration })
+  )
   res.setHeader('X-Cache-Expired-At', prettyMs(diff))
   res.setHeader('ETag', etag)
 }
 
 module.exports = {
-  key,
+  createKey,
   hasQueryParameter,
   isFunction,
   setHeaders,

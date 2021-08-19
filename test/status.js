@@ -66,34 +66,41 @@ test('MISS after cache expiration', async t => {
 })
 
 test('BYPASS for forcing refresh', async t => {
+  let index = 0
   const url = await createServer(
     cacheableResponse({
       get: ({ req, res }) => {
         return {
-          data: { foo: 'bar' },
+          data: { value: ++index },
           ttl: 86400000,
-          createdAt: Date.now(),
-          foo: { bar: true }
+          staleTtl: false,
+          createdAt: Date.now()
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end(data.value.toString())
       }
     })
   )
 
-  const { headers: headersOne } = await got(`${url}/kikobeats`)
+  const { body: bodyOne, headers: headersOne } = await got(`${url}/kikobeats`)
   t.is(headersOne['x-cache-status'], 'MISS')
+  t.is(bodyOne, '1')
 
-  const { headers: headersTwo } = await got(`${url}/kikobeats`)
+  const { body: bodyTwo, headers: headersTwo } = await got(`${url}/kikobeats`)
   t.is(headersTwo['x-cache-status'], 'HIT')
+  t.is(bodyTwo, '1')
 
-  const { headers: headersThree } = await got(`${url}/kikobeats?force=true`)
+  const { body: bodyThree, headers: headersThree } = await got(
+    `${url}/kikobeats?force=true`
+  )
   t.is(headersThree['x-cache-status'], 'BYPASS')
   t.is(headersThree['x-cache-expired-at'], '0ms')
+  t.is(bodyThree, '2')
 
-  const { headers: headersFour } = await got(`${url}/kikobeats`)
+  const { body: bodyFour, headers: headersFour } = await got(`${url}/kikobeats`)
   t.is(headersFour['x-cache-status'], 'HIT')
+  t.is(bodyFour, '2')
 })
 
 test('STALE when response is stale', async t => {
@@ -118,10 +125,7 @@ test('STALE when response is stale', async t => {
 
   await delay(20)
 
-  t.is(
-    (await got(`${url}/kikobeats`)).headers['x-cache-status'],
-    'STALE'
-  )
+  t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'STALE')
 
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'HIT')
 })
