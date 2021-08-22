@@ -95,7 +95,6 @@ test('BYPASS for forcing refresh', async t => {
     `${url}/kikobeats?force=true`
   )
   t.is(headersThree['x-cache-status'], 'BYPASS')
-  t.is(headersThree['x-cache-expired-at'], '0ms')
   t.is(bodyThree, '2')
 
   const { body: bodyFour, headers: headersFour } = await got(`${url}/kikobeats`)
@@ -206,7 +205,6 @@ test('custom bypass query parameter', async t => {
 
   const { headers: headersThree } = await got(`${url}/kikobeats?bypass=true`)
   t.is(headersThree['x-cache-status'], 'BYPASS')
-  t.is(headersThree['x-cache-expired-at'], '0ms')
 
   const { headers: headersFour } = await got(`${url}/kikobeats`)
   t.is(headersFour['x-cache-status'], 'HIT')

@@ -1,7 +1,6 @@
 'use strict'
 
 const { parse } = require('querystring')
-const prettyMs = require('pretty-ms')
 const { URL } = require('url')
 
 const size = obj => Object.keys(obj).length
@@ -63,7 +62,6 @@ const setHeaders = ({
     'X-Cache-Status',
     getStatus({ isHit, isStale, forceExpiration })
   )
-  res.setHeader('X-Cache-Expired-At', prettyMs(diff))
   res.setHeader('ETag', etag)
 }
 
