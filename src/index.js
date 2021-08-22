@@ -79,14 +79,15 @@ const cacheableResponse = ({
     })
 
     setHeaders({
-      etag,
-      res,
       createdAt,
+      etag,
+      forceExpiration,
+      hasValue,
       isHit,
       isStale,
-      ttl,
+      res,
       staleTtl,
-      forceExpiration
+      ttl
     })
 
     if (!forceExpiration && !isModified) {

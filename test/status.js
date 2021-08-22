@@ -41,7 +41,7 @@ test('MISS for undefined data value', async t => {
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
 })
 
-test('MISS after cache expiration', async t => {
+test('EXPIRED after cache expiration', async t => {
   const url = await createServer(
     cacheableResponse({
       staleTtl: false,
@@ -62,7 +62,7 @@ test('MISS after cache expiration', async t => {
   const doRequest = () => got(`${url}/kikobeats`)
 
   t.is((await doRequest()).headers['x-cache-status'], 'MISS')
-  t.is((await doRequest()).headers['x-cache-status'], 'MISS')
+  t.is((await doRequest()).headers['x-cache-status'], 'EXPIRED')
 })
 
 test('BYPASS for forcing refresh', async t => {

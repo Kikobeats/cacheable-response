@@ -32,13 +32,22 @@ const createKey = bypassQueryParameter => ({ req }) => {
 
 const toSeconds = ms => Math.floor(ms / 1000)
 
-const getStatus = ({ isHit, isStale, forceExpiration }) =>
-  isHit ? (isStale ? 'STALE' : 'HIT') : forceExpiration ? 'BYPASS' : 'MISS'
+const getStatus = ({ hasValue, isHit, isStale, forceExpiration }) =>
+  isHit
+    ? isStale
+        ? 'STALE'
+        : 'HIT'
+    : forceExpiration
+      ? 'BYPASS'
+      : hasValue
+        ? 'EXPIRED'
+        : 'MISS'
 
 const setHeaders = ({
   createdAt,
   etag,
   forceExpiration,
+  hasValue,
   isHit,
   isStale,
   res,
@@ -60,7 +69,7 @@ const setHeaders = ({
   res.setHeader('Cache-Control', cacheControl)
   res.setHeader(
     'X-Cache-Status',
-    getStatus({ isHit, isStale, forceExpiration })
+    getStatus({ hasValue, isHit, isStale, forceExpiration })
   )
   res.setHeader('ETag', etag)
 }
