@@ -63,7 +63,7 @@ const cacheableResponse = ({
       ...props
     } = result
 
-    const etag = cachedEtag || getEtag(serialize(data))
+    const etag = cachedEtag || getEtag(serialize(result))
     const ifNoneMatch = req.headers['if-none-match']
     const isModified = etag !== ifNoneMatch
 
