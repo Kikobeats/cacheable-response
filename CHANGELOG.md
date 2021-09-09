@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.7.4 (2021-09-09)
+
+
+### Bug Fixes
+
+* missing staleTtl in type definition ([#85](https://github.com/Kikobeats/cacheable-response/issues/85)) ([51479ff](https://github.com/Kikobeats/cacheable-response/commit/51479ffb37d2502b5fd7e05b767480e9a59c8443))
+
 ### 2.7.3 (2021-09-01)
 
 ### 2.7.2 (2021-08-25)
