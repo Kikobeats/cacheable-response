@@ -59,6 +59,9 @@ declare namespace CacheableResponse {
 
     /** ttl default to 7200000 */
     ttl?: number;
+    
+    /** ttl default to 3600000 */
+    staleTtl?: number | boolean;
 
     /** Compress opts pass through to compress-brotli */
     serialize?: (o: any) => string;
