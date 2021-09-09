@@ -47,7 +47,7 @@ declare namespace CacheableResponse {
     compress?: boolean;
 
     /** Get cache key from request context */
-    getKey?: (opts: Options) => string;
+    key?: (opts: Options) => string;
 
     /**
      * Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background.
