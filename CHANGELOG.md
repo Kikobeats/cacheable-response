@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.7.4 (2021-09-09)
+
+
+### Bug Fixes
+
+* typescript definition wrongly defines a non existing property ([#87](https://github.com/Kikobeats/cacheable-response/issues/87)) ([8adbfdb](https://github.com/Kikobeats/cacheable-response/commit/8adbfdb30ccf558f72363bf95c673f7e2b1946ff)), closes [/github.com/Kikobeats/cacheable-response/blob/e133b3fa9018d725099c6a4587b7ab43ef0b3902/CHANGELOG.md#260-2021-08-19](https://github.com/Kikobeats//github.com/Kikobeats/cacheable-response/blob/e133b3fa9018d725099c6a4587b7ab43ef0b3902/CHANGELOG.md/issues/260-2021-08-19)
+
 ### 2.7.3 (2021-09-01)
 
 ### 2.7.2 (2021-08-25)
