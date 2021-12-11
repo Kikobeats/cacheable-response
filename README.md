@@ -322,14 +322,8 @@ You can have a better overview of the percentage of success by looking your Clou
 
 > Make a PR for adding your project!
 
-### Express
-
 - [`unavatar.now.sh`](https://github.com/Kikobeats/unavatar/blob/master/src/index.js#L12)
 - [`html-microservice`](https://github.com/microlinkhq/html/blob/master/src/index.js#L9)
-
-### Next.js
-
-- [`ssr-caching`](https://github.com/zeit/next.js/tree/canary/examples/ssr-caching)
 
 ## Bibliography
 
