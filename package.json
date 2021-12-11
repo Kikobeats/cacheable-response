@@ -50,7 +50,7 @@
     "delay": "latest",
     "finepack": "latest",
     "git-authors-cli": "latest",
-    "got": "latest",
+    "got": "11",
     "micro": "latest",
     "nano-staged": "latest",
     "npm-check-updates": "latest",
