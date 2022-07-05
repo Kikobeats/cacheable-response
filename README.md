@@ -265,6 +265,13 @@ Default: `JSON.stringify`
 
 Set the serializer method to be used before compress.
 
+##### logger
+
+Type: `function`<br/>
+Default: `() => {}`
+
+When it's present, every time cacheable-response is called, a log will be printed.
+
 ##### deserialize
 
 Type: `function`<br/>

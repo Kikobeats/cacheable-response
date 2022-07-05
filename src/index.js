@@ -1,6 +1,5 @@
 'use strict'
 
-const debug = require('debug-logfmt')('cacheable-response')
 const createCompress = require('compress-brotli')
 const memoize = require('@keyvhq/memoize')
 const Keyv = require('@keyvhq/core')
@@ -10,6 +9,7 @@ const getEtag = require('etag')
 const { createKey, isFunction, setHeaders, size } = require('./util')
 
 const cacheableResponse = ({
+  logger = () => {},
   bypassQueryParameter = 'force',
   cache = new Keyv({ namespace: 'ssr' }),
   compress: enableCompression = false,
@@ -67,7 +67,7 @@ const cacheableResponse = ({
     const ifNoneMatch = req.headers['if-none-match']
     const isModified = etag !== ifNoneMatch
 
-    debug({
+    logger({
       key,
       isHit,
       isExpired,
