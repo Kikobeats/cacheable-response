@@ -35,8 +35,8 @@ const toSeconds = ms => Math.floor(ms / 1000)
 const getStatus = ({ hasValue, isHit, isStale, forceExpiration }) =>
   isHit
     ? isStale
-        ? 'STALE'
-        : 'HIT'
+      ? 'STALE'
+      : 'HIT'
     : forceExpiration
       ? 'BYPASS'
       : hasValue
