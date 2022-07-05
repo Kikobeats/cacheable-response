@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.7.11 (2022-07-05)
+
+
+### Bug Fixes
+
+* linter ([57f361e](https://github.com/Kikobeats/cacheable-response/commit/57f361e8db1a685ae645b82b8ce3209cf47dd561))
+
 ### 2.7.10 (2022-03-02)
 
 ### 2.7.9 (2022-02-25)
