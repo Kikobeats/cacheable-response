@@ -25,13 +25,48 @@ declare namespace CacheableResponse {
     Data extends {}
   > {
     /**
+     * The name of the query parameter to be used for skipping the cache copy in an intentional way.
+     *
+     * The default value is `'force'`.
+     */
+     bypassQueryParameter?: string
+
+    /**
+     * The cache instance used for backed your pre-calculated server side response copies.
+     *
+     * The default value is an in-memory instance.
+     */
+    cache?: CacheProvider<GetReturnProps, Data>;
+
+    /**
+     * Enable compress/decompress data using brotli compression format.
+     *
+     * The default value is `true`.
+     */
+    compress?: boolean;
+
+    /**
      * The method to be called for creating a fresh cacheable response associated with the current route path.
      */
-    get: (
+     get: (
       opts: Options
     ) => Promise<
       (Optional<Cache<Data>, "etag" | "ttl" | "createdAt"> & GetReturnProps) | null
     >;
+
+    /**
+     * It determinates how the cache key should be computed, receiving `req, res` as input.
+     *
+     * The default value is determining from `req.url`.
+     */
+    key?: (opts: Options) => string;
+
+    /**
+     * When it's present, every time cacheable-response is called, a log will be printed.
+     *
+     * The default value is a noop function to avoid print logs.
+     */
+    logger?: (payload: object) => void;
 
     /**
      * The method used to determinate how the content should be rendered.
@@ -40,32 +75,32 @@ declare namespace CacheableResponse {
       opts: GetReturnProps & { data: Data } & Pick<Options, "req" | "res">
     ) => any;
 
-    /** Cache provider, default to 'keyv' */
-    cache?: CacheProvider<GetReturnProps, Data>;
-
-    /** Enable compress, default false */
-    compress?: boolean;
-
-    /** Get cache key from request context */
-    key?: (opts: Options) => string;
+    /**
+     * Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background. The latency of the refresh is hidden from the user.
+     *
+     * The defalut value is `3600000`.
+     */
+     staleTtl?: number | boolean;
 
     /**
-     * Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background.
-     *  The latency of the refresh is hidden from the user.
-     * You can provide a function, it will receive ttl as first parameter or a fixed value.
-     *  The value will be associated with stale-while-revalidate directive.
-     */
-    revalidate?: (ttl: number) => number | number;
-
-    /** ttl default to 7200000 */
+     * Number of milliseconds a cache response is considered valid.
+     *
+     * The default value is `86400000`.
+     * */
     ttl?: number;
-    
-    /** ttl default to 3600000 */
-    staleTtl?: number | boolean;
 
-    /** Compress opts pass through to compress-brotli */
+    /**
+     * It sets the serializer method to be used before compress.
+     *
+     * The default value is `JSON.stringify`.
+     */
     serialize?: (o: any) => string;
 
+    /**
+     * It sets the deserialize method to be used after decompress.
+     *
+     * The default value is `JSON.parse`.
+     */
     deserialize?: (o: string) => any;
   }
 

@@ -156,7 +156,7 @@ The library provides enough good sensible defaults for most common scenarios and
 
 ##### bypassQueryParameter
 
-Type: `boolean`<br/>
+Type: `string`<br/>
 Default: `'force'`
 
 The name of the query parameter to be used for skipping the cache copy in an intentional way.
@@ -178,12 +178,6 @@ Type: `boolean`<br/>
 Default: `false`
 
 Enable compress/decompress data using brotli compression format.
-
-If you enable it, you need to an additional `iltorb` package:
-
-```bash
-npm install iltorb
-```
 
 ##### get
 
@@ -218,6 +212,13 @@ Default: `({ req }) => req.url)`
 
 It determinates how the cache key should be computed, receiving `req, res` as input.
 
+##### logger
+
+Type: `function`<br/>
+Default: `() => {}`
+
+When it's present, every time cacheable-response is called, a log will be printed.
+
 ##### send
 
 _Required_<br/>
@@ -239,7 +240,7 @@ It will receive `({ req, res, data, ...props })` being `props` any other data su
 Type: `number`|`boolean`<br/>
 Default: `3600000`
 
-Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background. the latency of the refresh is hidden from the user.
+Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background. The latency of the refresh is hidden from the user.
 
 The value will be associated with [`stale-while-revalidate`](https://www.mnot.net/blog/2014/06/01/chrome_and_stale-while-revalidate) directive.
 
@@ -264,13 +265,6 @@ Type: `function`<br/>
 Default: `JSON.stringify`
 
 Set the serializer method to be used before compress.
-
-##### logger
-
-Type: `function`<br/>
-Default: `() => {}`
-
-When it's present, every time cacheable-response is called, a log will be printed.
 
 ##### deserialize
 
