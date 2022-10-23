@@ -332,6 +332,8 @@ You can have a better overview of the percentage of success by looking your Clou
 - [Increasing the Performance of Dynamic Next.JS Websites, by scale AI](https://scale.ai/blog/performance-on-next-js-websites).
 - [The Benefits of Microcaching, by NGINX](https://www.nginx.com/blog/benefits-of-microcaching-nginx/).
 - [Cache-Control for Civilians, by Harry Robert](https://csswizardry.com/2019/03/cache-control-for-civilians/)
+- [Demystifying HTTP Caching, by Bharathvaj Ganesan](https://codeburst.io/demystifying-http-caching-7457c1e4eded).
+- [Keeping things fresh with stale-while-revalidate, by Jeff Posnick](https://web.dev/stale-while-revalidate/).
 
 ## License
 
