@@ -19,7 +19,7 @@ test('etag is present', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -43,7 +43,7 @@ test('compress support', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -83,7 +83,7 @@ test('prevent send if data is undefined', async t => {
       },
       send: ({ data, headers, res, req, ...props }) => {
         isSendCalled = true
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -107,7 +107,7 @@ test('return empty 304 response when If-None-Match matches ETag', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )

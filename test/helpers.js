@@ -1,10 +1,10 @@
 'use strict'
 
 const listen = require('test-listen')
-const micro = require('micro')
+const http = require('http')
 
 const createServer = server => {
-  const api = micro((req, res) => server({ req, res }))
+  const api = http.createServer((req, res) => server({ req, res }))
   return listen(api)
 }
 

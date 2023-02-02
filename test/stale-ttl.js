@@ -11,7 +11,7 @@ test('enabled by default', async t => {
     cacheableResponse({
       get: ({ req, res }) => ({ data: { foo: 'bar' } }),
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -32,7 +32,7 @@ test('as value', async t => {
       staleTtl: 300000,
       get: ({ req, res }) => ({ data: { foo: 'bar' } }),
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )

@@ -13,7 +13,7 @@ test('as value', async t => {
       staleTtl: 720000,
       get: ({ req, res }) => ({ data: { foo: 'bar' } }),
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -34,7 +34,7 @@ test('from value', async t => {
       staleTtl: 17280000,
       get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -54,7 +54,7 @@ test('sets default ttl', async t => {
     cacheableResponse({
       get: ({ req, res }) => ({ data: { foo: 'bar' } }),
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
