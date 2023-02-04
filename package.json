@@ -75,18 +75,16 @@
     "finepack": "latest",
     "git-authors-cli": "latest",
     "got": "11",
-    "micro": "latest",
     "nano-staged": "latest",
     "npm-check-updates": "latest",
     "prettier-standard": "latest",
     "simple-git-hooks": "latest",
     "standard": "latest",
     "standard-markdown": "latest",
-    "standard-version": "latest",
-    "test-listen": "latest"
+    "standard-version": "latest"
   },
   "engines": {
-    "node": ">= 10"
+    "node": ">= 12"
   },
   "files": [
     "index.d.ts",

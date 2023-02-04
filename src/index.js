@@ -44,12 +44,10 @@ const cacheableResponse = ({
 
   return async opts => {
     const { req, res } = opts
-    const [
-      raw,
-      { forceExpiration, hasValue, key, isExpired, isStale }
-    ] = await memoGet(opts)
+    const [raw, { forceExpiration, hasValue, key, isExpired, isStale }] =
+      await memoGet(opts)
 
-    if (res.finished) return
+    if (res.writableEnded) return
 
     const result = (await decompress(raw)) || {}
     const isHit = !forceExpiration && !isExpired && hasValue

@@ -1,11 +1,22 @@
 'use strict'
 
-const listen = require('test-listen')
-const micro = require('micro')
+const { once } = require('events')
+const http = require('http')
 
-const createServer = server => {
-  const api = micro((req, res) => server({ req, res }))
-  return listen(api)
+const createServer = async handler => {
+  const server = http.createServer(async (req, res) => {
+    try {
+      await handler({ req, res })
+    } catch (error) {
+      console.error(error)
+      res.statusCode = 500
+      res.end()
+    }
+  })
+  server.listen()
+  await once(server, 'listening')
+  const { address, port, family } = server.address()
+  return `http://${family === 'IPv6' ? `[${address}]` : address}:${port}/`
 }
 
 const parseCacheControl = headers => {

@@ -20,7 +20,7 @@ test('MISS for first access', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -33,7 +33,7 @@ test('MISS for undefined data value', async t => {
     cacheableResponse({
       get: ({ req, res }) => undefined,
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -54,7 +54,7 @@ test('EXPIRED after cache expiration', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -115,7 +115,7 @@ test('STALE when response is stale', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -142,7 +142,7 @@ test('HIT for second access', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -166,7 +166,7 @@ test('HIT after empty 304 response', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -192,7 +192,7 @@ test('custom bypass query parameter', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )

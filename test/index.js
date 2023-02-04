@@ -19,7 +19,7 @@ test('etag is present', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -43,7 +43,7 @@ test('compress support', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -74,6 +74,8 @@ test('exit early is get is empty', async t => {
 })
 
 test('prevent send if data is undefined', async t => {
+  t.plan(1)
+
   let isSendCalled = false
   const url = await createServer(
     cacheableResponse({
@@ -83,7 +85,7 @@ test('prevent send if data is undefined', async t => {
       },
       send: ({ data, headers, res, req, ...props }) => {
         isSendCalled = true
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
@@ -107,7 +109,7 @@ test('return empty 304 response when If-None-Match matches ETag', async t => {
         }
       },
       send: ({ data, headers, res, req, ...props }) => {
-        res.end('Welcome to Micro')
+        res.end('Hello World')
       }
     })
   )
