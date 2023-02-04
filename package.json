@@ -81,8 +81,7 @@
     "simple-git-hooks": "latest",
     "standard": "latest",
     "standard-markdown": "latest",
-    "standard-version": "latest",
-    "test-listen": "latest"
+    "standard-version": "latest"
   },
   "engines": {
     "node": ">= 12"

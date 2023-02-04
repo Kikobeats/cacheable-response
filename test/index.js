@@ -74,6 +74,8 @@ test('exit early is get is empty', async t => {
 })
 
 test('prevent send if data is undefined', async t => {
+  t.plan(1)
+
   let isSendCalled = false
   const url = await createServer(
     cacheableResponse({
