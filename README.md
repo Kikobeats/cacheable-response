@@ -237,10 +237,12 @@ It will receive `({ req, res, data, ...props })` being `props` any other data su
 
 ##### staleTtl
 
-Type: `number`|`boolean`<br/>
+Type: `number`|`boolean|`function`<br/>
 Default: `3600000`
 
 Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background. The latency of the refresh is hidden from the user.
+
+This value can be specified as well providing it as part of [`.get`](#get) output.
 
 The value will be associated with [`stale-while-revalidate`](https://www.mnot.net/blog/2014/06/01/chrome_and_stale-while-revalidate) directive.
 
@@ -248,7 +250,7 @@ You can pass a `false` to disable it.
 
 ##### ttl
 
-Type: `number`<br/>
+Type: `number`|`function`<br/>
 Default: `86400000`
 
 Number of milliseconds a cache response is considered valid.
