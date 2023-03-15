@@ -237,7 +237,7 @@ It will receive `({ req, res, data, ...props })` being `props` any other data su
 
 ##### staleTtl
 
-Type: `number`|`boolean|`function`<br/>
+Type: `number`|`boolean`|`function`<br/>
 Default: `3600000`
 
 Number of milliseconds that indicates grace period after response cache expiration for refreshing it in the background. The latency of the refresh is hidden from the user.
