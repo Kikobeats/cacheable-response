@@ -1,10 +1,10 @@
 'use strict'
 
-const { once } = require('events')
-const http = require('http')
+const { default: listen } = require('async-listen')
+const { createServer } = require('http')
 
-const createServer = async handler => {
-  const server = http.createServer(async (req, res) => {
+const runServer = async handler => {
+  const server = createServer(async (req, res) => {
     try {
       await handler({ req, res })
     } catch (error) {
@@ -13,10 +13,7 @@ const createServer = async handler => {
       res.end()
     }
   })
-  server.listen()
-  await once(server, 'listening')
-  const { address, port, family } = server.address()
-  return `http://${family === 'IPv6' ? `[${address}]` : address}:${port}/`
+  return listen(server)
 }
 
 const parseCacheControl = headers => {
@@ -35,5 +32,5 @@ const parseCacheControl = headers => {
 
 module.exports = {
   parseCacheControl,
-  createServer
+  runServer
 }

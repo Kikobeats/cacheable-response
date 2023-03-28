@@ -4,10 +4,10 @@ const test = require('ava')
 const got = require('got')
 
 const cacheableResponse = require('..')
-const { createServer } = require('./helpers')
+const { runServer } = require('./helpers')
 
 test('etag is present', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       staleTtl: false,
       get: ({ req, res }) => {
@@ -31,7 +31,7 @@ test('etag is present', async t => {
 })
 
 test('compress support', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       compress: true,
       get: ({ req, res }) => {
@@ -62,7 +62,7 @@ test('exit early is get is empty', async t => {
     res.end(msg)
   }
 
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       get: ({ res }) => !isEnd && end(res, 'get'),
       send: ({ res }) => !isEnd && end(res, 'send')
@@ -77,7 +77,7 @@ test('prevent send if data is undefined', async t => {
   t.plan(1)
 
   let isSendCalled = false
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       compress: true,
       get: ({ req, res }) => {
@@ -98,7 +98,7 @@ test('prevent send if data is undefined', async t => {
 })
 
 test('return empty 304 response when If-None-Match matches ETag', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       get: ({ req, res }) => {
         return {

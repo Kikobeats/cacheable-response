@@ -4,10 +4,10 @@ const test = require('ava')
 const got = require('got')
 
 const cacheableResponse = require('..')
-const { parseCacheControl, createServer } = require('./helpers')
+const { parseCacheControl, runServer } = require('./helpers')
 
 test('enabled by default', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       get: ({ req, res }) => ({ data: { foo: 'bar' } }),
       send: ({ data, headers, res, req, ...props }) => {
@@ -27,7 +27,7 @@ test('enabled by default', async t => {
 })
 
 test('as value', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       staleTtl: 300000,
       get: ({ req, res }) => ({ data: { foo: 'bar' } }),

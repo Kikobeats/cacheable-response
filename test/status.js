@@ -6,10 +6,10 @@ const test = require('ava')
 const got = require('got')
 
 const cacheableResponse = require('..')
-const { createServer } = require('./helpers')
+const { runServer } = require('./helpers')
 
 test('MISS for first access', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       get: ({ req, res }) => {
         return {
@@ -29,7 +29,7 @@ test('MISS for first access', async t => {
 })
 
 test('MISS for undefined data value', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       get: ({ req, res }) => undefined,
       send: ({ data, headers, res, req, ...props }) => {
@@ -42,7 +42,7 @@ test('MISS for undefined data value', async t => {
 })
 
 test('EXPIRED after cache expiration', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       staleTtl: false,
       get: ({ req, res }) => {
@@ -67,7 +67,7 @@ test('EXPIRED after cache expiration', async t => {
 
 test('BYPASS for forcing refresh', async t => {
   let index = 0
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       get: ({ req, res }) => {
         return {
@@ -103,7 +103,7 @@ test('BYPASS for forcing refresh', async t => {
 })
 
 test('STALE when response is stale', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       staleTtl: 80,
       ttl: 100,
@@ -130,7 +130,7 @@ test('STALE when response is stale', async t => {
 })
 
 test('HIT for second access', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       staleTtl: false,
       get: ({ req, res }) => {
@@ -153,7 +153,7 @@ test('HIT for second access', async t => {
 
 test('HIT after empty 304 response', async t => {
   const cache = new Keyv({ namespace: 'ssr' })
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       staleTtl: false,
       cache,
@@ -180,7 +180,7 @@ test('HIT after empty 304 response', async t => {
 })
 
 test('custom bypass query parameter', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       bypassQueryParameter: 'bypass',
       get: ({ req, res }) => {

@@ -4,10 +4,10 @@ const test = require('ava')
 const got = require('got')
 
 const cacheableResponse = require('..')
-const { parseCacheControl, createServer } = require('./helpers')
+const { parseCacheControl, runServer } = require('./helpers')
 
 test('as value', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       ttl: 3600000,
       staleTtl: 720000,
@@ -29,7 +29,7 @@ test('as value', async t => {
 })
 
 test('from value', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       staleTtl: 17280000,
       get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
@@ -50,7 +50,7 @@ test('from value', async t => {
 })
 
 test('sets default ttl', async t => {
-  const url = await createServer(
+  const url = await runServer(
     cacheableResponse({
       get: ({ req, res }) => ({ data: { foo: 'bar' } }),
       send: ({ data, headers, res, req, ...props }) => {
