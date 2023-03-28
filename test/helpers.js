@@ -2,8 +2,11 @@
 
 const { default: listen } = require('async-listen')
 const { createServer } = require('http')
+const { promisify } = require('util')
 
-const runServer = async handler => {
+const closeServer = server => promisify(server.close)
+
+const runServer = async (t, handler) => {
   const server = createServer(async (req, res) => {
     try {
       await handler({ req, res })
@@ -13,7 +16,9 @@ const runServer = async handler => {
       res.end()
     }
   })
-  return listen(server)
+  const url = await listen(server)
+  t.teardown(() => closeServer(server))
+  return url
 }
 
 const parseCacheControl = headers => {

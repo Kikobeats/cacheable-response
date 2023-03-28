@@ -10,6 +10,7 @@ const { runServer } = require('./helpers')
 
 test('MISS for first access', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       get: ({ req, res }) => {
         return {
@@ -30,6 +31,7 @@ test('MISS for first access', async t => {
 
 test('MISS for undefined data value', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       get: ({ req, res }) => undefined,
       send: ({ data, headers, res, req, ...props }) => {
@@ -43,6 +45,7 @@ test('MISS for undefined data value', async t => {
 
 test('EXPIRED after cache expiration', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       staleTtl: false,
       get: ({ req, res }) => {
@@ -58,9 +61,7 @@ test('EXPIRED after cache expiration', async t => {
       }
     })
   )
-
   const doRequest = () => got(`${url}/kikobeats`)
-
   t.is((await doRequest()).headers['x-cache-status'], 'MISS')
   t.is((await doRequest()).headers['x-cache-status'], 'EXPIRED')
 })
@@ -68,6 +69,7 @@ test('EXPIRED after cache expiration', async t => {
 test('BYPASS for forcing refresh', async t => {
   let index = 0
   const url = await runServer(
+    t,
     cacheableResponse({
       get: ({ req, res }) => {
         return {
@@ -82,21 +84,17 @@ test('BYPASS for forcing refresh', async t => {
       }
     })
   )
-
   const { body: bodyOne, headers: headersOne } = await got(`${url}/kikobeats`)
   t.is(headersOne['x-cache-status'], 'MISS')
   t.is(bodyOne, '1')
-
   const { body: bodyTwo, headers: headersTwo } = await got(`${url}/kikobeats`)
   t.is(headersTwo['x-cache-status'], 'HIT')
   t.is(bodyTwo, '1')
-
   const { body: bodyThree, headers: headersThree } = await got(
     `${url}/kikobeats?force=true`
   )
   t.is(headersThree['x-cache-status'], 'BYPASS')
   t.is(bodyThree, '2')
-
   const { body: bodyFour, headers: headersFour } = await got(`${url}/kikobeats`)
   t.is(headersFour['x-cache-status'], 'HIT')
   t.is(bodyFour, '2')
@@ -104,6 +102,7 @@ test('BYPASS for forcing refresh', async t => {
 
 test('STALE when response is stale', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       staleTtl: 80,
       ttl: 100,
@@ -119,18 +118,15 @@ test('STALE when response is stale', async t => {
       }
     })
   )
-
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
-
   await delay(20)
-
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'STALE')
-
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'HIT')
 })
 
 test('HIT for second access', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       staleTtl: false,
       get: ({ req, res }) => {
@@ -154,6 +150,7 @@ test('HIT for second access', async t => {
 test('HIT after empty 304 response', async t => {
   const cache = new Keyv({ namespace: 'ssr' })
   const url = await runServer(
+    t,
     cacheableResponse({
       staleTtl: false,
       cache,
@@ -181,6 +178,7 @@ test('HIT after empty 304 response', async t => {
 
 test('custom bypass query parameter', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       bypassQueryParameter: 'bypass',
       get: ({ req, res }) => {
@@ -196,19 +194,14 @@ test('custom bypass query parameter', async t => {
       }
     })
   )
-
   const { headers: headersOne } = await got(`${url}/kikobeats`)
   t.is(headersOne['x-cache-status'], 'MISS')
-
   const { headers: headersTwo } = await got(`${url}/kikobeats`)
   t.is(headersTwo['x-cache-status'], 'HIT')
-
   const { headers: headersThree } = await got(`${url}/kikobeats?bypass=true`)
   t.is(headersThree['x-cache-status'], 'BYPASS')
-
   const { headers: headersFour } = await got(`${url}/kikobeats`)
   t.is(headersFour['x-cache-status'], 'HIT')
-
   const { headers: headersFive } = await got(`${url}/kikobeats?force=true`)
   t.is(headersFive['x-cache-status'], 'MISS')
 })

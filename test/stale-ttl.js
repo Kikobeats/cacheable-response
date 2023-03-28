@@ -8,6 +8,7 @@ const { parseCacheControl, runServer } = require('./helpers')
 
 test('enabled by default', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       get: ({ req, res }) => ({ data: { foo: 'bar' } }),
       send: ({ data, headers, res, req, ...props }) => {
@@ -15,10 +16,8 @@ test('enabled by default', async t => {
       }
     })
   )
-
   const { headers } = await got(`${url}/kikobeats`)
   const cacheControl = parseCacheControl(headers)
-
   t.true(cacheControl.public)
   t.true(cacheControl['must-revalidate'])
   t.true([86399, 86400].includes(cacheControl['max-age']))
@@ -28,6 +27,7 @@ test('enabled by default', async t => {
 
 test('as value', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       staleTtl: 300000,
       get: ({ req, res }) => ({ data: { foo: 'bar' } }),
@@ -36,10 +36,8 @@ test('as value', async t => {
       }
     })
   )
-
   const { headers } = await got(`${url}/kikobeats`)
   const cacheControl = parseCacheControl(headers)
-
   t.true(cacheControl.public)
   t.true(cacheControl['must-revalidate'])
   t.true([86399, 86400].includes(cacheControl['max-age']))

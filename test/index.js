@@ -8,6 +8,7 @@ const { runServer } = require('./helpers')
 
 test('etag is present', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       staleTtl: false,
       get: ({ req, res }) => {
@@ -32,6 +33,7 @@ test('etag is present', async t => {
 
 test('compress support', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       compress: true,
       get: ({ req, res }) => {
@@ -56,28 +58,26 @@ test('compress support', async t => {
 
 test('exit early is get is empty', async t => {
   let isEnd = false
-
   const end = (res, msg) => {
     isEnd = true
     res.end(msg)
   }
-
   const url = await runServer(
+    t,
     cacheableResponse({
       get: ({ res }) => !isEnd && end(res, 'get'),
       send: ({ res }) => !isEnd && end(res, 'send')
     })
   )
-
   const res = await got(`${url}/kikobeats`)
   t.is(res.body, 'get')
 })
 
 test('prevent send if data is undefined', async t => {
   t.plan(1)
-
   let isSendCalled = false
   const url = await runServer(
+    t,
     cacheableResponse({
       compress: true,
       get: ({ req, res }) => {
@@ -89,7 +89,6 @@ test('prevent send if data is undefined', async t => {
       }
     })
   )
-
   try {
     await got(`${url}/kikobeats`, { retry: 0 })
   } catch (err) {
@@ -99,6 +98,7 @@ test('prevent send if data is undefined', async t => {
 
 test('return empty 304 response when If-None-Match matches ETag', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       get: ({ req, res }) => {
         return {

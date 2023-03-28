@@ -8,6 +8,7 @@ const { parseCacheControl, runServer } = require('./helpers')
 
 test('as value', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       ttl: 3600000,
       staleTtl: 720000,
@@ -17,10 +18,8 @@ test('as value', async t => {
       }
     })
   )
-
   const { headers } = await got(`${url}/kikobeats`)
   const cacheControl = parseCacheControl(headers)
-
   t.true(cacheControl.public)
   t.true(cacheControl['must-revalidate'])
   t.true([3600, 3599].includes(cacheControl['max-age']))
@@ -30,6 +29,7 @@ test('as value', async t => {
 
 test('from value', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       staleTtl: 17280000,
       get: ({ req, res }) => ({ data: { foo: 'bar' }, ttl: 86400000 }),
@@ -38,10 +38,8 @@ test('from value', async t => {
       }
     })
   )
-
   const { headers } = await got(`${url}/kikobeats`)
   const cacheControl = parseCacheControl(headers)
-
   t.true(cacheControl.public)
   t.true(cacheControl['must-revalidate'])
   t.true([86399, 86400].includes(cacheControl['max-age']))
@@ -51,6 +49,7 @@ test('from value', async t => {
 
 test('sets default ttl', async t => {
   const url = await runServer(
+    t,
     cacheableResponse({
       get: ({ req, res }) => ({ data: { foo: 'bar' } }),
       send: ({ data, headers, res, req, ...props }) => {
@@ -58,10 +57,8 @@ test('sets default ttl', async t => {
       }
     })
   )
-
   const { headers } = await got(`${url}/kikobeats`)
   const cacheControl = parseCacheControl(headers)
-
   t.true(cacheControl.public)
   t.true(cacheControl['must-revalidate'])
   t.true([86400, 86399].includes(cacheControl['max-age']))
