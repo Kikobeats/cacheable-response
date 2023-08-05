@@ -59,8 +59,8 @@
   ],
   "dependencies": {
     "@keyvhq/core": "~2.0.0",
-    "@keyvhq/memoize": "~2.0.0",
-    "compress-brotli": "~1.3.3",
+    "@keyvhq/memoize": "~2.0.3",
+    "compress-brotli": "~1.3.9",
     "etag": "~1.8.1",
     "pretty-ms": "~7.0.1"
   },
@@ -119,7 +119,8 @@
   },
   "nano-staged": {
     "*.js,!*.min.js,": [
-      "prettier-standard"
+      "prettier-standard",
+      "standard --fix"
     ],
     "*.md": [
       "standard-markdown"
