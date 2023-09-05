@@ -1,7 +1,7 @@
 'use strict'
 
+const { setTimeout } = require('timers/promises')
 const Keyv = require('@keyvhq/core')
-const delay = require('delay')
 const test = require('ava')
 const got = require('got')
 
@@ -119,7 +119,7 @@ test('STALE when response is stale', async t => {
     })
   )
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
-  await delay(20)
+  await setTimeout(20)
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'STALE')
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'HIT')
 })

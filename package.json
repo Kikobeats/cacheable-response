@@ -61,8 +61,7 @@
     "@keyvhq/core": "~2.0.0",
     "@keyvhq/memoize": "~2.0.3",
     "compress-brotli": "~1.3.9",
-    "etag": "~1.8.1",
-    "pretty-ms": "~7.0.1"
+    "etag": "~1.8.1"
   },
   "devDependencies": {
     "@commitlint/cli": "latest",
@@ -73,7 +72,6 @@
     "c8": "latest",
     "ci-publish": "latest",
     "conventional-github-releaser": "latest",
-    "delay": "latest",
     "finepack": "latest",
     "git-authors-cli": "latest",
     "got": "11",
