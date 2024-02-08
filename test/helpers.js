@@ -2,9 +2,9 @@
 
 const { default: listen } = require('async-listen')
 const { createServer } = require('http')
-const { promisify } = require('util')
 
-const closeServer = server => promisify(server.close)
+const closeServer = server =>
+  require('util').promisify(server.close.bind(server))()
 
 const runServer = async (t, handler) => {
   const server = createServer(async (req, res) => {
