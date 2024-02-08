@@ -71,9 +71,9 @@
     "ava": "latest",
     "c8": "latest",
     "ci-publish": "latest",
-    "conventional-github-releaser": "latest",
     "finepack": "latest",
     "git-authors-cli": "latest",
+    "github-generate-release": "latest",
     "got": "11",
     "nano-staged": "latest",
     "npm-check-updates": "latest",
@@ -97,7 +97,7 @@
     "prerelease": "npm run update:check && npm run contributors",
     "pretest": "npm run lint",
     "release": "standard-version -a",
-    "release:github": "conventional-github-releaser -p angular",
+    "release:github": "github-generate-release",
     "release:tags": "git push --follow-tags origin HEAD:master",
     "test": "c8 ava",
     "update": "ncu -u",
@@ -106,8 +106,8 @@
   "license": "MIT",
   "ava": {
     "files": [
-      "test/**/*.js",
-      "!test/helpers.js"
+      "!test/helpers.js",
+      "test/**/*.js"
     ]
   },
   "commitlint": {
@@ -116,7 +116,7 @@
     ]
   },
   "nano-staged": {
-    "*.js,!*.min.js": [
+    "*.js": [
       "prettier-standard",
       "standard --fix"
     ],
@@ -124,7 +124,7 @@
       "standard-markdown"
     ],
     "package.json": [
-      "finepack --sort-ignore-object-at ava"
+      "finepack"
     ]
   },
   "simple-git-hooks": {
