@@ -69,20 +69,22 @@ At least, **cacheable-response** needs two things:
 **cacheable-response** is _framework agnostic_: It could be used with any library that accepts `(request, response)` as input.
 
 ```js
-const micro = require('micro')
-
+const http = require('http')
 /* Explicitly pass `cacheable-response` as server */
-micro((req, res) => ssrCache({ req, res }))
+http
+  .createServer((req, res) => ssrCache({ req, res }))
+  .listen(3000)
 ```
 
-That's include any express-like framework as well.
+It could be use in the express way too:
 
 ```js
 const express = require('express')
 const app = express()
 
 /* Passing `cacheable-response` instance as middleware */
-app.use((req, res) => ssrCache({ req, res }))
+app
+  .use((req, res) => ssrCache({ req, res }))
 ```
 
 See more [examples](#examples).
@@ -210,7 +212,15 @@ In case you want to bypass the cache, preventing caching a value (e.g., when an 
 Type: `function`<br/>
 Default: `({ req }) => req.url)`
 
-It determinates how the cache key should be computed, receiving `req, res` as input.
+It specifies how to compute the cache key, taking `req, res` as input.
+
+Alternatively, it can return an array:
+
+```js
+const key = ({ req }) => [getKey({ req }), req.query.force]
+```
+
+where the second parameter represents whether to force the cache entry to expire.
 
 ##### logger
 
