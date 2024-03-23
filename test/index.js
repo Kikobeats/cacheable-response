@@ -56,7 +56,7 @@ test('compress support', async t => {
   t.is(headersOne.etag, headersTwo.etag)
 })
 
-test('exit early is get is empty', async t => {
+test('exit early is response was written', async t => {
   let isEnd = false
   const end = (res, msg) => {
     isEnd = true
@@ -73,21 +73,22 @@ test('exit early is get is empty', async t => {
   t.is(res.body, 'get')
 })
 
-test('prevent send if data is undefined', async t => {
+test('prevent send if get throws an error', async t => {
   t.plan(1)
   let isSendCalled = false
   const url = await runServer(
     t,
     cacheableResponse({
       compress: true,
-      get: ({ req, res }) => {
+      get: () => {
         throw Error()
       },
-      send: ({ data, headers, res, req, ...props }) => {
+      send: ({ res }) => {
         isSendCalled = true
         res.end('Hello World')
       }
-    })
+    }),
+    { throwErrors: false }
   )
   try {
     await got(`${url}/kikobeats`, { retry: 0 })
