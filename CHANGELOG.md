@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 2.9.0 (2024-03-24)
+
+
+### Features
+
+* store etag ([#115](https://github.com/Kikobeats/cacheable-response/issues/115)) ([f1aaef9](https://github.com/Kikobeats/cacheable-response/commit/f1aaef948d6ae671d7e9221148c8f746b0b67be6))
+
 ### 2.8.13 (2024-03-23)
 
 ### 2.8.12 (2024-02-09)
