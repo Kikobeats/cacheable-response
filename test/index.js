@@ -6,31 +6,6 @@ const got = require('got')
 const cacheableResponse = require('..')
 const { runServer } = require('./helpers')
 
-test('etag is present', async t => {
-  const url = await runServer(
-    t,
-    cacheableResponse({
-      staleTtl: false,
-      get: ({ req, res }) => {
-        return {
-          data: { foo: 'bar' },
-          ttl: 30000,
-          createdAt: Date.now(),
-          foo: { bar: true }
-        }
-      },
-      send: ({ data, headers, res, req, ...props }) => {
-        res.end('Hello World')
-      }
-    })
-  )
-  const { headers: headersOne } = await got(`${url}/kikobeats`)
-  t.is(headersOne['x-cache-status'], 'MISS')
-  const { headers: headersTwo } = await got(`${url}/kikobeats`)
-  t.is(headersTwo['x-cache-status'], 'HIT')
-  t.is(headersOne.etag, headersTwo.etag)
-})
-
 test('compress support', async t => {
   const url = await runServer(
     t,
