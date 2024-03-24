@@ -13,14 +13,14 @@ const cacheableResponse = ({
   bypassQueryParameter = 'force',
   cache = new Keyv({ namespace: 'ssr' }),
   compress: enableCompression = false,
-  get,
+  get: rawGet,
   key: getKey = createKey(bypassQueryParameter),
   send,
   staleTtl: rawStaleTtl = 3600000,
   ttl: rawTtl = 86400000,
   ...compressOpts
 } = {}) => {
-  assert(get, '.get required')
+  assert(rawGet, '.get required')
   assert(send, '.send required')
 
   const staleTtl = isFunction(rawStaleTtl)
@@ -32,6 +32,12 @@ const cacheableResponse = ({
   const { serialize, compress, decompress } = createCompress({
     enable: enableCompression,
     ...compressOpts
+  })
+
+  const get = opts => Promise.resolve(rawGet(opts)).then(result => {
+    if (typeof result !== 'object') return result
+    result.etag = getEtag(serialize(result))
+    return result
   })
 
   const memoGet = memoize(get, cache, {
@@ -55,13 +61,12 @@ const cacheableResponse = ({
     const {
       createdAt = Date.now(),
       data = null,
-      etag: cachedEtag,
+      etag = getEtag(serialize(result)),
       staleTtl = memoGet.staleTtl(result),
       ttl = memoGet.ttl(result),
       ...props
     } = result
 
-    const etag = cachedEtag || getEtag(serialize(result))
     const ifNoneMatch = req.headers['if-none-match']
     const isModified = etag !== ifNoneMatch
 
