@@ -4,7 +4,6 @@ const createCompress = require('compress-brotli')
 const memoize = require('@keyvhq/memoize')
 const Keyv = require('@keyvhq/core')
 const assert = require('assert')
-const getEtag = require('etag')
 
 const { createKey, isFunction, setHeaders, size } = require('./util')
 
@@ -34,11 +33,14 @@ const cacheableResponse = ({
     ...compressOpts
   })
 
-  const get = opts => Promise.resolve(rawGet(opts)).then(result => {
-    if (typeof result !== 'object') return result
-    result.etag = getEtag(serialize(result))
-    return result
-  })
+  const getEtag = input => require('etag')(serialize(input))
+
+  const get = opts =>
+    Promise.resolve(rawGet(opts)).then(result => {
+      if (typeof result !== 'object') return result
+      result.etag = getEtag(result)
+      return result
+    })
 
   const memoGet = memoize(get, cache, {
     key: getKey,
@@ -48,7 +50,7 @@ const cacheableResponse = ({
     value: compress
   })
 
-  return async opts => {
+  const fn = async opts => {
     const { req, res } = opts
     const [raw, { forceExpiration, hasValue, key, isExpired, isStale }] =
       await memoGet(opts)
@@ -61,7 +63,7 @@ const cacheableResponse = ({
     const {
       createdAt = Date.now(),
       data = null,
-      etag = getEtag(serialize(result)),
+      etag = getEtag(result),
       staleTtl = memoGet.staleTtl(result),
       ttl = memoGet.ttl(result),
       ...props
@@ -101,6 +103,10 @@ const cacheableResponse = ({
 
     return send({ data, res, req, ...props })
   }
+
+  fn.getEtag = getEtag
+  return fn
 }
 
 module.exports = cacheableResponse
+module.exports.setHeaders = setHeaders
