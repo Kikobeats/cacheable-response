@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 2.10.0 (2024-03-25)
+
+
+### Features
+
+* automatically decorate etag ([#116](https://github.com/Kikobeats/cacheable-response/issues/116)) ([d37f262](https://github.com/Kikobeats/cacheable-response/commit/d37f262e9766899620f1c925fb0a4ebb89ca30a5))
+
 ## 2.9.0 (2024-03-24)
 
 
