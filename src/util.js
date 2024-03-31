@@ -12,23 +12,27 @@ const hasQueryParameter = (req, key) => {
   return value !== undefined && value !== null
 }
 
-const createKey = bypassQueryParameter => ({ req }) => {
-  const urlObj = new URL(req.url, 'http://localhost:8080')
-  const OMIT_KEYS = [bypassQueryParameter, /^utm_\w+/i]
-  const omitKeys = Array.from(urlObj.searchParams.keys()).reduce((acc, key) => {
-    const isOmitable = OMIT_KEYS.some(omitQueryParam =>
-      omitQueryParam instanceof RegExp
-        ? omitQueryParam.test(key)
-        : omitQueryParam === key
-    )
-    return isOmitable ? [...acc, key] : acc
-  }, [])
-  omitKeys.forEach(key => urlObj.searchParams.delete(key))
-  return [
-    `${urlObj.pathname}${urlObj.search}`,
-    hasQueryParameter(req, bypassQueryParameter)
-  ]
-}
+const createKey =
+  bypassQueryParameter =>
+    ({ req }) => {
+      const urlObj = new URL(req.url, 'http://localhost:8080')
+      const OMIT_KEYS = [bypassQueryParameter, /^utm_\w+/i]
+      Array.from(urlObj.searchParams.keys()).forEach(key => {
+        const isOmitable = OMIT_KEYS.some(omitQueryParam =>
+          omitQueryParam instanceof RegExp
+            ? omitQueryParam.test(key)
+            : omitQueryParam === key
+        )
+        if (isOmitable) {
+          urlObj.searchParams.delete(key)
+        }
+      })
+
+      return [
+      `${urlObj.pathname}${urlObj.search}`,
+      hasQueryParameter(req, bypassQueryParameter)
+      ]
+    }
 
 const toSeconds = ms => Math.floor(ms / 1000)
 
