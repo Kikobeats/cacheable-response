@@ -170,7 +170,7 @@ Default: `new Keyv({ namespace: 'ssr' })`
 
 The cache instance used for backed your pre-calculated server side response copies.
 
-The library delegates in [keyv](https://github.com/lukechilds/keyv), a tiny key value store with [multi adapter support](https://github.com/lukechilds/keyv#official-storage-adapters).
+The library delegates in [keyv](https://keyvhq.js.org/), a tiny key value store with [multi adapter support](https://keyvhq.js.org/#/?id=storage-adapters).
 
 If you don't specify it, a memory cache will be used.
 
@@ -289,15 +289,13 @@ Set the deserialize method to be used after decompress.
 
 > This content is not sponsored; Just I consider CloudFlare is doing a good job offering a cache layer as part of their free tier.
 
-Imagine what could be better than having one cache layer?
+Imagine what could be better than having one cache layer? Exactly, two cache layers.
 
-Exactly, two cache layers.
-
-If your server domain is connected with CloudFlare you can take advantage of having a distributed CDN that also caches your responses.
+If your server domain is connected with CloudFlare you can take advantage of [unlimited bandwidth usage](https://web.archive.org/web/20200428000736/https://support.cloudflare.com/hc/en-us/articles/205177068-How-does-Cloudflare-work-).
 
 ![](https://i.imgur.com/2BCHVzh.png)
 
-For doing that, you need to setup a `Page Rule` over your domain specifing you want to enable cache. [Read more how to do that](https://support.cloudflare.com/hc/en-us/articles/115000150272-How-do-I-use-Cache-Everything-with-Cloudflare-).
+For doing that, you need to setup a `Page Rule` over your domain specifing you want to enable cache. [Read more how to do that](https://web.archive.org/web/20190429045303/https://support.cloudflare.com/hc/en-us/articles/115000150272-How-do-I-use-Cache-Everything-with-Cloudflare-).
 
 Next time you query about a resource, a new `cf-cache-status` appeared as part of your headers response.
 
@@ -310,7 +308,7 @@ x-cache-expired-at: 1h 59m 60s
 cf-cache-status: MISS
 ```
 
-CloudFlare will [respect your `cache-control` policy](https://support.cloudflare.com/hc/en-us/articles/202775670-How-Do-I-Tell-Cloudflare-What-to-Cache-), creating another caching layer reflected by `cf-cache-status`
+CloudFlare will [respect your `cache-control` policy](https://web.archive.org/web/20190323033009/https://support.cloudflare.com/hc/en-us/articles/202775670-How-Do-I-Tell-Cloudflare-What-to-Cache-), creating another caching layer reflected by `cf-cache-status`
 
 ```bash
 HTTP/2 200
