@@ -333,7 +333,7 @@ You can have a better overview of the percentage of success by looking your Clou
 
 > Make a PR for adding your project!
 
-- [`unavatar.now.sh`](https://github.com/Kikobeats/unavatar/blob/master/src/index.js#L12)
+- [`unavatar.io`](https://unavatar.io)
 - [`html-microservice`](https://github.com/microlinkhq/html/blob/master/src/index.js#L9)
 
 ## Bibliography
