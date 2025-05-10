@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.11.0-0](https://github.com/Kikobeats/cacheable-response/compare/v2.10.3...v2.11.0-0) (2025-05-10)
+
+
+### Bug Fixes
+
+* prevent hit origin servers ([9a15c2a](https://github.com/Kikobeats/cacheable-response/commit/9a15c2ac5cb649174ac68f94edd59d8986a9f433))
+
 ### 2.10.3 (2025-05-10)
 
 ### 2.10.2 (2024-05-09)
