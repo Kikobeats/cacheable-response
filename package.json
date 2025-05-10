@@ -2,43 +2,14 @@
   "name": "cacheable-response",
   "description": "An HTTP compliant route path middleware for serving cache response with invalidation support.",
   "homepage": "https://github.com/Kikobeats/cacheable-response",
-  "version": "2.10.2",
+  "version": "2.10.3",
   "main": "src/index.js",
   "author": {
     "email": "josefrancisco.verdu@gmail.com",
     "name": "Kiko Beats",
     "url": "https://kikobeats.com"
   },
-  "contributors": [
-    {
-      "name": "Marco Wettstein",
-      "email": "macrozone@gmail.com"
-    },
-    {
-      "name": "whooehoo",
-      "email": "whooehoo@yandex.ru"
-    },
-    {
-      "name": "Ali Hmer",
-      "email": "alitohami@gmail.com"
-    },
-    {
-      "name": "ChengCheng",
-      "email": "chengcheng.st@gmail.com"
-    },
-    {
-      "name": "Stig Kleppe-Jørgensen",
-      "email": "from.github@nisgits.net"
-    },
-    {
-      "name": "iKoala",
-      "email": "iikoala@hotmail.com"
-    },
-    {
-      "name": "rickynyairo",
-      "email": "rickynyairo@gmail.com"
-    }
-  ],
+  "contributors": [],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Kikobeats/cacheable-response.git"
