@@ -64,9 +64,11 @@ const setHeaders = ({
   const maxAge = toSeconds(diff)
   const revalidation = staleTtl ? toSeconds(staleTtl) : 0
 
-  let cacheControl = `public, must-revalidate, max-age=${maxAge}`
+  let cacheControl = forceExpiration
+    ? 'private, no-cache, no-store, max-age=0'
+    : `public, must-revalidate, max-age=${maxAge}`
 
-  if (revalidation) {
+  if (!forceExpiration && revalidation) {
     cacheControl = `${cacheControl}, stale-while-revalidate=${revalidation}, stale-if-error=${revalidation}`
   }
 

@@ -94,6 +94,7 @@ test('BYPASS for forcing refresh', async t => {
     `${url}/kikobeats?force=true`
   )
   t.is(headersThree['x-cache-status'], 'BYPASS')
+  t.is(headersThree['cache-control'], 'private, no-cache, no-store, max-age=0')
   t.is(bodyThree, '2')
   const { body: bodyFour, headers: headersFour } = await got(`${url}/kikobeats`)
   t.is(headersFour['x-cache-status'], 'HIT')
