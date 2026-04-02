@@ -45,7 +45,7 @@
     "finepack": "latest",
     "git-authors-cli": "latest",
     "github-generate-release": "latest",
-    "got": "11",
+    "got": "15",
     "nano-staged": "latest",
     "simple-git-hooks": "latest",
     "standard": "latest",
