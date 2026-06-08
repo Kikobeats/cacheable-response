@@ -1,7 +1,7 @@
 'use strict'
 
 const createCompress = require('compress-brotli')
-const memoize = require('@keyvhq/memoize')
+const memoize = require('./memoize')
 const Keyv = require('@keyvhq/core')
 const assert = require('assert')
 
