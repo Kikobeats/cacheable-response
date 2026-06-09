@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.10 (2026-06-09)
+
+
+### Bug Fixes
+
+* force bypass returns fresh data during stale window ([#132](https://github.com/Kikobeats/cacheable-response/issues/132)) ([e0cef04](https://github.com/Kikobeats/cacheable-response/commit/e0cef04fe5d383f9a2b4a946646f044e15f41ef7))
+
 ### 2.10.9 (2026-06-09)
 
 ### 2.10.8 (2026-05-06)
