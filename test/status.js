@@ -66,6 +66,37 @@ test('EXPIRED after cache expiration', async t => {
   t.is((await doRequest()).headers['x-cache-status'], 'EXPIRED')
 })
 
+test('BYPASS for forcing refresh when response is stale concurrently', async t => {
+  let index = 0
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      staleTtl: 80,
+      ttl: 100,
+      get: async ({ req, res }) => {
+        await setTimeout(50)
+        return {
+          data: { value: ++index },
+          createdAt: Date.now()
+        }
+      },
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end(data.value.toString())
+      }
+    })
+  )
+  t.is((await got(`${url}/kikobeats`)).body, '1')
+  await setTimeout(25)
+  const [normal, force] = await Promise.all([
+    got(`${url}/kikobeats`),
+    got(`${url}/kikobeats?force=true`)
+  ])
+  t.is(normal.headers['x-cache-status'], 'STALE')
+  t.is(force.headers['x-cache-status'], 'BYPASS')
+  t.not(force.body, '1')
+  t.is(force.body, String(index))
+})
+
 test('BYPASS for forcing refresh when response is stale', async t => {
   let index = 0
   const url = await runServer(
