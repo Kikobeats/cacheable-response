@@ -43,6 +43,20 @@ test('MISS for undefined data value', async t => {
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
 })
 
+test('MISS for null data value', async t => {
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      get: ({ req, res }) => null,
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Hello World')
+      }
+    })
+  )
+  t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
+  t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
+})
+
 test('EXPIRED after cache expiration', async t => {
   const url = await runServer(
     t,
