@@ -37,6 +37,7 @@ const cacheableResponse = ({
 
   const get = opts =>
     Promise.resolve(rawGet(opts)).then(result => {
+      if (result == null) return undefined
       if (typeof result !== 'object') return result
       result.etag = getEtag(result)
       return result
