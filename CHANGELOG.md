@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.12 (2026-06-16)
+
+
+### Bug Fixes
+
+* handle null return from get without crashing ([#138](https://github.com/Kikobeats/cacheable-response/issues/138)) ([467a630](https://github.com/Kikobeats/cacheable-response/commit/467a630d55f72231039471055dbe794114192ac2))
+
 ### 2.10.11 (2026-06-14)
 
 ### 2.10.10 (2026-06-09)
