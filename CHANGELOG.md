@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.14 (2026-06-30)
+
+
+### Bug Fixes
+
+* skip 304 short-circuit when get bypasses cache ([#140](https://github.com/Kikobeats/cacheable-response/issues/140)) ([beb7a8e](https://github.com/Kikobeats/cacheable-response/commit/beb7a8ee621afb25e1bcdc1c3332b7067df9396c)), closes [#138](https://github.com/Kikobeats/cacheable-response/issues/138)
+
 ### 2.10.13 (2026-06-19)
 
 ### 2.10.12 (2026-06-16)
