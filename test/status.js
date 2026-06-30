@@ -57,6 +57,25 @@ test('MISS for null data value', async t => {
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
 })
 
+test('MISS for null data value with If-None-Match', async t => {
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      get: ({ req, res }) => null,
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end('Hello World')
+      }
+    })
+  )
+  const { headers } = await got(`${url}/kikobeats`)
+  const { body, statusCode } = await got(`${url}/kikobeats`, {
+    headers: { 'If-None-Match': headers.etag }
+  })
+  t.is(statusCode, 200)
+  t.is(body, 'Hello World')
+  t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
+})
+
 test('EXPIRED after cache expiration', async t => {
   const url = await runServer(
     t,
