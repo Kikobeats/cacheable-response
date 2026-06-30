@@ -96,7 +96,7 @@ const cacheableResponse = ({
       ttl
     })
 
-    if (!forceExpiration && !isModified) {
+    if (raw && !forceExpiration && !isModified) {
       res.statusCode = 304
       res.end()
       return
