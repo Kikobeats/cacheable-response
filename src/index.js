@@ -43,8 +43,18 @@ const cacheableResponse = ({
       return result
     })
 
+  // @keyvhq/memoize only treats forceExpiration === true as a forced refresh.
+  // Custom keys often pass query-string values (e.g. req.query.force === 'true'),
+  // which are truthy strings: headers would show BYPASS while the body stayed stale.
+  const memoKey = (...args) => {
+    const rawKey = getKey(...args)
+    if (!Array.isArray(rawKey)) return rawKey
+    const [cacheKey, forceExpiration] = rawKey
+    return [cacheKey, Boolean(forceExpiration)]
+  }
+
   const memoGet = memoize(get, cache, {
-    key: getKey,
+    key: memoKey,
     objectMode: true,
     staleTtl,
     ttl,
@@ -60,6 +70,9 @@ const cacheableResponse = ({
 
     const result = (await decompress(raw)) || {}
     const isHit = !forceExpiration && !isExpired && hasValue
+    // null/undefined from .get() is a documented storage bypass; do not advertise
+    // the response as publicly cacheable to shared HTTP caches / CDNs.
+    const preventCaching = raw == null
 
     const {
       createdAt = Date.now(),
@@ -91,6 +104,7 @@ const cacheableResponse = ({
       hasValue,
       isHit,
       isStale,
+      preventCaching,
       res,
       staleTtl,
       ttl

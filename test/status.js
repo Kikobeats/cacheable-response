@@ -53,7 +53,9 @@ test('MISS for null data value', async t => {
       }
     })
   )
-  t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
+  const { headers } = await got(`${url}/kikobeats`)
+  t.is(headers['x-cache-status'], 'MISS')
+  t.is(headers['cache-control'], 'private, no-cache, no-store, max-age=0')
   t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
 })
 
@@ -159,6 +161,38 @@ test('BYPASS for forcing refresh', async t => {
   const { body: bodyFour, headers: headersFour } = await got(`${url}/kikobeats`)
   t.is(headersFour['x-cache-status'], 'HIT')
   t.is(bodyFour, '2')
+})
+
+test('BYPASS for custom key force query string', async t => {
+  let index = 0
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      staleTtl: false,
+      // Documented custom-key shape: second tuple value comes from the query
+      // string and is therefore a string (e.g. 'true'), not a boolean.
+      key: ({ req }) => {
+        const urlObj = new URL(req.url, 'http://localhost')
+        return [urlObj.pathname, urlObj.searchParams.get('force')]
+      },
+      get: ({ req, res }) => {
+        return {
+          data: { value: ++index },
+          ttl: 86400000,
+          createdAt: Date.now()
+        }
+      },
+      send: ({ data, headers, res, req, ...props }) => {
+        res.end(data.value.toString())
+      }
+    })
+  )
+  t.is((await got(`${url}/kikobeats`)).body, '1')
+  const { body, headers } = await got(`${url}/kikobeats?force=true`)
+  t.is(headers['x-cache-status'], 'BYPASS')
+  t.is(headers['cache-control'], 'private, no-cache, no-store, max-age=0')
+  t.is(body, '2')
+  t.is(index, 2)
 })
 
 test('STALE when response is stale', async t => {
