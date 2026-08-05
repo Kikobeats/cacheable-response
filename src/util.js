@@ -59,9 +59,10 @@ const setHeaders = ({
   staleTtl,
   ttl
 }) => {
+  const noStore = forceExpiration || preventCaching
+
   // Specifies the maximum amount of time a resource
   // will be considered fresh in seconds
-  const noStore = forceExpiration || preventCaching
   const diff = noStore ? 0 : createdAt + ttl - Date.now()
   const maxAge = toSeconds(diff)
   const revalidation = staleTtl ? toSeconds(staleTtl) : 0

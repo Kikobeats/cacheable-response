@@ -169,8 +169,6 @@ test('BYPASS for custom key force query string', async t => {
     t,
     cacheableResponse({
       staleTtl: false,
-      // Documented custom-key shape: second tuple value comes from the query
-      // string and is therefore a string (e.g. 'true'), not a boolean.
       key: ({ req }) => {
         const urlObj = new URL(req.url, 'http://localhost')
         return [urlObj.pathname, urlObj.searchParams.get('force')]
