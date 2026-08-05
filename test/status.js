@@ -173,16 +173,12 @@ test('BYPASS for custom key force query string', async t => {
         const urlObj = new URL(req.url, 'http://localhost')
         return [urlObj.pathname, urlObj.searchParams.get('force')]
       },
-      get: ({ req, res }) => {
-        return {
-          data: { value: ++index },
-          ttl: 86400000,
-          createdAt: Date.now()
-        }
-      },
-      send: ({ data, headers, res, req, ...props }) => {
-        res.end(data.value.toString())
-      }
+      get: () => ({
+        data: { value: ++index },
+        ttl: 86400000,
+        createdAt: Date.now()
+      }),
+      send: ({ data, res }) => res.end(data.value.toString())
     })
   )
   t.is((await got(`${url}/kikobeats`)).body, '1')
@@ -191,6 +187,35 @@ test('BYPASS for custom key force query string', async t => {
   t.is(headers['cache-control'], 'private, no-cache, no-store, max-age=0')
   t.is(body, '2')
   t.is(index, 2)
+})
+
+test('BYPASS for custom key force query string with a falsy value', async t => {
+  let index = 0
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      staleTtl: false,
+      key: ({ req }) => {
+        const urlObj = new URL(req.url, 'http://localhost')
+        return [urlObj.pathname, urlObj.searchParams.get('force')]
+      },
+      get: () => ({
+        data: { value: ++index },
+        ttl: 86400000,
+        createdAt: Date.now()
+      }),
+      send: ({ data, res }) => res.end(data.value.toString())
+    })
+  )
+  t.is((await got(`${url}/kikobeats`)).body, '1')
+  const { body, headers } = await got(`${url}/kikobeats?force=false`)
+  t.is(headers['x-cache-status'], 'BYPASS')
+  t.is(body, '2')
+  const { body: bodyThree, headers: headersThree } = await got(
+    `${url}/kikobeats`
+  )
+  t.is(headersThree['x-cache-status'], 'HIT')
+  t.is(bodyThree, '2')
 })
 
 test('STALE when response is stale', async t => {
