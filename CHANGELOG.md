@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.16 (2026-08-06)
+
+
+### Bug Fixes
+
+* make cache bypass actually refresh and stay uncached ([#142](https://github.com/Kikobeats/cacheable-response/issues/142)) ([0387d02](https://github.com/Kikobeats/cacheable-response/commit/0387d0243583ed646fc91bce0aef2a59706ac5fa))
+
 ### 2.10.15 (2026-08-03)
 
 ### 2.10.14 (2026-06-30)
