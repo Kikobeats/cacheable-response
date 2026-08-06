@@ -222,6 +222,12 @@ const key = ({ req }) => [getKey({ req }), req.query.force]
 
 where the second parameter represents whether to force the cache entry to expire.
 
+It is evaluated as a boolean, meaning any present query string value (including `?force=false`) forces the expiration, the same way the default [`bypassQueryParameter`](#bypassqueryparameter) behaves. Return an actual boolean if you need value based semantics:
+
+```js
+const key = ({ req }) => [getKey({ req }), req.query.force === 'true']
+```
+
 ##### logger
 
 Type: `function`<br/>

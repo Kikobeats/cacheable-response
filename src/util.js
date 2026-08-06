@@ -54,21 +54,24 @@ const setHeaders = ({
   hasValue,
   isHit,
   isStale,
+  preventCaching = false,
   res,
   staleTtl,
   ttl
 }) => {
+  const noStore = forceExpiration || preventCaching
+
   // Specifies the maximum amount of time a resource
   // will be considered fresh in seconds
-  const diff = forceExpiration ? 0 : createdAt + ttl - Date.now()
+  const diff = noStore ? 0 : createdAt + ttl - Date.now()
   const maxAge = toSeconds(diff)
   const revalidation = staleTtl ? toSeconds(staleTtl) : 0
 
-  let cacheControl = forceExpiration
+  let cacheControl = noStore
     ? 'private, no-cache, no-store, max-age=0'
     : `public, must-revalidate, max-age=${maxAge}`
 
-  if (!forceExpiration && revalidation) {
+  if (!noStore && revalidation) {
     cacheControl = `${cacheControl}, stale-while-revalidate=${revalidation}, stale-if-error=${revalidation}`
   }
 

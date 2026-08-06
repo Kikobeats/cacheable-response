@@ -43,8 +43,14 @@ const cacheableResponse = ({
       return result
     })
 
+  // @keyvhq/memoize only treats forceExpiration === true as a forced refresh.
+  const memoKey = (...args) => {
+    const key = getKey(...args)
+    return Array.isArray(key) ? [key[0], Boolean(key[1])] : key
+  }
+
   const memoGet = memoize(get, cache, {
-    key: getKey,
+    key: memoKey,
     objectMode: true,
     staleTtl,
     ttl,
@@ -60,6 +66,7 @@ const cacheableResponse = ({
 
     const result = (await decompress(raw)) || {}
     const isHit = !forceExpiration && !isExpired && hasValue
+    const preventCaching = raw == null
 
     const {
       createdAt = Date.now(),
@@ -91,6 +98,7 @@ const cacheableResponse = ({
       hasValue,
       isHit,
       isStale,
+      preventCaching,
       res,
       staleTtl,
       ttl
