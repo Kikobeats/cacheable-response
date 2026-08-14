@@ -1,42 +1,35 @@
 'use strict'
 
-const { connect } = require('net')
+const http = require('http')
 const test = require('ava')
 const got = require('got')
 
 const cacheableResponse = require('..')
 const { runServer } = require('./helpers')
 
-// got/http.get parse `//host` as a scheme-relative URL and leave the server.
+// `path` is the request-target. got/URL would treat `//host` as scheme-relative.
 const rawRequest = (url, target) =>
   new Promise((resolve, reject) => {
-    const socket = connect(Number(url.port), url.hostname, () => {
-      socket.write(
-        `GET ${target} HTTP/1.1\r\nHost: ${url.host}\r\nConnection: close\r\n\r\n`
-      )
-    })
-    let raw = ''
-    socket.setEncoding('utf8')
-    socket.on('data', chunk => {
-      raw += chunk
-    })
-    socket.on('error', reject)
-    socket.on('end', () => {
-      const separator = raw.indexOf('\r\n\r\n')
-      const headerLines = raw.substring(0, separator).split('\r\n').slice(1)
-      const headers = {}
-      for (const line of headerLines) {
-        const index = line.indexOf(':')
-        if (index !== -1) {
-          headers[line.slice(0, index).toLowerCase()] = line.slice(index + 1).trim()
-        }
+    const req = http.request(
+      {
+        hostname: url.hostname === '::' ? '127.0.0.1' : url.hostname,
+        port: url.port,
+        path: target
+      },
+      res => {
+        const chunks = []
+        res.on('data', chunk => chunks.push(chunk))
+        res.on('end', () =>
+          resolve({
+            statusCode: res.statusCode,
+            headers: res.headers,
+            body: Buffer.concat(chunks).toString()
+          })
+        )
       }
-      resolve({
-        statusCode: Number(raw.substring(9, 12)),
-        headers,
-        body: raw.substring(separator + 4)
-      })
-    })
+    )
+    req.on('error', reject)
+    req.end()
   })
 
 test('compress support', async t => {
