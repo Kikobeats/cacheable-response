@@ -12,7 +12,7 @@ const rawRequest = (url, target) =>
   new Promise((resolve, reject) => {
     const req = http.request(
       {
-        hostname: url.hostname === '::' ? '127.0.0.1' : url.hostname,
+        hostname: '127.0.0.1',
         port: url.port,
         path: target
       },
