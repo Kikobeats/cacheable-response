@@ -57,3 +57,29 @@ test('default key dedupe requests', t => {
     ['/kikobeats?foo=bar', true]
   )
 })
+
+test('request targets are keyed by raw path', t => {
+  const key = createKey('force')
+  t.deepEqual(key({ req: { url: '//evil.com/' } }), ['//evil.com/', false])
+  t.deepEqual(key({ req: { url: '//evil.com/about?force=true' } }), [
+    '//evil.com/about',
+    true
+  ])
+  t.deepEqual(key({ req: { url: '//evil.com/?utm_source=twitter' } }), [
+    '//evil.com/',
+    false
+  ])
+  t.deepEqual(key({ req: { url: '//x/../../' } }), ['//x/../../', false])
+  t.deepEqual(key({ req: { url: '//x/../../about' } }), [
+    '//x/../../about',
+    false
+  ])
+  t.deepEqual(key({ req: { url: 'http://evil.com/' } }), [
+    'http://evil.com/',
+    false
+  ])
+  t.deepEqual(key({ req: { url: '//evil.com/about' } }), [
+    '//evil.com/about',
+    false
+  ])
+})

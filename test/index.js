@@ -1,10 +1,36 @@
 'use strict'
 
+const http = require('http')
 const test = require('ava')
 const got = require('got')
 
 const cacheableResponse = require('..')
 const { runServer } = require('./helpers')
+
+// `path` is the request-target. got/URL would treat `//host` as scheme-relative.
+const rawRequest = (url, target) =>
+  new Promise((resolve, reject) => {
+    const req = http.request(
+      {
+        hostname: '127.0.0.1',
+        port: new URL(url).port,
+        path: target
+      },
+      res => {
+        const chunks = []
+        res.on('data', chunk => chunks.push(chunk))
+        res.on('end', () =>
+          resolve({
+            statusCode: res.statusCode,
+            headers: res.headers,
+            body: Buffer.concat(chunks).toString()
+          })
+        )
+      }
+    )
+    req.on('error', reject)
+    req.end()
+  })
 
 test('compress support', async t => {
   const url = await runServer(
@@ -95,4 +121,50 @@ test('return empty 304 response when If-None-Match matches ETag', async t => {
   })
   t.is(statusCode, 304)
   t.is(body, '')
+})
+
+test('non origin-form request targets do not poison the origin-form cache', async t => {
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      staleTtl: false,
+      get: ({ req }) => ({
+        data: { path: req.url },
+        ttl: 86400000,
+        createdAt: Date.now()
+      }),
+      send: ({ data, res }) => {
+        res.end(data.path)
+      }
+    })
+  )
+
+  const poisoned = await rawRequest(url, '//evil.com/')
+  t.is(poisoned.body, '//evil.com/')
+  t.is(poisoned.headers['x-cache-status'], 'MISS')
+
+  const home = await rawRequest(url, '/')
+  t.is(home.body, '/')
+  t.is(home.headers['x-cache-status'], 'MISS')
+
+  await rawRequest(url, '//evil.com/?force=true')
+  const homeAfterForce = await rawRequest(url, '/')
+  t.is(homeAfterForce.body, '/')
+  t.is(homeAfterForce.headers['x-cache-status'], 'HIT')
+
+  const dotted = await rawRequest(url, '//x/../../')
+  t.is(dotted.body, '//x/../../')
+  t.is(dotted.headers['x-cache-status'], 'MISS')
+
+  const homeAfterDot = await rawRequest(url, '/')
+  t.is(homeAfterDot.body, '/')
+  t.is(homeAfterDot.headers['x-cache-status'], 'HIT')
+
+  const absolute = await rawRequest(url, 'http://evil.com/')
+  t.is(absolute.body, 'http://evil.com/')
+  t.is(absolute.headers['x-cache-status'], 'MISS')
+
+  const homeAfterAbsolute = await rawRequest(url, '/')
+  t.is(homeAfterAbsolute.body, '/')
+  t.is(homeAfterAbsolute.headers['x-cache-status'], 'HIT')
 })

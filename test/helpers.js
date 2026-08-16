@@ -20,7 +20,8 @@ const runServer = async (t, handler, { throwErrors = true } = {}) => {
 
   const url = await listen(server)
   t.teardown(() => closeServer(server))
-  return url
+  // origin has no trailing slash, so `${url}/path` stays origin-form.
+  return url.origin
 }
 
 const parseCacheControl = headers => {

@@ -1,7 +1,6 @@
 'use strict'
 
 const { parse } = require('querystring')
-const { URL } = require('url')
 
 const size = obj => Object.keys(obj).length
 
@@ -15,21 +14,29 @@ const hasQueryParameter = (req, key) => {
 const createKey =
   bypassQueryParameter =>
     ({ req }) => {
-      const urlObj = new URL(req.url, 'http://localhost:8080')
+    // req.url is an HTTP request-target, not a WHATWG URL. Parsing it as
+    // one turns `//host/` and `//x/../../` into `/` (cache poisoning).
+      const rawUrl = req.url
+      const q = rawUrl.indexOf('?')
+      const pathname = q === -1 ? rawUrl : rawUrl.slice(0, q)
+      const searchParams = new URLSearchParams(
+        q === -1 ? '' : rawUrl.slice(q + 1)
+      )
       const OMIT_KEYS = [bypassQueryParameter, /^utm_\w+/i]
-      Array.from(urlObj.searchParams.keys()).forEach(key => {
+      Array.from(searchParams.keys()).forEach(key => {
         const isOmitable = OMIT_KEYS.some(omitQueryParam =>
           omitQueryParam instanceof RegExp
             ? omitQueryParam.test(key)
             : omitQueryParam === key
         )
         if (isOmitable) {
-          urlObj.searchParams.delete(key)
+          searchParams.delete(key)
         }
       })
 
+      const search = searchParams.toString()
       return [
-      `${urlObj.pathname}${urlObj.search}`,
+      `${pathname}${search ? `?${search}` : ''}`,
       hasQueryParameter(req, bypassQueryParameter)
       ]
     }
