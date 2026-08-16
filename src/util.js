@@ -16,7 +16,7 @@ const createKey =
     ({ req }) => {
     // req.url is an HTTP request-target, not a WHATWG URL. Parsing it as
     // one turns `//host/` and `//x/../../` into `/` (cache poisoning).
-      const rawUrl = req.url || '/'
+      const rawUrl = req.url
       const q = rawUrl.indexOf('?')
       const pathname = q === -1 ? rawUrl : rawUrl.slice(0, q)
       const searchParams = new URLSearchParams(

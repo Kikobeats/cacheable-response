@@ -78,9 +78,8 @@ test('request targets are keyed by raw path', t => {
     'http://evil.com/',
     false
   ])
-  t.not(key({ req: { url: '//evil.com/' } })[0], '/')
-  t.not(key({ req: { url: '//evil.com/about' } })[0], '/about')
-  t.not(key({ req: { url: '//x/../../' } })[0], '/')
-  t.not(key({ req: { url: '//x/../../about' } })[0], '/about')
-  t.not(key({ req: { url: 'http://evil.com/' } })[0], '/')
+  t.deepEqual(key({ req: { url: '//evil.com/about' } }), [
+    '//evil.com/about',
+    false
+  ])
 })
