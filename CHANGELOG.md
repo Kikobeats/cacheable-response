@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.18 (2026-08-16)
+
+
+### Bug Fixes
+
+* do not cache GET //host under the homepage key ([#144](https://github.com/Kikobeats/cacheable-response/issues/144)) ([b4d7dbe](https://github.com/Kikobeats/cacheable-response/commit/b4d7dbe455591d0896aed1a6214c8417f370883f))
+
 ### 2.10.17 (2026-08-07)
 
 ### 2.10.16 (2026-08-06)
