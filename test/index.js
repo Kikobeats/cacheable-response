@@ -1,10 +1,36 @@
 'use strict'
 
+const http = require('http')
 const test = require('ava')
 const got = require('got')
 
 const cacheableResponse = require('..')
 const { runServer } = require('./helpers')
+
+// `path` is the request-target. got/URL would normalize `..` / `%2e%2e`.
+const rawRequest = (url, target) =>
+  new Promise((resolve, reject) => {
+    const req = http.request(
+      {
+        hostname: '127.0.0.1',
+        port: url.port,
+        path: target
+      },
+      res => {
+        const chunks = []
+        res.on('data', chunk => chunks.push(chunk))
+        res.on('end', () =>
+          resolve({
+            statusCode: res.statusCode,
+            headers: res.headers,
+            body: Buffer.concat(chunks).toString()
+          })
+        )
+      }
+    )
+    req.on('error', reject)
+    req.end()
+  })
 
 test('compress support', async t => {
   const url = await runServer(
@@ -95,4 +121,42 @@ test('return empty 304 response when If-None-Match matches ETag', async t => {
   })
   t.is(statusCode, 304)
   t.is(body, '')
+})
+
+test('dot-segment request targets do not poison the origin-form cache', async t => {
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      staleTtl: false,
+      get: ({ req }) => ({
+        data: { path: req.url },
+        ttl: 86400000,
+        createdAt: Date.now()
+      }),
+      send: ({ data, res }) => {
+        res.end(data.path)
+      }
+    })
+  )
+
+  const poisoned = await rawRequest(url, '/ok/%2e%2e/')
+  t.is(poisoned.body, '/ok/%2e%2e/')
+  t.is(poisoned.headers['x-cache-status'], 'MISS')
+
+  const home = await rawRequest(url, '/')
+  t.is(home.body, '/')
+  t.is(home.headers['x-cache-status'], 'MISS')
+
+  await rawRequest(url, '/ok/%2e%2e/?force=true')
+  const homeAfterForce = await rawRequest(url, '/')
+  t.is(homeAfterForce.body, '/')
+  t.is(homeAfterForce.headers['x-cache-status'], 'HIT')
+
+  const alias = await rawRequest(url, '/foo/%2e%2e/secret')
+  t.is(alias.body, '/foo/%2e%2e/secret')
+  t.is(alias.headers['x-cache-status'], 'MISS')
+
+  const secret = await rawRequest(url, '/secret')
+  t.is(secret.body, '/secret')
+  t.is(secret.headers['x-cache-status'], 'MISS')
 })

@@ -12,10 +12,36 @@ const hasQueryParameter = (req, key) => {
   return value !== undefined && value !== null
 }
 
+const KEY_ORIGIN = 'http://localhost:8080'
+const ABSOLUTE_FORM = /^https?:\/\/[^/?#]+/i
+
+// WHATWG `URL` is safe for query-string work, but its pathname is not the
+// HTTP request-target: `//host` is scheme-relative, and `.` / `..` / `%2e`
+// are normalized. Node leaves `req.url` as sent, so those targets must not
+// share a cache key with `/` or `/secret`.
+const requestTargetPath = rawUrl => {
+  let rest = rawUrl || '/'
+  if (!rest.startsWith('//')) {
+    const origin = rest.match(ABSOLUTE_FORM)
+    if (origin) rest = rest.slice(origin[0].length) || '/'
+  }
+
+  const qIndex = rest.indexOf('?')
+  const hIndex = rest.indexOf('#')
+  let pathEnd = rest.length
+  if (qIndex !== -1) pathEnd = qIndex
+  if (hIndex !== -1 && hIndex < pathEnd) pathEnd = hIndex
+  return { pathname: rest.slice(0, pathEnd) || '/', rest, qIndex, hIndex }
+}
+
 const createKey =
   bypassQueryParameter =>
     ({ req }) => {
-      const urlObj = new URL(req.url, 'http://localhost:8080')
+      const { pathname, rest, qIndex, hIndex } = requestTargetPath(req.url)
+      const urlObj = new URL(KEY_ORIGIN)
+      if (qIndex !== -1 && (hIndex === -1 || qIndex < hIndex)) {
+        urlObj.search = rest.slice(qIndex, hIndex === -1 ? rest.length : hIndex)
+      }
       const OMIT_KEYS = [bypassQueryParameter, /^utm_\w+/i]
       Array.from(urlObj.searchParams.keys()).forEach(key => {
         const isOmitable = OMIT_KEYS.some(omitQueryParam =>
@@ -29,7 +55,7 @@ const createKey =
       })
 
       return [
-      `${urlObj.pathname}${urlObj.search}`,
+      `${pathname}${urlObj.search}`,
       hasQueryParameter(req, bypassQueryParameter)
       ]
     }
