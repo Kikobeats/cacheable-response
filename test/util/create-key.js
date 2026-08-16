@@ -58,25 +58,29 @@ test('default key dedupe requests', t => {
   )
 })
 
-test('scheme-relative request targets keep their path', t => {
-  t.deepEqual(createKey('force')({ req: { url: '//evil.com/' } }), [
+test('request targets are keyed by raw path', t => {
+  const key = createKey('force')
+  t.deepEqual(key({ req: { url: '//evil.com/' } }), ['//evil.com/', false])
+  t.deepEqual(key({ req: { url: '//evil.com/about?force=true' } }), [
+    '//evil.com/about',
+    true
+  ])
+  t.deepEqual(key({ req: { url: '//evil.com/?utm_source=twitter' } }), [
     '//evil.com/',
     false
   ])
-  t.deepEqual(
-    createKey('force')({ req: { url: '//evil.com/about?force=true' } }),
-    ['//evil.com/about', true]
-  )
-  t.deepEqual(
-    createKey('force')({ req: { url: '//evil.com/?utm_source=twitter' } }),
-    ['//evil.com/', false]
-  )
-  t.notDeepEqual(
-    createKey('force')({ req: { url: '//evil.com/' } })[0],
-    createKey('force')({ req: { url: '/' } })[0]
-  )
-  t.notDeepEqual(
-    createKey('force')({ req: { url: '//evil.com/about' } })[0],
-    createKey('force')({ req: { url: '/about' } })[0]
-  )
+  t.deepEqual(key({ req: { url: '//x/../../' } }), ['//x/../../', false])
+  t.deepEqual(key({ req: { url: '//x/../../about' } }), [
+    '//x/../../about',
+    false
+  ])
+  t.deepEqual(key({ req: { url: 'http://evil.com/' } }), [
+    'http://evil.com/',
+    false
+  ])
+  t.not(key({ req: { url: '//evil.com/' } })[0], '/')
+  t.not(key({ req: { url: '//evil.com/about' } })[0], '/about')
+  t.not(key({ req: { url: '//x/../../' } })[0], '/')
+  t.not(key({ req: { url: '//x/../../about' } })[0], '/about')
+  t.not(key({ req: { url: 'http://evil.com/' } })[0], '/')
 })

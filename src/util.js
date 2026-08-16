@@ -1,7 +1,6 @@
 'use strict'
 
 const { parse } = require('querystring')
-const { URL } = require('url')
 
 const size = obj => Object.keys(obj).length
 
@@ -12,32 +11,32 @@ const hasQueryParameter = (req, key) => {
   return value !== undefined && value !== null
 }
 
-const KEY_ORIGIN = 'http://localhost:8080'
-
 const createKey =
   bypassQueryParameter =>
     ({ req }) => {
+    // req.url is an HTTP request-target, not a WHATWG URL. Parsing it as
+    // one turns `//host/` and `//x/../../` into `/` (cache poisoning).
       const rawUrl = req.url || '/'
-      // HTTP origin-form can start with `//` (empty first segment). WHATWG
-      // URL treats that as scheme-relative, so `GET //evil.com/` would share
-      // the `/` cache key and poison the homepage.
-      const urlObj = rawUrl.startsWith('//')
-        ? new URL(`${KEY_ORIGIN}${rawUrl}`)
-        : new URL(rawUrl, KEY_ORIGIN)
+      const q = rawUrl.indexOf('?')
+      const pathname = q === -1 ? rawUrl : rawUrl.slice(0, q)
+      const searchParams = new URLSearchParams(
+        q === -1 ? '' : rawUrl.slice(q + 1)
+      )
       const OMIT_KEYS = [bypassQueryParameter, /^utm_\w+/i]
-      Array.from(urlObj.searchParams.keys()).forEach(key => {
+      Array.from(searchParams.keys()).forEach(key => {
         const isOmitable = OMIT_KEYS.some(omitQueryParam =>
           omitQueryParam instanceof RegExp
             ? omitQueryParam.test(key)
             : omitQueryParam === key
         )
         if (isOmitable) {
-          urlObj.searchParams.delete(key)
+          searchParams.delete(key)
         }
       })
 
+      const search = searchParams.toString()
       return [
-      `${urlObj.pathname}${urlObj.search}`,
+      `${pathname}${search ? `?${search}` : ''}`,
       hasQueryParameter(req, bypassQueryParameter)
       ]
     }

@@ -13,7 +13,7 @@ const rawRequest = (url, target) =>
     const req = http.request(
       {
         hostname: '127.0.0.1',
-        port: url.port,
+        port: new URL(url).port,
         path: target
       },
       res => {
@@ -123,7 +123,7 @@ test('return empty 304 response when If-None-Match matches ETag', async t => {
   t.is(body, '')
 })
 
-test('scheme-relative request targets do not poison the origin-form cache', async t => {
+test('non origin-form request targets do not poison the origin-form cache', async t => {
   const url = await runServer(
     t,
     cacheableResponse({
@@ -151,4 +151,20 @@ test('scheme-relative request targets do not poison the origin-form cache', asyn
   const homeAfterForce = await rawRequest(url, '/')
   t.is(homeAfterForce.body, '/')
   t.is(homeAfterForce.headers['x-cache-status'], 'HIT')
+
+  const dotted = await rawRequest(url, '//x/../../')
+  t.is(dotted.body, '//x/../../')
+  t.is(dotted.headers['x-cache-status'], 'MISS')
+
+  const homeAfterDot = await rawRequest(url, '/')
+  t.is(homeAfterDot.body, '/')
+  t.is(homeAfterDot.headers['x-cache-status'], 'HIT')
+
+  const absolute = await rawRequest(url, 'http://evil.com/')
+  t.is(absolute.body, 'http://evil.com/')
+  t.is(absolute.headers['x-cache-status'], 'MISS')
+
+  const homeAfterAbsolute = await rawRequest(url, '/')
+  t.is(homeAfterAbsolute.body, '/')
+  t.is(homeAfterAbsolute.headers['x-cache-status'], 'HIT')
 })

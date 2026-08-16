@@ -26,7 +26,7 @@ test('save etag in cache when is possible', async t => {
     })
   )
   await got(`${url}/kikobeats`)
-  const { etag } = await cache.get('/')
+  const { etag } = await cache.get('/kikobeats')
   t.truthy(etag)
 })
 
