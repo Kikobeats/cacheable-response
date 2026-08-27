@@ -15,3 +15,10 @@ test('parse url as fallback', t => {
   t.true(hasQueryParameter(req, 'foo'))
   t.false(hasQueryParameter(req, 'fooz'))
 })
+
+test('parse url when req.query is a raw query string', t => {
+  const req = { url: '/kikobeats?foo=bar&force=true', query: 'foo=bar&force=true' }
+  t.true(hasQueryParameter(req, 'force'))
+  t.true(hasQueryParameter(req, 'foo'))
+  t.false(hasQueryParameter(req, 'fooz'))
+})

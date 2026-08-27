@@ -7,7 +7,13 @@ const size = obj => Object.keys(obj).length
 const isFunction = fn => typeof fn === 'function'
 
 const hasQueryParameter = (req, key) => {
-  const value = req.query ? req.query[key] : parse(req.url.split('?')[1])[key]
+  // router-http (and other non-Express routers) store the raw query string on
+  // req.query. A truthy string must not be indexed like `{ force: ... }`, or
+  // `?force=true` silently fails to bypass the cache.
+  const value =
+    req.query != null && typeof req.query === 'object'
+      ? req.query[key]
+      : parse(req.url.split('?')[1])[key]
   return value !== undefined && value !== null
 }
 
