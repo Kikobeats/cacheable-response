@@ -35,6 +35,15 @@ test('default key dedupe requests', t => {
   t.deepEqual(
     createKey('force')({
       req: {
+        url: '/kikobeats?foo=bar&force=true',
+        query: 'foo=bar&force=true'
+      }
+    }),
+    ['/kikobeats?foo=bar', true]
+  )
+  t.deepEqual(
+    createKey('force')({
+      req: {
         url: '/kikobeats?foo=bar'
       }
     }),

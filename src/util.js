@@ -7,7 +7,11 @@ const size = obj => Object.keys(obj).length
 const isFunction = fn => typeof fn === 'function'
 
 const hasQueryParameter = (req, key) => {
-  const value = req.query ? req.query[key] : parse(req.url.split('?')[1])[key]
+  // router-http stores a raw query string; only treat req.query as a map when it is an object.
+  const value =
+    req.query != null && typeof req.query === 'object'
+      ? req.query[key]
+      : parse(req.url.split('?')[1])[key]
   return value !== undefined && value !== null
 }
 

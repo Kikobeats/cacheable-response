@@ -128,6 +128,33 @@ test('BYPASS for forcing refresh when response is stale', async t => {
   t.is(body, String(index))
 })
 
+test('BYPASS when req.query is a raw query string', async t => {
+  let index = 0
+  const cache = cacheableResponse({
+    get: () => ({
+      data: { value: ++index },
+      ttl: 86400000,
+      staleTtl: false,
+      createdAt: Date.now()
+    }),
+    send: ({ data, res }) => res.end(data.value.toString())
+  })
+  const url = await runServer(t, async ({ req, res }) => {
+    const q = req.url.indexOf('?')
+    req.query = q === -1 ? null : req.url.slice(q + 1)
+    await cache({ req, res })
+  })
+  t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'MISS')
+  t.is((await got(`${url}/kikobeats`)).headers['x-cache-status'], 'HIT')
+  const { body, headers } = await got(`${url}/kikobeats?force=true`)
+  t.is(headers['x-cache-status'], 'BYPASS')
+  t.is(headers['cache-control'], 'private, no-cache, no-store, max-age=0')
+  t.is(body, '2')
+  const { body: cached, headers: cachedHeaders } = await got(`${url}/kikobeats`)
+  t.is(cachedHeaders['x-cache-status'], 'HIT')
+  t.is(cached, '2')
+})
+
 test('BYPASS for forcing refresh', async t => {
   let index = 0
   const url = await runServer(
