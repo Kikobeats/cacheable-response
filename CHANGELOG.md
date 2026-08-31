@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.19 (2026-08-31)
+
+
+### Bug Fixes
+
+* detect force bypass when req.query is a raw query string ([#146](https://github.com/Kikobeats/cacheable-response/issues/146)) ([bc4bc1d](https://github.com/Kikobeats/cacheable-response/commit/bc4bc1d44fb7335a0ae14c2c2408f9f305cb200f))
+
 ### 2.10.18 (2026-08-16)
 
 
