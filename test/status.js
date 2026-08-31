@@ -150,6 +150,9 @@ test('BYPASS when req.query is a raw query string', async t => {
   t.is(headers['x-cache-status'], 'BYPASS')
   t.is(headers['cache-control'], 'private, no-cache, no-store, max-age=0')
   t.is(body, '2')
+  const { body: cached, headers: cachedHeaders } = await got(`${url}/kikobeats`)
+  t.is(cachedHeaders['x-cache-status'], 'HIT')
+  t.is(cached, '2')
 })
 
 test('BYPASS for forcing refresh', async t => {
