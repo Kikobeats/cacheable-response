@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.21 (2026-09-10)
+
+
+### Bug Fixes
+
+* persist default createdAt so HIT max-age can shrink ([#148](https://github.com/Kikobeats/cacheable-response/issues/148)) ([a70f4a3](https://github.com/Kikobeats/cacheable-response/commit/a70f4a3e0e1be1ac0135f70cb50aec7c89bfc5e3))
+
 ### 2.10.20 (2026-09-10)
 
 ### 2.10.19 (2026-08-31)
