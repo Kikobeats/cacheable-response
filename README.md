@@ -1,8 +1,8 @@
 # cacheable-response
 
-![Last version](https://img.shields.io/github/tag/Kikobeats/cacheable-response.svg?style=flat-square)
-[![Coverage Status](https://img.shields.io/coveralls/Kikobeats/cacheable-response.svg?style=flat-square)](https://coveralls.io/github/Kikobeats/cacheable-response)
-[![NPM Status](https://img.shields.io/npm/dm/cacheable-response.svg?style=flat-square)](https://www.npmjs.org/package/cacheable-response)
+[![Last version](https://img.shields.io/github/v/tag/Kikobeats/cacheable-response?style=flat-square)](https://github.com/Kikobeats/cacheable-response/releases)
+[![Coverage Status](https://img.shields.io/coverallsCoverage/github/Kikobeats/cacheable-response?style=flat-square)](https://coveralls.io/github/Kikobeats/cacheable-response)
+[![NPM Status](https://img.shields.io/npm/dm/cacheable-response?style=flat-square)](https://www.npmjs.com/package/cacheable-response)
 
 > An HTTP compliant route path middleware for serving cache response with invalidation support.
 
