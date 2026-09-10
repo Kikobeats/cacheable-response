@@ -39,8 +39,11 @@ const cacheableResponse = ({
     Promise.resolve(rawGet(opts)).then(result => {
       if (result == null) return undefined
       if (typeof result !== 'object') return result
-      result.etag = getEtag(result)
-      return result
+      // Persist createdAt at write time so HIT max-age can count down.
+      const value = { ...result }
+      value.etag = getEtag(value)
+      if (value.createdAt == null) value.createdAt = Date.now()
+      return value
     })
 
   // @keyvhq/memoize only treats forceExpiration === true as a forced refresh.
