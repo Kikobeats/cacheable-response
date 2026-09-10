@@ -64,33 +64,36 @@ test('sets default ttl', async t => {
   t.true([86400, 86399].includes(cacheControl['max-age']))
 })
 
-test('default createdAt is persisted so HIT max-age shrinks', async t => {
-  const realNow = Date.now
-  let now = 1_700_000_000_000
-  Date.now = () => now
-  t.teardown(() => {
-    Date.now = realNow
-  })
-
-  const url = await runServer(
-    t,
-    cacheableResponse({
-      ttl: 3600000,
-      staleTtl: false,
-      get: () => ({ data: { foo: 'bar' } }),
-      send: ({ res }) => {
-        res.end('Hello World')
-      }
+test.serial(
+  'default createdAt is persisted so HIT max-age shrinks',
+  async t => {
+    const realNow = Date.now
+    let now = 1_700_000_000_000
+    Date.now = () => now
+    t.teardown(() => {
+      Date.now = realNow
     })
-  )
 
-  const { headers: miss } = await got(`${url}/kikobeats`)
-  t.is(miss['x-cache-status'], 'MISS')
-  t.is(parseCacheControl(miss)['max-age'], 3600)
+    const url = await runServer(
+      t,
+      cacheableResponse({
+        ttl: 3600000,
+        staleTtl: false,
+        get: () => ({ data: { foo: 'bar' } }),
+        send: ({ res }) => {
+          res.end('Hello World')
+        }
+      })
+    )
 
-  now += 30_000
+    const { headers: miss } = await got(`${url}/kikobeats`)
+    t.is(miss['x-cache-status'], 'MISS')
+    t.is(parseCacheControl(miss)['max-age'], 3600)
 
-  const { headers: hit } = await got(`${url}/kikobeats`)
-  t.is(hit['x-cache-status'], 'HIT')
-  t.is(parseCacheControl(hit)['max-age'], 3570)
-})
+    now += 30_000
+
+    const { headers: hit } = await got(`${url}/kikobeats`)
+    t.is(hit['x-cache-status'], 'HIT')
+    t.is(parseCacheControl(hit)['max-age'], 3570)
+  }
+)
