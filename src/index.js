@@ -39,6 +39,9 @@ const cacheableResponse = ({
     Promise.resolve(rawGet(opts)).then(result => {
       if (result == null) return undefined
       if (typeof result !== 'object') return result
+      // Stamp here, not at read time: Cache-Control max-age is createdAt + ttl
+      // - now. A read-time Date.now() default resets freshness on every HIT.
+      if (result.createdAt == null) result.createdAt = Date.now()
       result.etag = getEtag(result)
       return result
     })
