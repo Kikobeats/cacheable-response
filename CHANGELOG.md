@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.22 (2026-10-19)
+
+
+### Bug Fixes
+
+* honor per-entry ttl on compressed cache entries ([#149](https://github.com/Kikobeats/cacheable-response/issues/149)) ([df54794](https://github.com/Kikobeats/cacheable-response/commit/df54794ac89a7a9f0dcf2668375593759eb2d971))
+
 ### 2.10.21 (2026-09-10)
 
 
