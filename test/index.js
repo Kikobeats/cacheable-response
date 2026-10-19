@@ -37,6 +37,8 @@ test('compress support', async t => {
     t,
     cacheableResponse({
       compress: true,
+      // Shorter than the default stale window; disable it so a fresh entry is a HIT.
+      staleTtl: false,
       get: ({ req, res }) => {
         return {
           data: { foo: 'bar' },
@@ -55,6 +57,52 @@ test('compress support', async t => {
   const { headers: headersTwo } = await got(`${url}/kikobeats`)
   t.is(headersTwo['x-cache-status'], 'HIT')
   t.is(headersOne.etag, headersTwo.etag)
+})
+
+test('compressed entries written as raw buffers still hit', async t => {
+  const Keyv = require('@keyvhq/core')
+  const createCompress = require('compress-brotli')
+  const cache = new Keyv({ namespace: 'ssr' })
+  const { compress } = createCompress({ enable: true })
+  await cache.set(
+    '/compat',
+    await compress({ data: { foo: 'from-raw' }, createdAt: Date.now() }),
+    86400000
+  )
+
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      cache,
+      compress: true,
+      staleTtl: false,
+      get: () => ({ data: { foo: 'fresh' } }),
+      send: ({ data, res }) => res.end(data.foo)
+    })
+  )
+
+  const { headers, body } = await got(`${url}/compat`)
+  t.is(headers['x-cache-status'], 'HIT')
+  t.is(body, 'from-raw')
+})
+
+test('uncompressed values keep their own compressed field', async t => {
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      get: () => ({ data: { foo: 'bar' }, compressed: { algo: 'br' } }),
+      send: ({ data, compressed, res }) =>
+        res.end(`${data.foo}|${compressed.algo}`)
+    })
+  )
+
+  const miss = await got(`${url}/kikobeats`)
+  t.is(miss.headers['x-cache-status'], 'MISS')
+  t.is(miss.body, 'bar|br')
+
+  const hit = await got(`${url}/kikobeats`)
+  t.is(hit.headers['x-cache-status'], 'HIT')
+  t.is(hit.body, 'bar|br')
 })
 
 test('exit early is response was written', async t => {
