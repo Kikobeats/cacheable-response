@@ -97,3 +97,77 @@ test.serial(
     t.is(parseCacheControl(hit)['max-age'], 3570)
   }
 )
+
+test.serial('compressed entries expire on their own ttl', async t => {
+  const realNow = Date.now
+  let now = 1_700_000_000_000
+  Date.now = () => now
+  t.teardown(() => {
+    Date.now = realNow
+  })
+
+  let calls = 0
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      compress: true,
+      ttl: 86400000,
+      staleTtl: false,
+      get: () => {
+        calls += 1
+        return { data: { n: calls }, ttl: 1000 }
+      },
+      send: ({ data, res }) => res.end(String(data.n))
+    })
+  )
+
+  const miss = await got(`${url}/kikobeats`)
+  t.is(miss.headers['x-cache-status'], 'MISS')
+  t.is(miss.body, '1')
+
+  now += 5000
+
+  const expired = await got(`${url}/kikobeats`)
+  t.is(expired.headers['x-cache-status'], 'EXPIRED')
+  t.is(expired.body, '2')
+})
+
+test.serial('compressed entries honor a per-entry staleTtl', async t => {
+  const realNow = Date.now
+  let now = 1_700_000_000_000
+  Date.now = () => now
+  t.teardown(() => {
+    Date.now = realNow
+  })
+
+  let calls = 0
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      compress: true,
+      ttl: 86400000,
+      staleTtl: false,
+      get: () => {
+        calls += 1
+        return { data: { n: calls }, ttl: 20000, staleTtl: 15000 }
+      },
+      send: ({ data, res }) => res.end(String(data.n))
+    })
+  )
+
+  const miss = await got(`${url}/kikobeats`)
+  t.is(miss.headers['x-cache-status'], 'MISS')
+  t.is(miss.body, '1')
+
+  const hit = await got(`${url}/kikobeats`)
+  t.is(hit.headers['x-cache-status'], 'HIT')
+  t.is(hit.body, '1')
+
+  now += 6000
+
+  const stale = await got(`${url}/kikobeats`)
+  t.is(stale.headers['x-cache-status'], 'STALE')
+  t.is(stale.body, '1')
+  await new Promise(resolve => setImmediate(resolve))
+  t.is(calls, 2)
+})

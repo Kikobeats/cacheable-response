@@ -33,6 +33,33 @@ const cacheableResponse = ({
     ...compressOpts
   })
 
+  // memoize calls ttl/staleTtl on the stored value. A brotli payload is a
+  // Buffer, so those fields would be invisible and every entry would keep the
+  // default lifetime. Keep them beside the payload; raw buffers still load.
+  const isCompressedEntry = value =>
+    enableCompression &&
+    value != null &&
+    typeof value === 'object' &&
+    !Buffer.isBuffer(value) &&
+    Object.prototype.hasOwnProperty.call(value, 'compressed')
+
+  const storeValue = async data => {
+    const payload = await compress(data)
+    if (!enableCompression || data == null || typeof data !== 'object') return payload
+    return {
+      compressed: payload,
+      ttl: ttl(data),
+      staleTtl: staleTtl(data)
+    }
+  }
+
+  const loadValue = data =>
+    isCompressedEntry(data) ? decompress(data.compressed) : decompress(data)
+
+  const ttlOf = value => (isCompressedEntry(value) ? value.ttl : ttl(value))
+  const staleTtlOf = value =>
+    isCompressedEntry(value) ? value.staleTtl : staleTtl(value)
+
   const getEtag = input => require('etag')(serialize(input))
 
   const get = opts =>
@@ -55,9 +82,9 @@ const cacheableResponse = ({
   const memoGet = memoize(get, cache, {
     key: memoKey,
     objectMode: true,
-    staleTtl,
-    ttl,
-    value: compress
+    staleTtl: staleTtlOf,
+    ttl: ttlOf,
+    value: storeValue
   })
 
   const fn = async opts => {
@@ -67,7 +94,7 @@ const cacheableResponse = ({
 
     if (res.writableEnded) return
 
-    const result = (await decompress(raw)) || {}
+    const result = (await loadValue(raw)) || {}
     const isHit = !forceExpiration && !isExpired && hasValue
     const preventCaching = raw == null
 
