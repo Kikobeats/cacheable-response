@@ -86,6 +86,25 @@ test('compressed entries written as raw buffers still hit', async t => {
   t.is(body, 'from-raw')
 })
 
+test('uncompressed values keep their own compressed field', async t => {
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      get: () => ({ data: { foo: 'bar' }, compressed: { algo: 'br' } }),
+      send: ({ data, compressed, res }) =>
+        res.end(`${data.foo}|${compressed.algo}`)
+    })
+  )
+
+  const miss = await got(`${url}/kikobeats`)
+  t.is(miss.headers['x-cache-status'], 'MISS')
+  t.is(miss.body, 'bar|br')
+
+  const hit = await got(`${url}/kikobeats`)
+  t.is(hit.headers['x-cache-status'], 'HIT')
+  t.is(hit.body, 'bar|br')
+})
+
 test('exit early is response was written', async t => {
   let isEnd = false
   const end = (res, msg) => {

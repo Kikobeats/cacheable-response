@@ -171,3 +171,74 @@ test.serial('compressed entries honor a per-entry staleTtl', async t => {
   await new Promise(resolve => setImmediate(resolve))
   t.is(calls, 2)
 })
+
+test.serial('compressed entries honor ttl and staleTtl functions', async t => {
+  const realNow = Date.now
+  let now = 1_700_000_000_000
+  Date.now = () => now
+  t.teardown(() => {
+    Date.now = realNow
+  })
+
+  let calls = 0
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      compress: true,
+      ttl: value => value.seconds * 1000,
+      staleTtl: value => value.staleSeconds * 1000,
+      get: () => {
+        calls += 1
+        return { data: { n: calls }, seconds: 20, staleSeconds: 15 }
+      },
+      send: ({ data, res }) => res.end(String(data.n))
+    })
+  )
+
+  const miss = await got(`${url}/kikobeats`)
+  t.is(miss.headers['x-cache-status'], 'MISS')
+  t.is(miss.body, '1')
+  t.is(parseCacheControl(miss.headers)['max-age'], 20)
+  t.is(parseCacheControl(miss.headers)['stale-while-revalidate'], 15)
+
+  const hit = await got(`${url}/kikobeats`)
+  t.is(hit.headers['x-cache-status'], 'HIT')
+  t.is(hit.body, '1')
+
+  now += 6000
+
+  const stale = await got(`${url}/kikobeats`)
+  t.is(stale.headers['x-cache-status'], 'STALE')
+  t.is(stale.body, '1')
+  await new Promise(resolve => setImmediate(resolve))
+  t.is(calls, 2)
+})
+
+test('a compressed field on the value is not the storage envelope', async t => {
+  const url = await runServer(
+    t,
+    cacheableResponse({
+      compress: true,
+      ttl: 3600000,
+      staleTtl: 120000,
+      get: () => ({ data: { foo: 'bar' }, compressed: { algo: 'br' } }),
+      send: ({ data, compressed, res }) =>
+        res.end(`${data.foo}|${compressed.algo}`)
+    })
+  )
+
+  const miss = await got(`${url}/kikobeats`)
+  t.is(miss.headers['x-cache-status'], 'MISS')
+  t.is(miss.body, 'bar|br')
+  const missCache = parseCacheControl(miss.headers)
+  t.true([3600, 3599].includes(missCache['max-age']))
+  t.true([120, 119].includes(missCache['stale-while-revalidate']))
+  t.true([120, 119].includes(missCache['stale-if-error']))
+
+  const hit = await got(`${url}/kikobeats`)
+  t.is(hit.headers['x-cache-status'], 'HIT')
+  t.is(hit.body, 'bar|br')
+  const hitCache = parseCacheControl(hit.headers)
+  t.true([3600, 3599].includes(hitCache['max-age']))
+  t.true([120, 119].includes(hitCache['stale-while-revalidate']))
+})

@@ -40,12 +40,11 @@ const cacheableResponse = ({
     enableCompression &&
     value != null &&
     typeof value === 'object' &&
-    !Buffer.isBuffer(value) &&
     Object.prototype.hasOwnProperty.call(value, 'compressed')
 
   const storeValue = async data => {
     const payload = await compress(data)
-    if (!enableCompression || data == null || typeof data !== 'object') return payload
+    if (!enableCompression || data == null || typeof data !== 'object') { return payload }
     return {
       compressed: payload,
       ttl: ttl(data),
@@ -102,10 +101,16 @@ const cacheableResponse = ({
       createdAt = Date.now(),
       data = null,
       etag = getEtag(result),
-      staleTtl = memoGet.staleTtl(result),
-      ttl = memoGet.ttl(result),
+      staleTtl: resultStaleTtl,
+      ttl: resultTtl,
       ...props
     } = result
+
+    // A cached value may itself have a `compressed` field. That is not the
+    // storage envelope, so don't read lifetimes with the envelope predicate.
+    const responseStaleTtl =
+      resultStaleTtl === undefined ? staleTtl(result) : resultStaleTtl
+    const responseTtl = resultTtl === undefined ? ttl(result) : resultTtl
 
     const ifNoneMatch = req.headers['if-none-match']
     const isModified = etag !== ifNoneMatch
@@ -130,8 +135,8 @@ const cacheableResponse = ({
       isStale,
       preventCaching,
       res,
-      staleTtl,
-      ttl
+      staleTtl: responseStaleTtl,
+      ttl: responseTtl
     })
 
     if (hasValue && !forceExpiration && !isModified) {

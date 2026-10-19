@@ -106,16 +106,32 @@ declare namespace CacheableResponse {
 
   export type GetOpts = HttpContext & Props;
 
+  /**
+   * Stored when `compress` is enabled.
+   * Lifetimes sit beside the brotli payload so expiry does not depend on decompressing it.
+   * Entries written before that are still a raw `Buffer`.
+   */
+  export interface CompressedEntry {
+    compressed: Buffer;
+    ttl: number;
+    staleTtl: number | boolean;
+  }
+
   export interface CacheProvider<P extends Props, V = any> {
-    /** Returns the cached value, or the compressed buffer when compress option is set to true. */
-    get(key: string): Promise<Buffer | (Cache<V> & P) | undefined>;
+    /**
+     * Returns the cached value.
+     * With `compress` enabled this is a `CompressedEntry`, or a `Buffer` for older entries.
+     */
+    get(
+      key: string
+    ): Promise<Buffer | CompressedEntry | (Cache<V> & P) | undefined>;
 
     /**
      * Set a value. You can implements an expiry TTL in milliseconds.
      */
     set(
       key: string,
-      value: Buffer | (Cache<V> & P),
+      value: Buffer | CompressedEntry | (Cache<V> & P),
       ttl: number
     ): Promise<true>;
   }
