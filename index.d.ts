@@ -10,15 +10,44 @@ declare function CacheableResponse<
   Data extends {} = {}
 >(
   params: CacheableResponse.InputParams<Options, Props, Data>
-): (opts: Options) => any;
-
-/** Framework agnostic req and res object */
-export interface HttpContext {
-  req: IncomingMessage;
-  res: ServerResponse;
-}
+): CacheableResponse.Handler<Options>;
 
 declare namespace CacheableResponse {
+  /** Framework agnostic req and res object */
+  export interface HttpContext {
+    req: IncomingMessage;
+    res: ServerResponse;
+  }
+
+  /** The middleware returned by `cacheableResponse`. */
+  export interface Handler<Options extends GetOpts = GetOpts> {
+    (opts: Options): any;
+
+    /** Computes the ETag the middleware sends for a given response value. */
+    getEtag(input: object | string | number | boolean | null): string;
+  }
+
+  export interface SetHeadersOptions {
+    /** JS timestamp of when the response was generated. */
+    createdAt: number;
+    etag: string;
+    forceExpiration?: boolean;
+    hasValue: boolean;
+    isHit: boolean;
+    isStale: boolean;
+    preventCaching?: boolean;
+    res: ServerResponse;
+    /** Grace period in milliseconds, or `false` to disable it. */
+    staleTtl: number | boolean;
+    /** ttl in milliseconds */
+    ttl: number;
+  }
+
+  /**
+   * Writes the `Cache-Control`, `X-Cache-Status` and `ETag` headers the middleware sends.
+   */
+  export function setHeaders(options: SetHeadersOptions): void;
+
   export interface InputParams<
     Options extends GetOpts,
     GetReturnProps extends Props,
@@ -41,7 +70,7 @@ declare namespace CacheableResponse {
     /**
      * Enable compress/decompress data using brotli compression format.
      *
-     * The default value is `true`.
+     * The default value is `false`.
      */
     compress?: boolean;
 
@@ -154,4 +183,4 @@ declare namespace CacheableResponse {
     Partial<Pick<T, K>>;
 }
 
-export default CacheableResponse;
+export = CacheableResponse;
