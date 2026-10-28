@@ -35,3 +35,6 @@ coverage
 .env
 .envrc
 .envrc
+benchmark-output.json
+head-output.json
+cache/

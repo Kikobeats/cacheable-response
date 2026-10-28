@@ -58,6 +58,7 @@
     "src"
   ],
   "scripts": {
+    "benchmark": "node benchmark/index.js",
     "clean": "rm -rf node_modules",
     "contributors": "(git-authors-cli && --sort-ignore-object-at ava && git add package.json && git commit -m 'build: contributors' --no-verify) || true",
     "lint": "standard",
