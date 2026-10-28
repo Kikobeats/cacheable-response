@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.24 (2026-10-28)
+
+
+### Bug Fixes
+
+* declare the real minimum Node.js version ([#151](https://github.com/Kikobeats/cacheable-response/issues/151)) ([9e44192](https://github.com/Kikobeats/cacheable-response/commit/9e441927706ed6f085d17e94d6330936296ff6c1))
+
 ### 2.10.23 (2026-10-28)
 
 ### 2.10.22 (2026-10-19)
