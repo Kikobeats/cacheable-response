@@ -70,11 +70,12 @@ const serve = async (handler, url, headers) => {
 }
 
 const serveSequentially = async (handler, urlOf, count, headersOf) => {
-  const tally = { statuses: {}, bytes: 0 }
+  const tally = { statuses: {}, codes: {}, bytes: 0 }
   for (let request = 0; request < count; request++) {
     const res = await serve(handler, urlOf(request), headersOf?.(request))
     const status = res.headers['x-cache-status']
     tally.statuses[status] = (tally.statuses[status] || 0) + 1
+    tally.codes[res.statusCode] = (tally.codes[res.statusCode] || 0) + 1
     if (res.statusCode === 200) tally.bytes += res.body.length
   }
   return tally
@@ -128,8 +129,9 @@ const notModifiedCase = {
       NOT_MODIFIED_REQUESTS,
       () => state.headers
     ),
-  verify: ({ statuses, bytes }) =>
-    statuses.HIT === NOT_MODIFIED_REQUESTS && bytes === 0
+  verify: ({ statuses, codes }) =>
+    statuses.HIT === NOT_MODIFIED_REQUESTS &&
+    codes[304] === NOT_MODIFIED_REQUESTS
 }
 
 const compressedHitCase = {
