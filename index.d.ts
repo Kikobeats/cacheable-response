@@ -154,12 +154,21 @@ declare namespace CacheableResponse {
   /**
    * A `@keyvhq/core` instance is used as is.
    * Anything else is passed to `new Keyv()` as its options, and its keys are copied onto the instance,
-   * so an object with its own `get`, `set`, `has`, `delete`, or `clear` would replace those methods instead of being a cache.
+   * so an object with its own `get`, `set`, `has`, `delete`, `clear`, `_getKeyPrefix`, or `_getKeyUnprefix`
+   * would replace those methods instead of being a cache.
+   * `_getKeyPrefix` is how a read finds the stored entry.
    */
   export type CacheProvider =
     | Keyv<any>
     | (Keyv.Options<any> & {
-        [Method in "get" | "set" | "has" | "delete" | "clear"]?: never;
+        [Method in
+          | "get"
+          | "set"
+          | "has"
+          | "delete"
+          | "clear"
+          | "_getKeyPrefix"
+          | "_getKeyUnprefix"]?: never;
       });
 
   interface Props {

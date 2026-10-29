@@ -102,3 +102,9 @@ cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...
 cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyDelete } })
 // @ts-expect-error own clear replaces Keyv#clear
 cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyClear } })
+const onlyPrefix = { _getKeyPrefix: (key: string) => key }
+const onlyUnprefix = { _getKeyUnprefix: (key: string) => key }
+// @ts-expect-error own _getKeyPrefix replaces the method a read uses to find the entry
+cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyPrefix } })
+// @ts-expect-error own _getKeyUnprefix replaces Keyv's prefix helper
+cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyUnprefix } })
