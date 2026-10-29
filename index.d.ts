@@ -154,9 +154,11 @@ declare namespace CacheableResponse {
   /**
    * A `@keyvhq/core` instance is used as is.
    * Anything else is passed to `new Keyv()` as its options, and its keys are copied onto the instance,
-   * so an object with its own `get`, `set`, `has`, `delete`, `clear`, `_getKeyPrefix`, or `_getKeyUnprefix`
-   * would replace those methods instead of being a cache.
+   * so an object with its own `get`, `set`, `has`, `delete`, `clear`, `iterator`,
+   * `_getKeyPrefix`, or `_getKeyUnprefix` would replace those methods instead of being a cache.
    * `_getKeyPrefix` is how a read finds the stored entry.
+   * `serialize` and `deserialize` are real Keyv options, so they stay allowed.
+   * `constructor` is on every object, so excluding it would reject real options too.
    */
   export type CacheProvider =
     | Keyv<any>
@@ -167,6 +169,7 @@ declare namespace CacheableResponse {
           | "has"
           | "delete"
           | "clear"
+          | "iterator"
           | "_getKeyPrefix"
           | "_getKeyUnprefix"]?: never;
       });

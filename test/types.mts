@@ -108,3 +108,6 @@ const onlyUnprefix = { _getKeyUnprefix: (key: string) => key }
 cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyPrefix } })
 // @ts-expect-error own _getKeyUnprefix replaces Keyv's prefix helper
 cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyUnprefix } })
+const onlyIterator = { iterator: () => undefined }
+// @ts-expect-error own iterator stays on the instance when the store does not install one
+cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyIterator } })
