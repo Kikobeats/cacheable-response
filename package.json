@@ -3,6 +3,7 @@
   "description": "An HTTP compliant route path middleware for serving cache response with invalidation support.",
   "homepage": "https://github.com/Kikobeats/cacheable-response",
   "version": "2.10.24",
+  "types": "index.d.ts",
   "main": "src/index.js",
   "author": {
     "email": "josefrancisco.verdu@gmail.com",
@@ -37,6 +38,7 @@
   "devDependencies": {
     "@commitlint/cli": "latest",
     "@commitlint/config-conventional": "latest",
+    "@types/node": "latest",
     "async-listen": "latest",
     "ava": "7",
     "c8": "latest",
@@ -48,7 +50,8 @@
     "nano-staged": "latest",
     "simple-git-hooks": "latest",
     "standard": "latest",
-    "standard-version": "latest"
+    "standard-version": "latest",
+    "typescript": "latest"
   },
   "engines": {
     "node": ">= 20"
@@ -68,7 +71,8 @@
     "release": "standard-version -a",
     "release:github": "github-generate-release",
     "release:tags": "git push --follow-tags origin HEAD:master",
-    "test": "c8 ava"
+    "test": "npm run test:types && c8 ava",
+    "test:types": "tsc --noEmit --strict --module nodenext --moduleResolution nodenext --target es2022 --types node test/types.mts"
   },
   "license": "MIT",
   "ava": {
