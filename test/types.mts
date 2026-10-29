@@ -62,6 +62,16 @@ const keyvOptionHooks: CacheProvider = {
 cacheableResponse({ ...params, cache: keyvCache })
 cacheableResponse({ ...params, cache: keyvOptions })
 cacheableResponse({ ...params, cache: keyvOptionHooks })
+const copiedHooks = {
+  __defineGetter__: () => undefined,
+  __defineSetter__: () => undefined,
+  __lookupGetter__: () => undefined,
+  __lookupSetter__: () => undefined,
+  ['__proto__']: () => undefined
+}
+cacheableResponse({ ...params, cache: { namespace: 'ssr', store: new Map(), ...copiedHooks } })
+const copiedIterator = { [Symbol.iterator]: () => undefined }
+cacheableResponse({ ...params, cache: { namespace: 'ssr', store: new Map(), ...copiedIterator } })
 cacheableResponse<GetOpts, {}, Data>({ ...params, cache: keyvCache })
 
 const plainCache = {
