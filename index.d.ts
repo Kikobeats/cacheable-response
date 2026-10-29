@@ -1,4 +1,5 @@
 import { IncomingMessage, ServerResponse } from "http";
+import Keyv = require("@keyvhq/core");
 
 /**
  * Cacheable response is a HTTP middleware for serving a pre-calculated response.
@@ -61,11 +62,12 @@ declare namespace CacheableResponse {
      bypassQueryParameter?: string
 
     /**
-     * The cache instance used for backed your pre-calculated server side response copies.
+     * The cache backing your pre-calculated server side response copies:
+     * a `@keyvhq/core` instance, or the options to create one.
      *
-     * The default value is an in-memory instance.
+     * The default value is `new Keyv({ namespace: 'ssr' })`, an in-memory instance.
      */
-    cache?: CacheProvider<GetReturnProps, Data>;
+    cache?: CacheProvider;
 
     /**
      * Enable compress/decompress data using brotli compression format.
@@ -99,9 +101,12 @@ declare namespace CacheableResponse {
 
     /**
      * The method used to determinate how the content should be rendered.
+     *
+     * Props are checked here but not inferred from here, so a `Keyv<any>` cache
+     * cannot widen them. The indexed access is `NoInfer` for TypeScript before 5.4.
      */
     send: (
-      opts: GetReturnProps & { data: Data } & Pick<Options, "req" | "res">
+      opts: [GetReturnProps][GetReturnProps extends any ? 0 : never] & { data: Data } & Pick<Options, "req" | "res">
     ) => any;
 
     /**
@@ -146,24 +151,28 @@ declare namespace CacheableResponse {
     staleTtl: number | boolean;
   }
 
-  export interface CacheProvider<P extends Props, V = any> {
-    /**
-     * Returns the cached value.
-     * With `compress` enabled this is a `CompressedEntry`, or a `Buffer` for older entries.
-     */
-    get(
-      key: string
-    ): Promise<Buffer | CompressedEntry | (Cache<V> & P) | undefined>;
-
-    /**
-     * Set a value. You can implements an expiry TTL in milliseconds.
-     */
-    set(
-      key: string,
-      value: Buffer | CompressedEntry | (Cache<V> & P),
-      ttl: number
-    ): Promise<true>;
-  }
+  /**
+   * A `@keyvhq/core` instance is used as is.
+   * Anything else is passed to `new Keyv()` as its options, and its keys are copied onto the instance,
+   * so an object with its own `get`, `set`, `has`, `delete`, `clear`, `iterator`,
+   * `_getKeyPrefix`, or `_getKeyUnprefix` would replace those methods instead of being a cache.
+   * `_getKeyPrefix` is how a read finds the stored entry.
+   * `serialize`, `deserialize`, and `ttl` are real Keyv options, so they stay allowed.
+   * `constructor` is on every object, so excluding it would reject real options too.
+   */
+  export type CacheProvider =
+    | Keyv<any>
+    | (Keyv.Options<any> & {
+        [Method in
+          | "get"
+          | "set"
+          | "has"
+          | "delete"
+          | "clear"
+          | "iterator"
+          | "_getKeyPrefix"
+          | "_getKeyUnprefix"]?: never;
+      });
 
   interface Props {
     [key: string]: any;
