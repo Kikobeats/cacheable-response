@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.26 (2026-10-29)
+
+
+### Bug Fixes
+
+* **types:** type `cache` as a Keyv instance or Keyv options ([#153](https://github.com/Kikobeats/cacheable-response/issues/153)) ([0aef307](https://github.com/Kikobeats/cacheable-response/commit/0aef307e7b3c42dd11c0475f16ad6628a43ed6f3))
+
 ### 2.10.25 (2026-10-29)
 
 

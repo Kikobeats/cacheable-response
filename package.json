@@ -2,7 +2,7 @@
   "name": "cacheable-response",
   "description": "An HTTP compliant route path middleware for serving cache response with invalidation support.",
   "homepage": "https://github.com/Kikobeats/cacheable-response",
-  "version": "2.10.25",
+  "version": "2.10.26",
   "types": "index.d.ts",
   "main": "src/index.js",
   "author": {
