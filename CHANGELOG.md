@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### 2.10.25 (2026-10-29)
+
+
+### Bug Fixes
+
+* **types:** describe the CommonJS export with export = ([#152](https://github.com/Kikobeats/cacheable-response/issues/152)) ([fd87d7f](https://github.com/Kikobeats/cacheable-response/commit/fd87d7f7906200ea309d656c09a8ac7af8af5939))
+
 ### 2.10.24 (2026-10-28)
 
 
