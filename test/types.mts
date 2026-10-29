@@ -58,7 +58,7 @@ cacheableResponse<GetOpts, {}, Data>({ ...params, cache: keyvCache })
 
 const plainCache = {
   get: async (key: string) => undefined,
-  set: async (key: string, value: unknown, ttl: number) => true as const
+  set: async (key: string, value: unknown, ttl: number) => true
 }
 // @ts-expect-error a plain `{ get, set }` object is passed to `new Keyv()` as options and never read from
 cacheableResponse<GetOpts, {}, Data>({ ...params, cache: plainCache })
