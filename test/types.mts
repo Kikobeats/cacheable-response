@@ -62,6 +62,7 @@ const keyvOptionHooks: CacheProvider = {
 cacheableResponse({ ...params, cache: keyvCache })
 cacheableResponse({ ...params, cache: keyvOptions })
 cacheableResponse({ ...params, cache: keyvOptionHooks })
+// Object.assign copies these keys onto the instance. They are not Keyv methods.
 const copiedHooks = {
   __defineGetter__: () => undefined,
   __defineSetter__: () => undefined,
