@@ -157,7 +157,7 @@ declare namespace CacheableResponse {
    * so an object with its own `get`, `set`, `has`, `delete`, `clear`, `iterator`,
    * `_getKeyPrefix`, or `_getKeyUnprefix` would replace those methods instead of being a cache.
    * `_getKeyPrefix` is how a read finds the stored entry.
-   * `serialize` and `deserialize` are real Keyv options, so they stay allowed.
+   * `serialize`, `deserialize`, and `ttl` are real Keyv options, so they stay allowed.
    * `constructor` is on every object, so excluding it would reject real options too.
    */
   export type CacheProvider =

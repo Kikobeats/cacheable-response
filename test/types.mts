@@ -52,8 +52,16 @@ console.log(cacheableResponse.default)
 
 const keyvCache = new Keyv({ namespace: 'ssr' })
 const keyvOptions: CacheProvider = { namespace: 'ssr', store: new Map() }
+const keyvOptionHooks: CacheProvider = {
+  namespace: 'ssr',
+  store: new Map(),
+  ttl: 60_000,
+  serialize: data => JSON.stringify(data),
+  deserialize: text => JSON.parse(text)
+}
 cacheableResponse({ ...params, cache: keyvCache })
 cacheableResponse({ ...params, cache: keyvOptions })
+cacheableResponse({ ...params, cache: keyvOptionHooks })
 cacheableResponse<GetOpts, {}, Data>({ ...params, cache: keyvCache })
 
 const plainCache = {
