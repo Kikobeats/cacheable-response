@@ -70,9 +70,35 @@ cacheableResponse({
   // @ts-expect-error `data` is still inferred from `get` when `cache` is a `Keyv<any>`
   send: ({ data, res }) => res.end(data.htmll)
 })
+cacheableResponse({
+  cache: sharedKeyv,
+  get: async () => ({ data: { html: '<p/>' }, statusCode: 201 }),
+  send: ({ data, statusCode, res }) => {
+    res.statusCode = statusCode
+    res.end(data.html)
+  }
+})
 
 const adapterKeyv = new Keyv<undefined>({ namespace: 'ssr' })
 cacheableResponse({ ...params, cache: adapterKeyv })
 
 // @ts-expect-error `get` and `set` would replace Keyv methods, the object is still never read from
 cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { ttl: 60_000, ...plainCache } })
+
+// Spread a real Keyv option in with one method. A fresh literal would still
+// fail excess-property checks after that method was dropped from the type.
+const onlyGet = { get: async (key: string) => undefined }
+const onlySet = { set: async (key: string, value: unknown, ttl: number) => true }
+const onlyHas = { has: async (key: string) => false }
+const onlyDelete = { delete: async (key: string) => false }
+const onlyClear = { clear: async () => undefined }
+// @ts-expect-error own get replaces Keyv#get
+cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyGet } })
+// @ts-expect-error own set replaces Keyv#set
+cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlySet } })
+// @ts-expect-error own has replaces Keyv#has
+cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyHas } })
+// @ts-expect-error own delete replaces Keyv#delete
+cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyDelete } })
+// @ts-expect-error own clear replaces Keyv#clear
+cacheableResponse<GetOpts, {}, Data>({ ...params, cache: { namespace: 'ssr', ...onlyClear } })

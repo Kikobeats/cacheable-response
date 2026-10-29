@@ -62,7 +62,7 @@ declare namespace CacheableResponse {
      bypassQueryParameter?: string
 
     /**
-     * The cache used for backed your pre-calculated server side response copies:
+     * The cache backing your pre-calculated server side response copies:
      * a `@keyvhq/core` instance, or the options to create one.
      *
      * The default value is `new Keyv({ namespace: 'ssr' })`, an in-memory instance.
@@ -101,6 +101,9 @@ declare namespace CacheableResponse {
 
     /**
      * The method used to determinate how the content should be rendered.
+     *
+     * Props are checked here but not inferred from here, so a `Keyv<any>` cache
+     * cannot widen them. The indexed access is `NoInfer` for TypeScript before 5.4.
      */
     send: (
       opts: [GetReturnProps][GetReturnProps extends any ? 0 : never] & { data: Data } & Pick<Options, "req" | "res">
@@ -151,7 +154,7 @@ declare namespace CacheableResponse {
   /**
    * A `@keyvhq/core` instance is used as is.
    * Anything else is passed to `new Keyv()` as its options, and its keys are copied onto the instance,
-   * so an object with its own `get` or `set` would replace Keyv methods instead of being a cache.
+   * so an object with its own `get`, `set`, `has`, `delete`, or `clear` would replace those methods instead of being a cache.
    */
   export type CacheProvider =
     | Keyv<any>

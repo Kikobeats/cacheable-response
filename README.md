@@ -165,10 +165,10 @@ The name of the query parameter to be used for skipping the cache copy in an int
 
 ##### cache
 
-Type: `Keyv` \| `object`<br/>
+Type: `Keyv` instance \| options<br/>
 Default: `new Keyv({ namespace: 'ssr' })`
 
-The cache instance used for backed your pre-calculated server side response copies.
+The cache backing your pre-calculated server side response copies.
 
 The library delegates in [keyv](https://keyvhq.js.org/), a tiny key value store with [multi adapter support](https://keyvhq.js.org/#/?id=storage-adapters).
 
