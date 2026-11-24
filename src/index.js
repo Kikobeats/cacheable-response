@@ -2,6 +2,7 @@
 
 const createCompress = require('compress-brotli')
 const memoize = require('@keyvhq/memoize')
+const { etag } = require('etag')
 const Keyv = require('@keyvhq/core')
 const assert = require('assert')
 
@@ -44,7 +45,9 @@ const cacheableResponse = ({
 
   const storeValue = async data => {
     const payload = await compress(data)
-    if (!enableCompression || data == null || typeof data !== 'object') { return payload }
+    if (!enableCompression || data == null || typeof data !== 'object') {
+      return payload
+    }
     return {
       compressed: payload,
       ttl: ttl(data),
@@ -59,7 +62,7 @@ const cacheableResponse = ({
   const staleTtlOf = value =>
     isCompressedEntry(value) ? value.staleTtl : staleTtl(value)
 
-  const getEtag = input => require('etag')(serialize(input))
+  const getEtag = input => etag(serialize(input))
 
   const get = opts =>
     Promise.resolve(rawGet(opts)).then(result => {
